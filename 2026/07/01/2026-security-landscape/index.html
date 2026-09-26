@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>2026 上半年安全态势回顾</title>
+<meta name="keywords" content="2026 上半年安全态势回顾, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="盘点 2026 年上半年值得关注的网络安全事件：供应链攻击升级、AI 辅助攻击工具涌现、零日漏洞利用新趋势。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="2026 上半年安全态势回顾">
+<meta property="og:description" content="盘点 2026 年上半年值得关注的网络安全事件：供应链攻击升级、AI 辅助攻击工具涌现、零日漏洞利用新趋势。">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">2026 上半年安全态势回顾</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-07-01</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/%E5%AE%89%E5%85%A8/">
+              安全
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%A8%81%E8%83%81%E6%83%85%E6%8A%A5/">
+              威胁情报
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>2026 上半年，安全领域发生了几个值得注意的变化。本文做一个简要复盘。</p>
+<h2 id="供应链攻击持续升级"><a href="#供应链攻击持续升级" class="headerlink" title="供应链攻击持续升级"></a>供应链攻击持续升级</h2><p>上半年最引人关注的是某主流 npm 包的维护者账号被盗事件，攻击者在十余个版本中植入了窃密代码，影响了数万个下游项目。</p>
+<div class="markdown-alert markdown-alert-danger">
+<p class="markdown-alert-title">危险</p>
+
+<p>及时审查 <code>package-lock.json</code> 中的变更，不要盲目信任依赖更新。启用 <code>npm audit</code> 和 Dependabot 告警是最低配置。</p>
+</div>
+
+<h2 id="AI-辅助攻击工具"><a href="#AI-辅助攻击工具" class="headerlink" title="AI 辅助攻击工具"></a>AI 辅助攻击工具</h2><p>2026 年见证了第一波真正具有实战价值的 AI 攻击工具：</p>
+<ul>
+<li>自动化的钓鱼邮件生成，成功率远超人工编写</li>
+<li>基于 LLM 的漏洞利用 PoC 自动生成</li>
+<li>深度伪造语音的社会工程攻击</li>
+</ul>
+<div class="markdown-alert markdown-alert-warning">
+<p class="markdown-alert-title">警告</p>
+
+<p>AI 同样在防御侧发挥作用。建议团队在今年完成 AI 辅助代码审计工具的评估和部署。</p>
+</div>
+
+<h2 id="零日漏洞趋势"><a href="#零日漏洞趋势" class="headerlink" title="零日漏洞趋势"></a>零日漏洞趋势</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>2025 H1</th>
+<th>2026 H1</th>
+<th>变化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>浏览器零日</td>
+<td>12</td>
+<td>18</td>
+<td>+50%</td>
+</tr>
+<tr>
+<td>操作系统零日</td>
+<td>8</td>
+<td>6</td>
+<td>-25%</td>
+</tr>
+<tr>
+<td>企业软件零日</td>
+<td>15</td>
+<td>22</td>
+<td>+47%</td>
+</tr>
+</tbody></table>
+<p>企业软件零日的激增值得关注，尤其是协作平台和 VPN 设备。</p>
+<pre class="mermaid">pie title 2026 H1 漏洞利用入口分布
+  "钓鱼邮件" : 38
+  "漏洞利用" : 27
+  "凭证泄露" : 20
+  "供应链" : 15</pre>
+
+<h2 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h2><div class="markdown-alert markdown-alert-abstract">
+<p class="markdown-alert-title">摘要</p>
+
+<p>2026 上半年的核心关键词是「AI + 供应链」。安全团队需要把这两项纳入年度风险评估，并确保基础设施的可见性和日志完整性。</p>
+</div>
+
+<ul>
+<li>启用 MFA 于所有对外服务</li>
+<li>建立第三方依赖审查制度</li>
+<li>部署异常行为检测系统</li>
+<li>定期进行 AI 辅助的红队演练</li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BE%9B%E5%BA%94%E9%93%BE%E6%94%BB%E5%87%BB%E6%8C%81%E7%BB%AD%E5%8D%87%E7%BA%A7"><span class="top-box-text">供应链攻击持续升级</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#AI-%E8%BE%85%E5%8A%A9%E6%94%BB%E5%87%BB%E5%B7%A5%E5%85%B7"><span class="top-box-text">AI 辅助攻击工具</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E9%9B%B6%E6%97%A5%E6%BC%8F%E6%B4%9E%E8%B6%8B%E5%8A%BF"><span class="top-box-text">零日漏洞趋势</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%BB%BA%E8%AE%AE"><span class="top-box-text">建议</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/30/frontend-performance-optimization/">
+          <h3 class="post-title">
+            
+            下一篇：前端性能优化实战
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script>window.__runMermaid = function () {
+      if (typeof mermaid === 'undefined' || window.__mermaidDone) { return; }
+      window.__mermaidDone = true;
+      var dark = document.documentElement.classList.contains('dark')
+        || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      mermaid.initialize({ startOnLoad: false, securityLevel: 'loose',
+        theme: dark ? "dark" : "default" });
+      mermaid.run({ querySelector: '.mermaid' }).catch(function (e) {
+        console.error('mermaid render failed:', e);
+      });
+    };</script><script src="/vendor/mermaid.min.js" charset="utf-8" onload="window.__runMermaid()"></script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js" charset="utf-8" onload="window.__runMermaid()"></script><script>window.addEventListener('load', function () { window.__runMermaid(); });</script></body>
+</html>
+

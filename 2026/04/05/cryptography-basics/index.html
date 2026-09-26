@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>密码学基础概念梳理</title>
+<meta name="keywords" content="密码学基础概念梳理, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="面向开发者的密码学入门：哈希、对称加密、非对称加密、数字签名和 TLS 的工作原理。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="密码学基础概念梳理">
+<meta property="og:description" content="面向开发者的密码学入门：哈希、对称加密、非对称加密、数字签名和 TLS 的工作原理。">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">密码学基础概念梳理</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-04-05</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/%E5%AE%89%E5%85%A8/">
+              安全
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/crypto/">
+              crypto
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>密码学是信息安全的基石。本文用尽可能直白的语言解释开发者日常接触的核心概念。</p>
+<h2 id="哈希（Hash）"><a href="#哈希（Hash）" class="headerlink" title="哈希（Hash）"></a>哈希（Hash）</h2><p>把任意长度的数据映射为固定长度的指纹：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;hello&quot;</span> | <span class="built_in">sha256sum</span></span><br><span class="line"><span class="comment"># 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824</span></span><br></pre></td></tr></table></figure>
+
+<p>特性：单向、抗碰撞、雪崩效应。</p>
+<div class="markdown-alert markdown-alert-important">
+<p class="markdown-alert-title">重要</p>
+
+<p>密码存储永远用 bcrypt&#x2F;scrypt&#x2F;argon2，不要用 SHA-256 直接哈希密码——它太快了，暴力破解成本太低。</p>
+</div>
+
+<h2 id="对称加密-vs-非对称加密"><a href="#对称加密-vs-非对称加密" class="headerlink" title="对称加密 vs 非对称加密"></a>对称加密 vs 非对称加密</h2><pre class="mermaid">graph TD
+  subgraph "对称加密"
+    K1[同一个密钥]
+    P1[明文] --> E1[加密]
+    E1 --> C1[密文]
+    C1 --> D1[解密]
+    D1 --> P1
+    K1 --> E1
+    K1 --> D1
+  end</pre>
+
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>对称</th>
+<th>非对称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>密钥</td>
+<td>1 个</td>
+<td>公钥+私钥</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>快</td>
+<td>慢 100-1000 倍</td>
+</tr>
+<tr>
+<td>用途</td>
+<td>数据加密</td>
+<td>密钥交换、签名</td>
+</tr>
+</tbody></table>
+<div class="markdown-alert markdown-alert-example">
+<p class="markdown-alert-title">示例</p>
+
+<p>TLS 握手用非对称加密交换密钥，后续数据传输用对称加密——兼顾安全与性能。</p>
+</div>
+
+<h2 id="JWT-与签名"><a href="#JWT-与签名" class="headerlink" title="JWT 与签名"></a>JWT 与签名</h2><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">SignJWT</span> &#125; <span class="keyword">from</span> <span class="string">&quot;jose&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> token = <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">SignJWT</span>(&#123; <span class="attr">sub</span>: <span class="string">&quot;user123&quot;</span> &#125;)</span><br><span class="line">  .<span class="title function_">setProtectedHeader</span>(&#123; <span class="attr">alg</span>: <span class="string">&quot;HS256&quot;</span> &#125;)</span><br><span class="line">  .<span class="title function_">setExpirationTime</span>(<span class="string">&quot;2h&quot;</span>)</span><br><span class="line">  .<span class="title function_">sign</span>(secretKey);</span><br></pre></td></tr></table></figure>
+
+<div class="markdown-alert markdown-alert-warning">
+<p class="markdown-alert-title">警告</p>
+
+<p>JWT 的 payload 只是 Base64 编码，不是加密！不要把敏感信息放进 payload，除非你用了 JWE。</p>
+</div>
+
+<h2 id="核心原则"><a href="#核心原则" class="headerlink" title="核心原则"></a>核心原则</h2><div class="markdown-alert markdown-alert-quote">
+<p class="markdown-alert-title">引用</p>
+
+<p>“Don’t roll your own crypto.”</p>
+<p>除非你是密码学专家，否则永远使用经过审计的标准库。</p>
+</div>
+
+<ul>
+<li>哈希密码：bcrypt &#x2F; argon2</li>
+<li>加密数据：libsodium &#x2F; Web Crypto API</li>
+<li>签名&#x2F;验证：jose &#x2F; OpenSSL</li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%93%88%E5%B8%8C%EF%BC%88Hash%EF%BC%89"><span class="top-box-text">哈希（Hash）</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86-vs-%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="top-box-text">对称加密 vs 非对称加密</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#JWT-%E4%B8%8E%E7%AD%BE%E5%90%8D"><span class="top-box-text">JWT 与签名</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%A0%B8%E5%BF%83%E5%8E%9F%E5%88%99"><span class="top-box-text">核心原则</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/03/28/ba-claude-skills-zhuang-jin-obsidian/">
+          <h3 class="post-title">
+            
+            下一篇：把claude-skills装进obsidian
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script>window.__runMermaid = function () {
+      if (typeof mermaid === 'undefined' || window.__mermaidDone) { return; }
+      window.__mermaidDone = true;
+      var dark = document.documentElement.classList.contains('dark')
+        || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      mermaid.initialize({ startOnLoad: false, securityLevel: 'loose',
+        theme: dark ? "dark" : "default" });
+      mermaid.run({ querySelector: '.mermaid' }).catch(function (e) {
+        console.error('mermaid render failed:', e);
+      });
+    };</script><script src="/vendor/mermaid.min.js" charset="utf-8" onload="window.__runMermaid()"></script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js" charset="utf-8" onload="window.__runMermaid()"></script><script>window.addEventListener('load', function () { window.__runMermaid(); });</script></body>
+</html>
+

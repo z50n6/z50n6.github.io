@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>前端性能优化实战</title>
+<meta name="keywords" content="前端性能优化实战, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="从首屏加载到运行时交互，一套可量化的前端性能优化方法论。以本博客为例记录优化过程。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="前端性能优化实战">
+<meta property="og:description" content="从首屏加载到运行时交互，一套可量化的前端性能优化方法论。以本博客为例记录优化过程。">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">前端性能优化实战</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-30</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/performance/">
+              performance
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/frontend/">
+              frontend
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/nextjs/">
+              nextjs
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>性能优化不是玄学，而是一套可量化的工程实践。核心指标围绕 Web Vitals 展开。</p>
+<h2 id="核心指标"><a href="#核心指标" class="headerlink" title="核心指标"></a>核心指标</h2><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LCP</td>
+<td>最大内容绘制</td>
+<td>&lt; 2.5s</td>
+</tr>
+<tr>
+<td>FID</td>
+<td>首次输入延迟</td>
+<td>&lt; 100ms</td>
+</tr>
+<tr>
+<td>CLS</td>
+<td>累计布局偏移</td>
+<td>&lt; 0.1</td>
+</tr>
+<tr>
+<td>INP</td>
+<td>交互到下次绘制</td>
+<td>&lt; 200ms</td>
+</tr>
+</tbody></table>
+<h2 id="优化策略"><a href="#优化策略" class="headerlink" title="优化策略"></a>优化策略</h2><h3 id="1-减少-JavaScript-体积"><a href="#1-减少-JavaScript-体积" class="headerlink" title="1. 减少 JavaScript 体积"></a>1. 减少 JavaScript 体积</h3><figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ❌ 客户端组件加载整个库</span></span><br><span class="line"><span class="keyword">import</span> &#123; everything &#125; <span class="keyword">from</span> <span class="string">&quot;heavy-lib&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ✅ 按需导入</span></span><br><span class="line"><span class="keyword">import</span> &#123; specificFunction &#125; <span class="keyword">from</span> <span class="string">&quot;heavy-lib/specific&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">提示</p>
+
+<p>Next.js App Router 的 Server Components 默认不为客户端发送 JS——这是零成本优化。本博客的文章详情页就是纯 Server Component。</p>
+</div>
+
+<h3 id="2-图片优化"><a href="#2-图片优化" class="headerlink" title="2. 图片优化"></a>2. 图片优化</h3><pre class="mermaid">graph LR
+  A[原始图片] --> B[WebP/AVIF 转换]
+  B --> C[多尺寸生成]
+  C --> D[懒加载]
+  D --> E[CDN 分发]</pre>
+
+<h3 id="3-字体优化"><a href="#3-字体优化" class="headerlink" title="3. 字体优化"></a>3. 字体优化</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 避免文字闪烁 */</span></span><br><span class="line"><span class="keyword">@font-face</span> &#123;</span><br><span class="line">  <span class="attribute">font-family</span>: <span class="string">&quot;Inter&quot;</span>;</span><br><span class="line">  <span class="attribute">src</span>: <span class="built_in">url</span>(<span class="string">&quot;/fonts/inter.woff2&quot;</span>) <span class="built_in">format</span>(<span class="string">&quot;woff2&quot;</span>);</span><br><span class="line">  <span class="attribute">font-display</span>: swap; <span class="comment">/* 先用系统字体，加载完再切换 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<div class="markdown-alert markdown-alert-info">
+<p class="markdown-alert-title">信息</p>
+
+<p>使用 <code>font-display: swap</code> 和 WOFF2 格式，能将字体加载对 LCP 的影响降到最低。</p>
+</div>
+
+<h2 id="测量工具链"><a href="#测量工具链" class="headerlink" title="测量工具链"></a>测量工具链</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Lighthouse CI</span></span><br><span class="line">npx lighthouse https://example.com --view</span><br><span class="line"></span><br><span class="line"><span class="comment"># Next.js 内置分析</span></span><br><span class="line">ANALYZE=<span class="literal">true</span> npm run build</span><br></pre></td></tr></table></figure>
+
+<div class="markdown-alert markdown-alert-success">
+<p class="markdown-alert-title">成功</p>
+
+<p>zBlog 首页 Lighthouse 得分：Performance 96、Accessibility 100、Best Practices 100、SEO 100（本机开发环境测试）。</p>
+</div>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%A0%B8%E5%BF%83%E6%8C%87%E6%A0%87"><span class="top-box-text">核心指标</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5"><span class="top-box-text">优化策略</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-%E5%87%8F%E5%B0%91-JavaScript-%E4%BD%93%E7%A7%AF"><span class="top-box-text">1. 减少 JavaScript 体积</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-%E5%9B%BE%E7%89%87%E4%BC%98%E5%8C%96"><span class="top-box-text">2. 图片优化</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-%E5%AD%97%E4%BD%93%E4%BC%98%E5%8C%96"><span class="top-box-text">3. 字体优化</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%B5%8B%E9%87%8F%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="top-box-text">测量工具链</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/25/tailwind-css-4-migration/">
+          <h3 class="post-title">
+            
+            下一篇：Tailwind CSS 4 迁移指南
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script>window.__runMermaid = function () {
+      if (typeof mermaid === 'undefined' || window.__mermaidDone) { return; }
+      window.__mermaidDone = true;
+      var dark = document.documentElement.classList.contains('dark')
+        || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      mermaid.initialize({ startOnLoad: false, securityLevel: 'loose',
+        theme: dark ? "dark" : "default" });
+      mermaid.run({ querySelector: '.mermaid' }).catch(function (e) {
+        console.error('mermaid render failed:', e);
+      });
+    };</script><script src="/vendor/mermaid.min.js" charset="utf-8" onload="window.__runMermaid()"></script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js" charset="utf-8" onload="window.__runMermaid()"></script><script>window.addEventListener('load', function () { window.__runMermaid(); });</script></body>
+</html>
+

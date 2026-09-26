@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>54ury</title>
+<meta name="keywords" content="54ury, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="一个安服从业者的个人 wiki——记录渗透测试、应急响应和漏洞分析中的踩坑与思考。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="54ury">
+<meta property="og:description" content="一个安服从业者的个人 wiki——记录渗透测试、应急响应和漏洞分析中的踩坑与思考。">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+<div class="content-container">
+
+  <div class="current-tag-container">
+    <h2 class="title">
+      <i class="icon icon-pricetags-outline"></i> web
+    </h2>
+  </div>
+
+  
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/03/15/owasp-top-10-2025/">
+        <h2 class="post-title">OWASP Top 10 2025 解读</h2>
+      </a>
+      <a href="/2026/03/15/owasp-top-10-2025/">
+          <div class="post-abstract">
+            
+                OWASP Top 10 2025 版本的核心变化，以及开发团队应该如何应对新增和调整的风险类别。
+			
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-03-15</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                安全
+                
+                  ，
+                
+            
+
+                owasp
+                
+                  ，
+                
+            
+
+                web
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+
+</div>
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = false; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+
+
