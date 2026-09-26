@@ -1370,90 +1370,106 @@ html.dark .site-marquee-dot {
   background: #d4a03c !important;
 }
 @-moz-keyframes marquee-slide {
-  0%, 5% {
-    transform: translate(calc(-50% + 55vw), -50%);
+  0%, 6% {
+    transform: translate(calc(-50% + 60vw), -50%);
     opacity: 0;
   }
-  14% {
+  16% {
     transform: translate(-50%, -50%);
     opacity: 1;
   }
-  40% {
-    transform: translate(-50%, -50%);
+  30% {
+    transform: translate(calc(-50% - 4vw), -50%);
     opacity: 1;
   }
-  50% {
-    transform: translate(calc(-50% - 55vw), -50%);
+  43% {
+    transform: translate(calc(-50% - 16vw), -50%);
+    opacity: 1;
+  }
+  53% {
+    transform: translate(calc(-50% - 60vw), -50%);
     opacity: 0;
   }
   100% {
-    transform: translate(calc(-50% - 55vw), -50%);
+    transform: translate(calc(-50% - 60vw), -50%);
     opacity: 0;
   }
 }
 @-webkit-keyframes marquee-slide {
-  0%, 5% {
-    transform: translate(calc(-50% + 55vw), -50%);
+  0%, 6% {
+    transform: translate(calc(-50% + 60vw), -50%);
     opacity: 0;
   }
-  14% {
+  16% {
     transform: translate(-50%, -50%);
     opacity: 1;
   }
-  40% {
-    transform: translate(-50%, -50%);
+  30% {
+    transform: translate(calc(-50% - 4vw), -50%);
     opacity: 1;
   }
-  50% {
-    transform: translate(calc(-50% - 55vw), -50%);
+  43% {
+    transform: translate(calc(-50% - 16vw), -50%);
+    opacity: 1;
+  }
+  53% {
+    transform: translate(calc(-50% - 60vw), -50%);
     opacity: 0;
   }
   100% {
-    transform: translate(calc(-50% - 55vw), -50%);
+    transform: translate(calc(-50% - 60vw), -50%);
     opacity: 0;
   }
 }
 @-o-keyframes marquee-slide {
-  0%, 5% {
-    transform: translate(calc(-50% + 55vw), -50%);
+  0%, 6% {
+    transform: translate(calc(-50% + 60vw), -50%);
     opacity: 0;
   }
-  14% {
+  16% {
     transform: translate(-50%, -50%);
     opacity: 1;
   }
-  40% {
-    transform: translate(-50%, -50%);
+  30% {
+    transform: translate(calc(-50% - 4vw), -50%);
     opacity: 1;
   }
-  50% {
-    transform: translate(calc(-50% - 55vw), -50%);
+  43% {
+    transform: translate(calc(-50% - 16vw), -50%);
+    opacity: 1;
+  }
+  53% {
+    transform: translate(calc(-50% - 60vw), -50%);
     opacity: 0;
   }
   100% {
-    transform: translate(calc(-50% - 55vw), -50%);
+    transform: translate(calc(-50% - 60vw), -50%);
     opacity: 0;
   }
 }
 @keyframes marquee-slide {
-  0%, 5% {
-    transform: translate(calc(-50% + 55vw), -50%);
+  0%, 6% {
+    transform: translate(calc(-50% + 60vw), -50%);
     opacity: 0;
   }
-  14% {
+  16% {
     transform: translate(-50%, -50%);
     opacity: 1;
   }
-  40% {
-    transform: translate(-50%, -50%);
+  30% {
+    transform: translate(calc(-50% - 4vw), -50%);
     opacity: 1;
   }
-  50% {
-    transform: translate(calc(-50% - 55vw), -50%);
+  43% {
+    transform: translate(calc(-50% - 16vw), -50%);
+    opacity: 1;
+  }
+  53% {
+    transform: translate(calc(-50% - 60vw), -50%);
     opacity: 0;
   }
   100% {
-    transform: translate(calc(-50% - 55vw), -50%);
+    transform: translate(calc(-50% - 60vw), -50%);
     opacity: 0;
   }
 }
