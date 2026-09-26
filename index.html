@@ -431,13 +431,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
-        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      <a href="/2026/06/28/web-dos/">
+        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
       </a>
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+      <a href="/2026/06/28/web-dos/">
           <div class="post-abstract">
             
-            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
+            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
           </div>
       </a>
       <div class="post-info">
@@ -501,13 +501,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/web-dos/">
-        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
       </a>
-      <a href="/2026/06/28/web-dos/">
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
           <div class="post-abstract">
             
-            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
+            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
           </div>
       </a>
       <div class="post-info">
@@ -692,13 +692,13 @@
             <i class="icon icon-pricetags-outline"></i>
             
 
-                DNS
+                网络
                 
                   ，
                 
             
 
-                网络
+                DNS
                 
             
           </span>
@@ -727,13 +727,13 @@
             <i class="icon icon-pricetags-outline"></i>
             
 
-                DNS
+                网络
                 
                   ，
                 
             
 
-                网络
+                DNS
                 
             
           </span>
@@ -797,13 +797,13 @@
             <i class="icon icon-pricetags-outline"></i>
             
 
-                安全工具
+                BurpSuite
                 
                   ，
                 
             
 
-                BurpSuite
+                安全工具
                 
             
           </span>
@@ -1405,35 +1405,6 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2023/07/14/file-share-server/">
-        <h2 class="post-title">文件共享服务器</h2>
-      </a>
-      <a href="/2023/07/14/file-share-server/">
-          <div class="post-abstract">
-            
-            cifs协议 通过网络提供文件共享服务，提供文件下载和上传服务（类似于FTP服务器） 创建共享 1 2 3 4 5 1. 在本地登录时，只受NTFS权限的影响 2. 远程登录时，将受共享及NTFS权限的共同影响，且取交集！ 3.
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2023-07-14</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                Windows
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-
-
-<section class="post-item">
-    <div class="content">
       <a href="/2023/07/14/iis-website/">
         <h2 class="post-title">IIS网站搭建</h2>
       </a>
@@ -1457,6 +1428,35 @@
             
 
                 IIS
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/14/file-share-server/">
+        <h2 class="post-title">文件共享服务器</h2>
+      </a>
+      <a href="/2023/07/14/file-share-server/">
+          <div class="post-abstract">
+            
+            cifs协议 通过网络提供文件共享服务，提供文件下载和上传服务（类似于FTP服务器） 创建共享 1 2 3 4 5 1. 在本地登录时，只受NTFS权限的影响 2. 远程登录时，将受共享及NTFS权限的共同影响，且取交集！ 3.
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-14</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
                 
             
           </span>

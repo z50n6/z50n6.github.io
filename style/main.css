@@ -1474,7 +1474,21 @@ html.dark .site-marquee-dot {
   }
 }
 #gitalk-container {
-  margin-top: 8px;
+  width: 94%;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(12,30,41,0.08);
+}
+#gitalk-container::before {
+  content: '评论';
+  display: block;
+  margin-bottom: 16px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--c-base-black);
 }
 #gitalk-container .gt-container {
   font-size: 15px;
@@ -1500,6 +1514,9 @@ html.dark .site-marquee-dot {
   border-color: var(--c-base-purple);
   background-color: var(--c-base-purple);
   border-radius: 4px;
+}
+#gitalk-container .gt-container .gt-btn-login {
+  margin-top: 14px;
 }
 #gitalk-container .gt-container .gt-btn-preview {
   background-color: transparent;
@@ -1538,6 +1555,12 @@ html.dark .site-marquee-dot {
 }
 #gitalk-container .gt-container .gt-comment-body {
   color: var(--c-base-black) !important;
+}
+html.dark #gitalk-container {
+  border-top-color: rgba(255,255,255,0.1);
+}
+html.dark #gitalk-container::before {
+  color: #c9d1d9;
 }
 html.dark #gitalk-container .gt-container a,
 html.dark #gitalk-container .gt-container .gt-comment-username,
