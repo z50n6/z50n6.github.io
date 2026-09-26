@@ -143,13 +143,538 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/05/24/doh-dot/">
-        <h2 class="post-title">DoH与DoT加密DNS</h2>
+      <a href="/2026/06/28/crlf-injection/">
+        <h2 class="post-title">CRLF 注入（HTTP 响应拆分）</h2>
       </a>
-      <a href="/2026/05/24/doh-dot/">
+      <a href="/2026/06/28/crlf-injection/">
           <div class="post-abstract">
             
-            解析 一、为什么需要加密 DNS？ 传统 DNS 使用 UDP&#x2F;TCP 53 端口 ，查询和应答以 明文 传输： 1 2 你的设备 ──明文 DNS 查询──→ DNS 服务器 ←──明文 DNS 应答── 这…
+            一、什么是 CRLF CRLF 是 CR（回车， \r ， %0d ）+ LF（换行， \n ， %0a ） 的组合。在 HTTP 协议里，这个组合子是骨架级的角色： 请求行 &#x2F;
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/arbitrary-file-read/">
+        <h2 class="post-title">任意文件读取 / 下载</h2>
+      </a>
+      <a href="/2026/06/28/arbitrary-file-read/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 是什么 一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。 任意文件读取和下载本质无区别： 信息都是从服务端流向浏览器 ，差异只在表现形态（页面展示 vs 触发下载行为）。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/csrf/">
+        <h2 class="post-title">CSRF 跨站请求伪造</h2>
+      </a>
+      <a href="/2026/06/28/csrf/">
+          <div class="post-abstract">
+            
+            一、基本原理 1.1 是什么 CSRF（Cross-Site Request Forgery，跨站请求伪造），也叫 One Click Attack 或 Session Riding。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/file-inclusion/">
+        <h2 class="post-title">任意文件包含（LFI / RFI）</h2>
+      </a>
+      <a href="/2026/06/28/file-inclusion/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 什么是文件包含 开发者把可复用的函数或代码段写到单个文件里形成”封装”，调用时直接 include ，不用重复编写。 这种调用文件的过程就叫文件包含。 为了让代码更灵活，被包含文件的路径通常设为变量来动态调用。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/file-upload/">
+        <h2 class="post-title">任意文件上传</h2>
+      </a>
+      <a href="/2026/06/28/file-upload/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 是什么 文件上传是 Web 应用的必备功能——头像上传、附件分享等。如果服务器配置不当或没有充分过滤，用户可以上传任意文件（恶意脚本、exe 程序等），这就是 任意文件上传漏洞 。通过它获取的网站后门叫 WebShell 。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/open-redirect/">
+        <h2 class="post-title">URL 重定向（开放重定向）</h2>
+      </a>
+      <a href="/2026/06/28/open-redirect/">
+          <div class="post-abstract">
+            
+            一、是什么 URL 重定向漏洞（Open Redirect），一句话： 网站接受用户输入的链接作为跳转目标，没有或仅做了很弱的校验，导致攻击者可以把用户从正常站点重定向到恶意站点。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      </a>
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+          <div class="post-abstract">
+            
+            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/ssrf/">
+        <h2 class="post-title">SSRF 服务器端请求伪造</h2>
+      </a>
+      <a href="/2026/06/28/ssrf/">
+          <div class="post-abstract">
+            
+            一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/sql-injection/">
+        <h2 class="post-title">SQL 注入</h2>
+      </a>
+      <a href="/2026/06/28/sql-injection/">
+          <div class="post-abstract">
+            
+            环境： SQLi-Labs | CMS靶场 提取码：xcuw | phpStudy 低版本 一、SQL 注入原理 1.1 是什么 SQL 注入（SQL Injection）——攻击者通过 用户可控参数 中注入 SQL 语法，破坏原有 SQL 结构，达到程序意料之外的结果。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/web-dos/">
+        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
+      </a>
+      <a href="/2026/06/28/web-dos/">
+          <div class="post-abstract">
+            
+            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/weak-password/">
+        <h2 class="post-title">弱口令</h2>
+      </a>
+      <a href="/2026/06/28/weak-password/">
+          <div class="post-abstract">
+            
+            一、概述 弱口令（Weak Password）没有严格定义——凡是 容易被猜解或能被工具快速破解的口令 都是弱口令。 两个主要成因： 管理员安全意识不足，用了简单密码 平台默认初始密码，部署后没改 弱口令危害极大——不需要 0day，不需要复杂利用链，猜对了就直接拿权限。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/xss/">
+        <h2 class="post-title">XSS 跨站脚本攻击</h2>
+      </a>
+      <a href="/2026/06/28/xss/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/xxe/">
+        <h2 class="post-title">XML 外部实体注入（XXE）</h2>
+      </a>
+      <a href="/2026/06/28/xxe/">
+          <div class="post-abstract">
+            
+            一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/14/authz-misconceptions/">
+        <h2 class="post-title">越权误区</h2>
+      </a>
+      <a href="/2026/06/14/authz-misconceptions/">
+          <div class="post-abstract">
+            
+            一句话总结： 平行越权改ID，垂直越权改鉴权。 核心区分 漏洞类型 操作方式 本质 平行越权 替换请求中的 资源ID （如 userId 、 orderId ） 用 A 的身份，访问 B 的数据 垂直越权 替换请求中的…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-14</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                渗透测试
+                
+                  ，
+                
+            
+
+                漏洞挖掘
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/14/ssrf-vs-url-redirect/">
+        <h2 class="post-title">SSRF 和 URL 跳转的误区及测试插件介绍</h2>
+      </a>
+      <a href="/2026/06/14/ssrf-vs-url-redirect/">
+          <div class="post-abstract">
+            
+            SSRF 和 URL 跳转的区别 用大白话来讲（不看官方定义，按我的理解写）： SSRF（服务端请求伪造）： 攻击者通过前端的输入点，让 服务器 主动向该服务器内网或其他网站发起了一个请求。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-14</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                渗透测试
+                
+                  ，
+                
+            
+
+                漏洞挖掘
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/05/24/dns-hijacking/">
+        <h2 class="post-title">DNS劫持原理与防护</h2>
+      </a>
+      <a href="/2026/05/24/dns-hijacking/">
+          <div class="post-abstract">
+            
+            一、DNS 是什么？ DNS（Domain Name System，域名系统）是互联网的「电话本」。 当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名翻…
           </div>
       </a>
       <div class="post-info">
@@ -178,13 +703,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/05/24/dns-hijacking/">
-        <h2 class="post-title">DNS劫持原理与防护</h2>
+      <a href="/2026/05/24/doh-dot/">
+        <h2 class="post-title">DoH与DoT加密DNS</h2>
       </a>
-      <a href="/2026/05/24/dns-hijacking/">
+      <a href="/2026/05/24/doh-dot/">
           <div class="post-abstract">
             
-            一、DNS 是什么？ DNS（Domain Name System，域名系统）是互联网的「电话本」。 当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名翻…
+            解析 一、为什么需要加密 DNS？ 传统 DNS 使用 UDP&#x2F;TCP 53 端口 ，查询和应答以 明文 传输： 1 2 你的设备 ──明文 DNS 查询──→ DNS 服务器 ←──明文 DNS 应答── 这…
           </div>
       </a>
       <div class="post-info">
@@ -236,6 +761,181 @@
             
 
                 代码审计
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/01/07/burpsuite-activation/">
+        <h2 class="post-title">burpsuite专业版激活</h2>
+      </a>
+      <a href="/2026/01/07/burpsuite-activation/">
+          <div class="post-abstract">
+            
+            大部分都用的是 52破解 里提供的burpsuite professional，内置java环境，不需要自己另外安装java环境，但是唯一的问题就是使用vbs脚本启动，不能固定到 任务栏 目录文件长这样： 下面的burp…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-01-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                BurpSuite
+                
+                  ，
+                
+            
+
+                安全工具
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2025/12/28/rce/">
+        <h2 class="post-title">RCE 远程代码/命令执行</h2>
+      </a>
+      <a href="/2025/12/28/rce/">
+          <div class="post-abstract">
+            
+            一、概念与本质 RCE（Remote Code&#x2F;Command Execution）分两层意思： 代码执行 ：用户输入被当作脚本代码解析执行（ eval(&#39;phpinfo();&#39;) ） 命令执行…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-12-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2025/08/14/wechat-service-account-capture/">
+        <h2 class="post-title">服务号渗透测试抓包问题解决(使用Burpsuite抓取手机app数据)</h2>
+      </a>
+      <a href="/2025/08/14/wechat-service-account-capture/">
+          <div class="post-abstract">
+            
+            这里渗透目标的服务号在PC端不能正常访问，且在手机上访问时可以的 所以，这里将手机数据转发至BurpSuite上。如何转发呢？
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-08-14</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                渗透测试
+                
+                  ，
+                
+            
+
+                抓包
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2025/06/16/seeyon-oa-vulns/">
+        <h2 class="post-title">致远OA前台和后台的几个中危漏洞</h2>
+      </a>
+      <a href="/2025/06/16/seeyon-oa-vulns/">
+          <div class="post-abstract">
+            
+            前言 在渗透测试项目中，OA系统通常被视为较为棘手的攻击目标，尤其是当系统配备了WAF时，难度更是大幅提升。 以下列举几个互联网上较少被提及的致远OA中危漏洞，这些漏洞几乎存在于所有版本中 前台漏洞 用户名枚举的几个接口…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-06-16</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                渗透测试
+                
+                  ，
+                
+            
+
+                漏洞挖掘
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2025/03/25/wechat-miniprogram-capture/">
+        <h2 class="post-title">微信小程序抓包配置教程</h2>
+      </a>
+      <a href="/2025/03/25/wechat-miniprogram-capture/">
+          <div class="post-abstract">
+            
+            安卓系统抓包（微信小程序）： 1、安卓系统7.0以下版本，不管微信任意版本，都会信任系统提供的证书 2、安卓系统7.0以上版本，微信7.0以下版本，微信会信任系统提供的证书 3、安卓系统7.0以上版本，微信7.0以上版本…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-03-25</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                渗透测试
+                
+                  ，
+                
+            
+
+                抓包
                 
             
           </span>
@@ -318,6 +1018,41 @@
 
 <section class="post-item">
     <div class="content">
+      <a href="/2025/01/21/web-vuln-overview/">
+        <h2 class="post-title">基础漏洞</h2>
+      </a>
+      <a href="/2025/01/21/web-vuln-overview/">
+          <div class="post-abstract">
+            
+            CRLF注入 CSRF跨站请求伪造 JWT攻防 RCE SQL注入 sql-inject导图 SSRF URL重定向 web拒绝服务 XML外部注入实体-XXE漏洞 XSS 跨站脚本攻击 任意文件包含-概述-利用-防御…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-01-21</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
       <a href="/2025/01/21/windows-overview/">
         <h2 class="post-title">Windows基础总览</h2>
       </a>
@@ -335,6 +1070,76 @@
             
 
                 Windows
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2024/09/19/burp-misc-packages/">
+        <h2 class="post-title">一站式解决Burp杂包问题</h2>
+      </a>
+      <a href="/2024/09/19/burp-misc-packages/">
+          <div class="post-abstract">
+            
+            来自： 【地图大师src漏洞挖掘】杂包，快滚出我的Burp 浏览器插件 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2024-09-19</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                渗透测试
+                
+                  ，
+                
+            
+
+                BurpSuite
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2024/09/07/login-attack-surface/">
+        <h2 class="post-title">登录框攻击面思路</h2>
+      </a>
+      <a href="/2024/09/07/login-attack-surface/">
+          <div class="post-abstract">
+            
+            参考链接： 登陆页面渗透测试常见的几种思路与总结 WEB漏洞 | 常见漏洞详解与思路技巧！ 登陆页面&#x2F;登陆框渗透测试思路 登录框界面之渗透测试思路总结 登录界面——渗你千千万万遍 渗透测试中登录框骚操作总结 如…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2024-09-07</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                渗透测试
+                
+                  ，
+                
+            
+
+                漏洞挖掘
                 
             
           </span>
@@ -370,6 +1175,41 @@
             
 
                 问题解决
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/12/31/business-logic/">
+        <h2 class="post-title">业务逻辑漏洞</h2>
+      </a>
+      <a href="/2023/12/31/business-logic/">
+          <div class="post-abstract">
+            
+            1、业务安全概述 1.1业务安全现状 1.1.1、业务逻辑漏洞 近年来，随着信息化技术的迅速发展和全球一体化进程的不断加快，计算机和⽹络已经成为与所有⼈都息息相关的⼯具和媒介，个⼈的⼯作、⽣活和娱乐，企业的管理，乃⾄国家的发展和改⾰都⽆处其外。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-12-31</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
                 
             
           </span>
@@ -656,41 +1496,6 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2023/07/12/dos-commands/">
-        <h2 class="post-title">DOS命令</h2>
-      </a>
-      <a href="/2023/07/12/dos-commands/">
-          <div class="post-abstract">
-            
-            1 2 3 color --help #查看帮助信息 color 0a #修改背景和字体颜色 cls #清屏命令 文件相关 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19…
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                Windows
-                
-                  ，
-                
-            
-
-                DOS
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-
-
-<section class="post-item">
-    <div class="content">
       <a href="/2023/07/12/ftp-server/">
         <h2 class="post-title">FTP服务器</h2>
       </a>
@@ -714,6 +1519,41 @@
             
 
                 FTP
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/12/dos-commands/">
+        <h2 class="post-title">DOS命令</h2>
+      </a>
+      <a href="/2023/07/12/dos-commands/">
+          <div class="post-abstract">
+            
+            1 2 3 color --help #查看帮助信息 color 0a #修改背景和字体颜色 cls #清屏命令 文件相关 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                DOS
                 
             
           </span>

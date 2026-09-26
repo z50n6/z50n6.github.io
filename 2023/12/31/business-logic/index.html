@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>业务逻辑漏洞</title>
+<meta name="keywords" content="业务逻辑漏洞, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="1、业务安全概述1.1业务安全现状1.1.1、业务逻辑漏洞近年来，随着信息化技术的迅速发展和全球一体化进程的不断加快，计算机和⽹络已经成为与所有⼈都息息相关的⼯具和媒介，个⼈的⼯作、⽣活和娱乐，企业的管理，乃⾄国家的发展和改⾰都⽆处其外。信">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="业务逻辑漏洞">
+<meta property="og:description" content="1、业务安全概述1.1业务安全现状1.1.1、业务逻辑漏洞近年来，随着信息化技术的迅速发展和全球一体化进程的不断加快，计算机和⽹络已经成为与所有⼈都息息相关的⼯具和媒介，个⼈的⼯作、⽣活和娱乐，企业的管理，乃⾄国家的发展和改⾰都⽆处其外。信">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">业务逻辑漏洞</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-12-31</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h2 id="1、业务安全概述"><a href="#1、业务安全概述" class="headerlink" title="1、业务安全概述"></a>1、业务安全概述</h2><h3 id="1-1业务安全现状"><a href="#1-1业务安全现状" class="headerlink" title="1.1业务安全现状"></a>1.1业务安全现状</h3><h4 id="1-1-1、业务逻辑漏洞"><a href="#1-1-1、业务逻辑漏洞" class="headerlink" title="1.1.1、业务逻辑漏洞"></a>1.1.1、业务逻辑漏洞</h4><p>近年来，随着信息化技术的迅速发展和全球一体化进程的不断加快，计算机和⽹络已经成为与所有⼈都息息相关的⼯具和媒介，个⼈的⼯作、⽣活和娱乐，企业的管理，乃⾄国家的发展和改⾰都⽆处其外。信息和互联⽹带来的不仅仅是便利和⾼效，⼤量隐私、敏感和⾼价值的信息数据和资产，成为恶意攻击者攻击和威胁的主要⽬标，从早期以极客为核⼼的⿊客⻩⾦时代，到现在利益链驱动的庞⼤⿊⾊产业，⽹络安全已经成为任何个⼈、企业、组织和国家所必须⾯临的重要问题。“⽹络安全和信息化是事关国家安全和国家发展、事关⼴⼤⼈⺠群众⼯作⽣活的重⼤战略问题，没有⽹络安全就没有国家安全，没有信息化就没有现代化。”</p>
+<p>随着互联⽹+ 的发展，经济形态不断地发⽣演变。众多传统⾏业逐步地融⼊互联⽹并利⽤信息通信技术以及互联⽹平台进⾏着频繁的商务活动，这些平台（如银⾏、保险、证券、电商、P2P、O2O、游戏、社交、招聘、航空等）由于涉及⼤量的⾦钱、个⼈信息、交易等重要隐私数据，成为了⿊客攻击的⾸要⽬标，而因为开发⼈员安全意识淡薄（只注重实现功能而忽略了在⽤⼾使⽤过程中个⼈的⾏为对Web 应⽤程序的业务逻辑功能的安全性影响）、开发代码频繁迭代导致这些平台业务逻辑层⾯的安全⻛险层出不穷。</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906110442287.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906110442287.png"  alt="image-20230906110442287" lazyload></a></p>
+<p>业务逻辑漏洞主要是开发⼈员业务流程设计的缺陷，不仅限于⽹络层、系统层、代码层等。⽐如登录验证的绕过、交易中的数据篡改、接口的恶意调⽤等，都属于业务逻辑漏洞。</p>
+<h4 id="1-1-2、黑客攻击目标"><a href="#1-1-2、黑客攻击目标" class="headerlink" title="1.1.2、黑客攻击目标"></a>1.1.2、黑客攻击目标</h4><p>一方面随着社会和科技的发展，购物、社交、P2P、O2O、游戏、招聘等业务纷纷具备了在线支付功能。如电商支付系统保存了用户手机号、姓 名、家庭住址，包括支付的银行卡信息、支付密码信息等，这些都是黑客感兴趣的敏感信息。攻击者可以利用程序员的设计缺陷进行交易数据篡改、敏 感信息盗取、资产的窃取等操作。现在的黑客不在以炫耀技能为主要攻击目的，而主要以经济利益为目的，攻击的目的逐渐转变为趋利化。</p>
+<p> 另一方面，如今的业务系统对于传统安全漏洞防护的技术、设备和开发框架越来越成熟，基于传统漏洞入侵也变得越来越困难，增加了黑客攻击的 成本。而业务逻辑漏洞可以逃逸各种安全防护，迄今为止没有很好的解决办法。也是为什么黑客偏好使用业务逻辑漏洞攻击的一个原因</p>
+<p><a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1623247259364753408&wfr=spider&for=pc">一夜薅走拼多多上千万，背后的“羊毛党”究竟有多可怕？</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzA3NjYwMjYwNg==&mid=2652650308&idx=3&sn=a62581bc0f0920a8323ab02a59eda6f1&chksm=84b656c5b3c1dfd33ccf91e760f9efd9f1bc7a00d32a43b536893780955caca42572f77f8bf7&scene=27">拼多多一夜被薅200亿？4毛充100话费，一个bug引发的惨案！</a></p>
+<p>为了解决业务安全所带来的风险，所以要对业务安全进行审计</p>
+<h2 id="2、业务安全测试流程"><a href="#2、业务安全测试流程" class="headerlink" title="2、业务安全测试流程"></a>2、业务安全测试流程</h2><p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906110649203.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906110649203.png"  alt="image-20230906110649203" lazyload></a></p>
+<h4 id="2-1-1、测试准备"><a href="#2-1-1、测试准备" class="headerlink" title="2.1.1、测试准备"></a>2.1.1、测试准备</h4><p>准备阶段主要包括对业务系统的前期熟悉工作，以了解被测试业务系统的数量、规模和场景等内容。 </p>
+<ul>
+<li>针对白盒测试，可以结合相关开发文档去熟悉相关系统的业务；</li>
+<li>针对黑盒测试，可通过实际操作还原业务流程的方式理解业务；</li>
+</ul>
+<h4 id="2-1-2、业务调研"><a href="#2-1-2、业务调研" class="headerlink" title="2.1.2、业务调研"></a>2.1.2、业务调研</h4><p>业务调研阶段主要针对业务系统相关负责人进行访谈调研，了解业务系统的整体情况，包括部署情况、功能模块、业务流程、数据流、业务逻辑以 及现有的安全措施等内容。根据以往测试实施经验，在业务调研前可先设计访谈问卷，访谈后可能会随着对客户业务系统具体情况了解的深入而不断调 整、更新问卷（黑盒测试此步骤可忽略）。</p>
+<h4 id="2-1-3、业务建模"><a href="#2-1-3、业务建模" class="headerlink" title="2.1.3、业务建模"></a>2.1.3、业务建模</h4><p>针对不同行业、不同平台的业务系统，如电商、银行、金融、证券、保险、游戏、社交、招聘等业务系统，识别出其中的高风险业务场景进行建 模。 以电商系统为例：</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906110955297.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906110955297.png"  alt="image-20230906110955297" lazyload></a></p>
+<h4 id="2-1-4、业务流程梳理"><a href="#2-1-4、业务流程梳理" class="headerlink" title="2.1.4、业务流程梳理"></a>2.1.4、业务流程梳理</h4><p>以商城用户登录</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906110936433.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906110936433.png"  alt="image-20230906110936433" lazyload></a></p>
+<p>建模完成后需要对重要业务场景的各个业务模块逐一进行业务流程梳理，从前台和后台、业务和支撑系统等4 个不同维度进行分析，识别各业务模 块的业务逻辑、业务数据流和功能字段（传参点）等。</p>
+<p>业务模块的流程梳理主要遵循以下原则： </p>
+<ul>
+<li>区分业务主流程和分支流程，业务梳理工作是围绕主流程进行分析的，而主流程一定是核心业务流程，业务流程重点梳理的对象首先应放在核 心主流程上，务必梳理出业务关键环节；</li>
+<li>概括归纳业务分支流程，业务分支流程往往存在通用点，可将具有业务相似性的分支流程归纳成某一类型的业务流程，无须单独对其进行测 试； </li>
+<li>识别业务流程数据信息流，特别是业务数据流在交互方双方之间传输的先后顺序、路径等； </li>
+<li>识别业务数据流功能字段，识别数据流中包含的重要程度不等的信息，理解这些字段的含义有助于下阶段风险点分析。</li>
+</ul>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906111104399.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906111104399.png"  alt="image-20230906111104399" lazyload></a></p>
+<h4 id="2-1-5、业务风险点识别"><a href="#2-1-5、业务风险点识别" class="headerlink" title="2.1.5、业务风险点识别"></a>2.1.5、业务风险点识别</h4><p>在完成前期不同维度的业务流程梳理工作后，针对前台业务应着重关注用户界面操作每一步可能的逻辑风险和技术风险；针对后台业务应着重关注 数据安全、数据流转及处理的日志和审计。 </p>
+<p>业务风险点识别应主要关注以下安全风险内容：</p>
+<p>业务环节存在的安全风险，业务环节存在的安全风险指的是业务使用者可见的业务存在的安全风险，如注册、登录和密码找回等身份认证环节，是 否存在完善的验证码机制、数据一致性校验机制、Session 和Cookie 校验机制等，是否能规避验证码绕过、暴力破解和SQL 注入等漏洞。 </p>
+<p>支持系统存在的安全风险，支持系统存在的安全风险，如用户访问控制机制是否完善，是否存在水平越权或垂直越权漏洞。系统内加密存储机制是 否完善，业务数据是否明文传输。系统使用的业务接口是否可以未授权访问或调用，是否可以调用重放、遍历，接口调用参数是否可篡改等。 </p>
+<p>业务环节间存在的安全风险，业务环节间存在的安全风险，如系统业务流程是否存在乱序，导致某个业务环节可绕过、回退，或某个业务请求可以 无限重放。业务环节间传输的数据是否有一致性校验机制，是否存在业务数据可被篡改的风险。</p>
+<p> 支持系统间存在的安全风险，如系统间数据传输是否加密、系统间传输的参数是否可篡改。系统间输入参数的过滤机 制是否完善，是否可能导致SQL 注入、XSS 跨站脚本和代码执行漏洞。 </p>
+<p>业务环节与支持系统间存在的安全风险，业务环节与支持系统间存在的风险，如数据传输是否加密、加密方式是否完善，是否采用前端加密、简单 MD5 编码等不安全的加密方式。系统处理多线程并发请求的机制是否完善，服务端逻辑与数据库读写是否存在时序问题，导致竞争条件漏洞。系统间 输入参数的过滤机制是否完善。</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906111305199.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906111305199.png"  alt="image-20230906111305199" lazyload></a></p>
+<h4 id="2-1-6、-开展测试"><a href="#2-1-6、-开展测试" class="headerlink" title="2.1.6、 开展测试"></a>2.1.6、 开展测试</h4><p>对前期业务流程梳理和识别出的风险点，进行有针对性的测试。 </p>
+<h4 id="2-1-7-、撰写报告"><a href="#2-1-7-、撰写报告" class="headerlink" title="2.1.7 、撰写报告"></a>2.1.7 、撰写报告</h4><p> 针对业务安全测试过程中发现的风险结果进行评价和建议，综合评价利用场景的风险程度和造成影响的严重程度，最终完成测试报告的编写</p>
+<h2 id="3、​​访问权限"><a href="#3、​​访问权限" class="headerlink" title="3、​​访问权限"></a>3、​​访问权限</h2><p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231130609109.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231130609109.png"  alt="image-20231231130609109" lazyload></a></p>
+<h4 id="漏洞出现原因"><a href="#漏洞出现原因" class="headerlink" title="漏洞出现原因"></a>漏洞出现原因</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.没有对数据进行完善的验证或者细分</span><br><span class="line">2.有验证，逻辑顺序搞错，先执行后验证</span><br><span class="line">3.有验证，验证产生在用户凭据上，如cookie、session、token、jwt（Cookie脆弱性）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="黑盒测试流程"><a href="#黑盒测试流程" class="headerlink" title="黑盒测试流程"></a>黑盒测试流程</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">（1）先通过工具把所以域名爆破出来，看看有没有含义敏感数据的页面</span><br><span class="line"></span><br><span class="line">（2）在功能点测试中，修改所有和权限挂钩的参数，尝试判断存不存在越权漏洞</span><br></pre></td></tr></table></figure>
+
+
+
+<p>越权访问（Broken Access Control，简称BAC）是Web应用程序中一种常见的漏洞，由于其存在范围广、危害大，在2021被OWASP列为Web应用十大安全隐患的第一名。</p>
+<p>由于越权访问漏洞属于逻辑类漏洞，所以目前上WAF无法进行完全的防御，也无法被全自动化的漏洞扫描器发现</p>
+<h4 id="水平越权"><a href="#水平越权" class="headerlink" title="水平越权"></a>水平越权</h4><p>在同级别账户中&#x3D;&#x3D;横向移动&#x3D;&#x3D;</p>
+<blockquote>
+<p>就是同级用户之间的越权，打个比方现在有ABC三个用户，A是管理员，BC都是普通用户，现在B能够使用C这个用户的权限这就是水平越权。</p>
+</blockquote>
+<h4 id="垂直越权"><a href="#垂直越权" class="headerlink" title="垂直越权"></a>垂直越权</h4><p>普通用户获取管理员权限</p>
+<blockquote>
+<p>通过低级权限跨越到高级权限，用高级权限干高级权限的事情，来我们继续打比方，A是超级管理员,BC是普通用户，现在这个B啊，通过了某些手段，跨越获得了A超级管理员的权限，这就是垂直越权，垂直越权的特点就是&#x3D;&#x3D;以低级权限向高级权限跨越&#x3D;&#x3D;</p>
+</blockquote>
+<hr>
+<h4 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><ul>
+<li>[Pikachu靶场 Over Permision](..&#x2F;..&#x2F;..&#x2F;..&#x2F;安全资源&#x2F;靶机&#x2F;专项练习&#x2F;Pikachu&#x2F;Pikachu靶场.md#9、Over Permision)</li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Unauthorized/Redis%E6%9C%AA%E6%8E%88%E6%9D%83.md">Redis未授权</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Unauthorized/Memcached%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE.md">Memcached未授权访问</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Unauthorized/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE.md">Elasticsearch未授权访问</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Unauthorized/Spring-Boot-Actuator%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E.md">Spring-Boot-Actuator未授权访问漏洞</a></li>
+<li><a target="_blank" rel="noopener" href="https://vulhub.org/#/environments/weblogic/CVE-2020-14882/">Weblogic CVE-2020-14883</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/B_l_a_nk/article/details/130936415">以下四个参考⬆️⬆️</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E9%9D%B6%E6%9C%BA/%E4%B8%93%E9%A1%B9%E7%BB%83%E4%B9%A0/DVWA/DVWA%E8%B6%8A%E6%9D%83%E5%AE%9E%E7%8E%B0RCE&getshell.md">DVWA越权实现RCE&amp;getshell</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Nexus/Nexus%E6%9C%AA%E6%8E%88%E6%9D%83%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A%E6%BC%8F%E6%B4%9E(CVE-2024-4956).md">Nexus未授权目录穿越漏洞(CVE-2024-4956)</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Unauthorized/MongoDB%E6%9C%AA%E6%8E%88%E6%9D%83.md">MongoDB未授权</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Joomla/Joomla%20%E6%9C%AA%E6%8E%88%E6%9D%83%E6%BC%8F%E6%B4%9ECVE-2023-23752.md">Joomla 未授权漏洞CVE-2023-23752</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Unauthorized/Zookeeper%E6%9C%AA%E6%8E%88%E6%9D%83.md">Zookeeper未授权</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/%E5%AE%89%E5%85%A8%E8%AE%BE%E5%A4%87/%E5%A0%A1%E5%9E%92%E6%9C%BA/JumpServer%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9ECVE-2023-42442.md">JumpServer未授权访问漏洞CVE-2023-42442</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Jenkins/Jenkins-CLI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E(CVE-2024-23897).md">Jenkins-CLI接口未授权任意文件读取漏洞(CVE-2024-23897)</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Nacos/Nacos-User-Agent-%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE(CVE-2021-29441).md">Nacos-User-Agent-未授权访问(CVE-2021-29441)</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/JBoss/JBoss-JMX-Console%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AEGetshell.md">JBoss-JMX-Console未授权访问Getshell</a></li>
+<li></li>
+</ul>
+<h6 id="MINIcms-垂直越权（CVE-2018-18891）"><a href="#MINIcms-垂直越权（CVE-2018-18891）" class="headerlink" title="MINIcms-垂直越权（CVE-2018-18891）"></a>MINIcms-垂直越权（CVE-2018-18891）</h6><p><strong>原理</strong></p>
+<p>判断是否拥有权限在于head.php，在post.php和page.php中有这样一个问题</p>
+<p>先等前面功能点代码执行完了</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203202415210-1624586452.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203202415210-1624586452.png"  alt="img" lazyload></a></p>
+<p>再进行权限判断</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203202500698-2137770829.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203202500698-2137770829.png"  alt="img" lazyload></a></p>
+<p>所以就导致了先执行后判断权限的垂直越权漏洞</p>
+<p><strong>演示</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（1）现有一篇文章test123</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203204340404-653423818.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203204340404-653423818.png"  alt="img" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（2）通过代码审计得知poc</span><br></pre></td></tr></table></figure>
+
+<p>poc:</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//</span><span class="number">127.0</span>.<span class="number">0</span>.<span class="number">1</span>/cms/mc/mc-admin/post.php?<span class="keyword">delete</span>=aesuas&amp;<span class="keyword">state</span>=publish&amp;date=&amp;tag=</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（3）直接在其他没登录的浏览器执行该poc</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203204740986-1769580761.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203204740986-1769580761.png"  alt="img" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（4）文章就被放到回收站了</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203204841108-284640077.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203204841108-284640077.png"  alt="img" lazyload></a></p>
+<h6 id="XHcms-未授权访问"><a href="#XHcms-未授权访问" class="headerlink" title="XHcms-未授权访问"></a>XHcms-未授权访问</h6><p><strong>原理</strong></p>
+<p>通过代码审计得知，只要cookie认证是user&#x3D;&#x3D;不为空即可&#x3D;&#x3D;</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203214454269-55199108.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203214454269-55199108.png"  alt="img" lazyload></a></p>
+<p><strong>演示</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（1）找到后台登录入口</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203215154512-368398547.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203215154512-368398547.png"  alt="img" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（2）抓包，添加cookie</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203215310917-857953540.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203215310917-857953540.png"  alt="img" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（3）成功进入后台</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203221319545-338237601.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203221319545-338237601.png"  alt="img" lazyload></a></p>
+<h6 id="YXcms-水平越权漏洞"><a href="#YXcms-水平越权漏洞" class="headerlink" title="YXcms-水平越权漏洞"></a>YXcms-水平越权漏洞</h6><p><strong>原理</strong></p>
+<p>只检测用户和ID对应关系，没检测当前操作用户是不是当前用户</p>
+<p>造成漏洞的原因：用户信息获取时未对用户与ID比较判断直接查询</p>
+<p><strong>演示</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（1）首先，我们注册了两个用户，他们的信息如下</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203184311340-1286734911.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203184311340-1286734911.png"  alt="img" lazyload></a></p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">2</span>）当我们修改用户<span class="keyword">bcxc2资料时，进行抓包</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203184726810-1767040123.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203184726810-1767040123.png"  alt="img" lazyload></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（3）这里，我们可以发现post传输的参数中，含有<span class="built_in">id</span>=2，猜测<span class="built_in">id</span>=2是指向账户bcxc的<span class="built_in">id</span>，将内容里的bcxc2改为bcxc1、<span class="built_in">id</span>=2改为<span class="built_in">id</span>=1</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203185447286-1098770796.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203185447286-1098770796.png"  alt="img" lazyload></a></p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">4</span>）提示修改成功，数据库bcxc1里的手机号和<span class="keyword">qq</span>号也被修改了</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/3021911-20230203185611577-832118173.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/3021911-20230203185611577-832118173.png"  alt="img" lazyload></a></p>
+<hr>
+<h4 id="利用工具"><a href="#利用工具" class="headerlink" title="利用工具"></a>利用工具</h4><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_54431413/article/details/124078289?ops_request_misc=%7B%22request_id%22:%22167543376816800222811944%22,%22scm%22:%2220140713.130102334..%22%7D&request_id=167543376816800222811944&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-4-124078289-null-null.142%5Ev73%5Ewechat_v2,201%5Ev4%5Eadd_ask,239%5Ev1%5Econtrol&utm_term=Authz&spm=1018.2226.3001.4187">Authz和AuthzMatrix 逻辑越权工具</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ztosec/secscan-authcheck">secscan-authcheck</a><ul>
+<li>安装踩坑： <a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44203158/article/details/110007233">https://blog.csdn.net/weixin_44203158/article/details/110007233</a></li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/xk11z/unauthorized_com">未授权访问漏洞检测工具</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/smxiazi/xia_Yue">Xiao_yue</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Quitten/Autorize">Autorize</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/sule01u/AutorizePro">AutorizePro</a> - 是一款强大越权检测 Burp 插件，通过增加 AI 辅助分析 &amp;&amp; 进一步优化检测逻辑，大幅降低误报率，提升越权漏洞检出效率。</li>
+</ul>
+<hr>
+<h2 id="6、数据篡改-购买支付"><a href="#6、数据篡改-购买支付" class="headerlink" title="6、数据篡改&amp;购买支付"></a>6、数据篡改&amp;购买支付</h2><p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231131144564.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231131144564.png"  alt="image-20231231131144564" lazyload></a></p>
+<p> <a class="simple-lightbox" href="/imgs/business-logic/%E6%94%AF%E4%BB%98%E9%80%BB%E8%BE%91.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/%E6%94%AF%E4%BB%98%E9%80%BB%E8%BE%91.png"  lazyload></a><br>支付逻辑常见测试：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、熟悉常见支付流程</span><br><span class="line">选择商品和数量-选择支付及配送方式-生成订单编号-订单支付选择-完成支付</span><br><span class="line"><span class="number">2</span>、熟悉那些数据篡改</span><br><span class="line">商品<span class="type">ID</span>，购买价格，购买数量，订单属性，折扣属性，支付方式，支付状态等</span><br><span class="line"><span class="number">3</span>、熟悉那些修改方式</span><br><span class="line">替换支付，重复支付，最小额支付，负数支付，溢出支付，优惠券支付等</span><br><span class="line"><span class="number">4</span>、熟悉那些另类方法</span><br><span class="line">无限试用，越权支付，并发兑换，四舍五入半价购，循环利用优惠券，支付签约逻辑等</span><br></pre></td></tr></table></figure>
+
+<p>支付逻辑如何挖掘：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、找到关键的数据包</span><br><span class="line">可能一个支付操作有三四个数据包，我们要对数据包进行挑选。</span><br><span class="line"><span class="number">2</span>、分析数据包</span><br><span class="line">支付数据包中会包含很多的敏感信息（账号，金额，余额，优惠等）</span><br><span class="line">要尝试对数据包中的各个参数进行分析。</span><br><span class="line"><span class="number">3</span>、不按套路出牌</span><br><span class="line">多去想想开发者没有想到的地方，如算法拼接，关闭开启返优惠券等</span><br><span class="line"><span class="number">4</span>、<span class="type">PC</span>端尝试过，<span class="type">APP</span>端也看看，小程序也试试</span><br></pre></td></tr></table></figure>
+
+<p>支付逻辑安全修复：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、在后端检查订单的每一个值，包括支付状态；</span><br><span class="line"><span class="number">2</span>、校验价格、数量参数，比如产品数量只能为整数，并限制最大购买数量 ；</span><br><span class="line"><span class="number">3</span>、与第三方支付平台检查，实际支付的金额是否与订单金额一致；</span><br><span class="line"><span class="number">4</span>、如给用户退款，要使用原路、原订单退回。如：退押金，按用户原支付订单原路退回；</span><br><span class="line"><span class="number">5</span>、加密、解密、数字签名及验证，这个可以有效避免数据修改，重放攻击中的各种问题；</span><br><span class="line"><span class="number">6</span>、金额超过指定值，进行人工审核等。</span><br></pre></td></tr></table></figure>
+
+<p><strong>文章</strong>：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://forum.butian.net/share/1125"> 一次信息泄露到越权支付的实战</a></li>
+</ul>
+<h4 id="经典场景"><a href="#经典场景" class="headerlink" title="经典场景"></a>经典场景</h4><p><strong>1、前端JS 限制绕过</strong></p>
+<p> 典型案例：</p>
+<ul>
+<li>绕过JS 限制，购买多个打折商品</li>
+</ul>
+<p>很多商品在限制用户购买数量时，Web 应用仅在页面通过JS 脚本限制，未在服务器端校验用户提交的数量，通过抓取客户端发送的请求包修改JS 端生成处理的交易数据，如将请求中的商品数量改为大于最大数限制的值，查看能否以非正常业务交易数据完成业务流程。 </p>
+<p>该项测试主要针对电商平台由于交易限制机制不严谨、不完善而导致的一些业务逻辑问题。例如，在促销活动中限制商品购买数量，却未对数量进 行前、后端严格校验，往往被攻击者所利用，购买多个促销商品，造成商家的损失。</p>
+<p><strong>2、请求重放测试</strong></p>
+<p> 典型案例：</p>
+<ul>
+<li>一次购买，多次收货</li>
+</ul>
+<p> 请求重放漏洞是电商平台业务逻辑漏洞中一种常见的由设计缺陷所引发的漏洞，通常情况下所引发的安全问题表现在商品首次购买成功后，参照订 购商品的正常流程请求，进行完全模拟正常订购业务流程的重放操作，可以实现“一次购买，多次收货” 等违背正常业务逻辑的结果。 </p>
+<p>该项测试主要针对电商平台订购兑换业务流程中对每笔交易请求的唯一性判断缺乏有效机制的业务逻辑问题，通过该项测试可以验证交易流程中随 机数、时间戳等生成机制是否正常。 </p>
+<p><strong>3、 业务上限测试</strong> </p>
+<p>典型案例： </p>
+<ul>
+<li>无限制查询历史消费记录</li>
+</ul>
+<p>业务上限测试主要是针对一些电商类应用程序在进行业务办理流程中，服务端没有对用户提交的查询范围、订单数量、金额等数据进行严格校验而 引发的一些业务逻辑漏洞。通常情况下，在业务流程中通过向服务端提交高于或低于预期的数据以校验服务端是否对所提交的数据做预期强校验。存在 此类脆弱性的应用程序，通常表现为查询到超出预期的信息、订购或兑换超出预期范围的商品等。 </p>
+<p>该项测试主要判断应用程序是否对业务预期范围外的业务请求做出正确回应。</p>
+<p><strong>4、商品⽀付⾦额篡改</strong> </p>
+<p>典型案例: </p>
+<ul>
+<li>1 毛钱买电冰箱</li>
+</ul>
+<p>电商类网站在业务流程整个环节，需要对业务数据的完整性和一致性进行保护，特别是确保在用户客户端与服务端、业务系统接口之间的数据传输 的一致性，通常在订购类交易流程中，容易出现服务器端未对用户提交的业务数据进行强制校验，过度信赖客户端提交的业务数据而导致的商品金额篡 改漏洞。商品金额篡改测试，通过抓包修改业务流程中的交易金额等字段，例如在支付页面抓取请求中商品的金额字段，修改成任意数额的金额并提 交，查看能否以修改后的金额数据完成业务流程。 </p>
+<p>该项测试主要针对订单生成的过程中存在商品支付金额校验不完整而产生业务安全风险点，通常导致攻击者用实际支付远低于订单支付的金额订购 商品的业务逻辑漏洞。 </p>
+<p><strong>5、商品订购数量篡改</strong></p>
+<p> 典型案例：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1jRUdEOeb2p3uUWFbPDhQKQ">damicms_5.4_网上商城任意商品购买—cms源码提取码：v6x2  </a></li>
+</ul>
+<p> 商品数量篡改测试是通过在业务流程中抓包修改订购商品数量等字段，如将请求中的商品数量修改成任意非预期数额、负数等进行提交，查看业务 系统能否以修改后的数量完成业务流程。</p>
+<p> 该项测试主要针对商品订购的过程中对异常交易数据处理缺乏风控机制而导致相关业务逻辑漏洞，例如针对订购中的数量、价格等缺乏判断而产生 意外的结果，往往被攻击者利用。</p>
+<h4 id="其他案例"><a href="#其他案例" class="headerlink" title="其他案例"></a>其他案例</h4><h6 id="damicms数据篡改-价格-数量-产品-订单"><a href="#damicms数据篡改-价格-数量-产品-订单" class="headerlink" title="damicms数据篡改-价格&amp;数量&amp;产品&amp;订单"></a>damicms数据篡改-价格&amp;数量&amp;产品&amp;订单</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、修改数量达到价格变动</span><br><span class="line">2、修改单价达到价格变动</span><br><span class="line">3、修改产品达到低价购买</span><br><span class="line">4、修改接口达到成功购买</span><br></pre></td></tr></table></figure>
+
+<p><strong>篡改价格</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">访问：http://127.0.0.1:8117/index.php?s=/articles/127.html</span><br><span class="line"> </span><br><span class="line">点击购买抓包：（大米测试产品6000）</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133224883-1155118600.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133224883-1155118600.png"  alt="1648259232208-7a894eff-8981-4fcc-a7c3-7a613db8083a.png" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">购买6000的数据包：</span><br><span class="line">GET /index.php?m=Member&amp;a=gobuy&amp;iscart=0&amp;id=127&amp;name=%E5%A4%A7%E7%B1%B3%E6%B5%8B%E8%AF%95%E4%BA%A7%E5%93%81&amp;qty=1&amp;price=6000&amp;gtype=%E7%81%B0%E8%89%B2&amp;pic=/Public/Uploads/thumb/thumb_1393218295.jpg HTTP/1.1</span><br><span class="line">正常放出的话，他就会跳到6000块钱支付单价上。</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">修改price=6000看看能不能对价格进行修改。</span><br><span class="line">GET /index.php?m=Member&amp;a=gobuy&amp;iscart=0&amp;id=127&amp;name=%E5%A4%A7%E7%B1%B3%E6%B5%8B%E8%AF%95%E4%BA%A7%E5%93%81&amp;qty=1&amp;price=6&amp;gtype=%E7%81%B0%E8%89%B2&amp;pic=/Public/Uploads/thumb/thumb_1393218295.jpg HTTP/1.1</span><br><span class="line">放出数据包</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109174636.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109174636.png"  lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">这样就对价格进行了修改，从而用6块钱买到了6000块钱的东西</span><br><span class="line">产生这个漏洞是因为这个6000价格不是固定的。最终判定金额的大小的时候，是由你的数据包的值为准，从而导致金额的篡改。</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改数量</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:8117/index.php?s=/articles/127.html</span><br><span class="line"> </span><br><span class="line">点击 立即购买，抓取数据包</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133223518-1231262049.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133223518-1231262049.png"  alt="1648259439095-f030e4a5-583c-4f5b-81d7-ba77298544de.png" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">购买产品数量为1的数据包：</span><br><span class="line">GET /index.php?m=Member&amp;a=gobuy&amp;iscart=0&amp;id=127&amp;name=%E5%A4%A7%E7%B1%B3%E6%B5%8B%E8%AF%95%E4%BA%A7%E5%93%81&amp;qty=1&amp;price=6000&amp;gtype=%E7%81%B0%E8%89%B2&amp;pic=/Public/Uploads/thumb/thumb_1393218295.jpg HTTP/1.1</span><br><span class="line"> </span><br><span class="line">把qty的值进行修改</span><br><span class="line">GET /index.php?m=Member&amp;a=gobuy&amp;iscart=0&amp;id=127&amp;name=%E5%A4%A7%E7%B1%B3%E6%B5%8B%E8%AF%95%E4%BA%A7%E5%93%81&amp;qty=-1&amp;price=6000&amp;gtype=%E7%81%B0%E8%89%B2&amp;pic=/Public/Uploads/thumb/thumb_1393218295.jpg HTTP/1.1</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109174151.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109174151.png"  lazyload></a></p>
+<p><strong>产品替换对冲</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">购买大米测试产品（6000）</span><br><span class="line"> </span><br><span class="line">数据包的值：</span><br><span class="line">GET /index.php?m=Member&amp;a=gobuy&amp;iscart=0&amp;id=127&amp;name=%E5%A4%A7%E7%B1%B3%E6%B5%8B%E8%AF%95%E4%BA%A7%E5%93%81&amp;qty=1&amp;price=6000&amp;gtype=%E7%81%B0%E8%89%B2&amp;pic=/Public/Uploads/thumb/thumb_1393218295.jpg HTTP/1.1</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">购买小米cms（5400）</span><br><span class="line"> </span><br><span class="line">数据包的值：</span><br><span class="line">GET /index.php?m=Member&amp;a=gobuy&amp;iscart=0&amp;id=70&amp;name=%E5%A4%A7%E7%B1%B3%E6%89%8B%E6%9C%BACMS&amp;qty=1&amp;price=5400&amp;gtype=%E7%81%B0%E8%89%B2&amp;pic=/Public/Uploads/thumb/thumb_1393218295.jpg HTTP/1.1</span><br><span class="line"> </span><br><span class="line">我们想以5400的价格去购买6000的东西，该怎么修改他呢？</span><br><span class="line">拿6000数据包：不修改价格和数量，其他都修改。</span><br><span class="line">/index.php?m=Member&amp;a=gobuy&amp;iscart=0&amp;id=127&amp;name=%E5%A4%A7%E7%B1%B3%E6%B5%8B%E8%AF%95%E4%BA%A7%E5%93%81&amp;</span><br><span class="line">&amp;gtype=%E7%81%B0%E8%89%B2&amp;pic=/Public/Uploads/thumb/thumb_1393218295.jpg</span><br><span class="line"> </span><br><span class="line">对5400的数据包进行替换：</span><br><span class="line">GET /index.php?m=Member&amp;a=gobuy&amp;iscart=0&amp;id=127&amp;name=%E5%A4%A7%E7%B1%B3%E6%B5%8B%E8%AF%95%E4%BA%A7%E5%93%81&amp;qty=1&amp;price=5400&amp;gtype=%E7%81%B0%E8%89%B2&amp;pic=/Public/Uploads/thumb/thumb_1393218295.jpg HTTP/1.1</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109174954.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109174954.png"  lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">放出数据包，实现了5400的价格购买了大米测试产品（6000）</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109175020.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109175020.png"  lazyload></a></p>
+<p><strong>订单替换对冲</strong></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109175057.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109175057.png"  lazyload></a></p>
+<h6 id="Nuishopcms修改方式-订单号-数量-优惠券"><a href="#Nuishopcms修改方式-订单号-数量-优惠券" class="headerlink" title="Nuishopcms修改方式-订单号&amp;数量&amp;优惠券"></a>Nuishopcms修改方式-订单号&amp;数量&amp;优惠券</h6><p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/Lucker_YYY/article/details/141457106">https://blog.csdn.net/Lucker_YYY/article/details/141457106</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1、修改数量达到价格变动</span><br><span class="line">2、修改订单达到底价购买</span><br><span class="line">3、优惠券重放使用&amp;重领使用</span><br></pre></td></tr></table></figure>
+
+<p><strong>支付接口</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">点击购买</span><br><span class="line"> </span><br><span class="line">抓取数据包：</span><br><span class="line">ET /gateway.do?_input_charset=utf-8&amp;logistics_fee=0.00&amp;logistics_payment=SELLER_PAY&amp;logistics_type=EXPRESS&amp;notify_url=http%3A%2F%2Fwww.myweb.com%2Findex.php%2FPublic%2Fshouquan&amp;out_trade_no=GB1648267817-9&amp;partner=2088002530455064&amp;payment_type=1&amp;price=5400&amp;quantity=1&amp;receive_address=afnaeoifadkokanf&amp;receive_mobile=15363908147&amp;receive_name=111&amp;return_url=http%3A%2F%2Fwww.myweb.com%2FTrade%2Fap_danbao%2Freturn_url.php&amp;seller_email=admin%40126.com&amp;service=create_partner_trade_by_buyer&amp;show_url=http%3A%2F%2Fwww.damicms.com%2FPublic%2Fdonate&amp;subject=%E5%A4%A7%E7%B1%B3%E6%89%8B%E6%9C%BACMS&amp;sign=d01de4eabc8e913c04e9782679fbc988&amp;sign_type=MD5 HTTP/1.1</span><br><span class="line"> </span><br><span class="line">可以尝试修改这个接口的数据包，从而达成这个支付接口转到你那里，就是你收到了钱，这样相当于没有付款就能够完成。类似于重定向，相当于收款方发生了改变。</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133224015-1552007953.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133224015-1552007953.png"  alt="1648268026870-6828a1d1-e008-401e-bbd1-b02d629c86ca.png" lazyload></a></p>
+<p><strong>订单号</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">差不多到付款的时候，抓取数据包</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133224000-150598243.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133224000-150598243.png"  alt="1648272076379-5b60129c-ada6-45c6-8d5c-9a2e2f7b6c34.png" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">出现订单编号：/index.php?s=/wap/pay/getpayvalue&amp;out_trade_no=1648272697757（1000块钱的订单编号）</span><br><span class="line"> </span><br><span class="line">再次购买10个数据包，抓取，订单编号：/index.php?s=/wap/pay/getpayvalue&amp;out_trade_no=1648272342449</span><br><span class="line"> </span><br><span class="line">1000数据包：/index.php?s=/wap/pay/getpayvalue&amp;out_trade_no=1648272697757</span><br><span class="line">/index.php?s=/wap/pay/wchatpay&amp;no=1648272697757</span><br><span class="line">10000数据包：/index.php?s=/wap/pay/getpayvalue&amp;out_trade_no=1648272842264</span><br><span class="line">/index.php?s=/wap/pay/wchatpay&amp;no=1648272842264</span><br><span class="line"> </span><br><span class="line">这个时候，想用1000的数据包来支付10000的东西</span><br><span class="line">点1000的东西，去支付</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133224945-587307717.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133224945-587307717.png"  alt="1648273115173-6304a8e9-cc87-4ecc-a6e5-8bcf8a900cb7.png" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">记录一下编号：</span><br><span class="line">/index.php?s=/order/orderPay&amp;id=12</span><br><span class="line"> </span><br><span class="line">付款订单编号：</span><br><span class="line">/index.php?s=/wap/pay/getpayvalue&amp;out_trade_no=1648273201769</span><br><span class="line"> </span><br><span class="line">把这个数值篡改为刚刚的10000的付款订单/index.php?s=/wap/pay/getpayvalue&amp;out_trade_no=1648272842264</span><br><span class="line">他变成了10000付款，相当于从1000的订单点过来，付款10000的数据包。</span><br><span class="line"> </span><br><span class="line">同理，在10000这里点过去，把订单编号变成1000，他也变成了1000付款（但是没有成功，应该是有过滤了。）</span><br><span class="line"> </span><br><span class="line">1000订单去购买10000订单 最终价格10000 订单为1000</span><br><span class="line">会出现两种情况：</span><br><span class="line">10000订单去购买1000订单 最终价格1000 订单为10000</span><br><span class="line">10000订单去购买1000订单 最终价格1000 订单为1000</span><br><span class="line"> </span><br><span class="line">有没有安全问题应该是看最终付款的商品价格。解决这个问题很简单，在购买的时候有一个id=12，在购买10000的商品的时候id=13</span><br><span class="line"> </span><br><span class="line">id编号对应了金额。</span><br><span class="line"> </span><br><span class="line">12对应1000</span><br><span class="line">13对应10000</span><br><span class="line">如果对应不上，则就发生错误，进行了过滤。</span><br></pre></td></tr></table></figure>
+
+<p><strong>数量</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">访问：http://127.0.0.1:8116/index.php?s=/goods/goodsinfo&amp;goodsid=1</span><br><span class="line"> </span><br><span class="line">点击购买，抓包</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133224318-381860647.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133224318-381860647.png"  alt="1648268380092-47663ced-b395-4d95-a21f-51cc3a59f776.png" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">发现数据包中tag=buy_now&amp;sku_id=1&amp;num=10，但是在这个数据包中没有发现这个价格。应该是价格固定的。</span><br><span class="line">但是这里有数量，可以阐释修改tag=buy_now&amp;sku_id=1&amp;num=0.000010</span><br><span class="line">放出数据包。</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133224110-710969202.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133224110-710969202.png"  alt="1648268646950-6e11e4bb-1d9c-4cb9-953d-6a770cfc03f7.png" lazyload></a></p>
+<p><strong>优惠券</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">使用优惠券，抓包</span><br><span class="line">goods_sku_list=1%3A1&amp;leavemessage=&amp;use_coupon=3&amp;integral=0&amp;account_balance=0&amp;pay_type=0&amp;buyer_invoice=&amp;pick_up_id=0&amp;express_company_id=1</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133225522-529557888.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133225522-529557888.png"  alt="1648270305957-96ef7463-52ad-4f25-a259-6422717f2b6f.png" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">没有使用优惠券，抓包</span><br><span class="line">goods_sku_list=1%3A1&amp;leavemessage=&amp;use_coupon=0&amp;integral=0&amp;account_balance=0&amp;pay_type=0&amp;buyer_invoice=&amp;pick_up_id=0&amp;express_company_id=1</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133225174-1964187695.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133225174-1964187695.png"  alt="1648270460309-f0d56f9b-b73d-4c2a-84ab-6aaefaa5be6d.png" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">对比两个数据包的值：</span><br><span class="line">使用：goods_sku_list=1%3A1&amp;leavemessage=&amp;use_coupon=3&amp;integral=0&amp;account_balance=0&amp;pay_type=0&amp;buyer_invoice=&amp;pick_up_id=0&amp;express_company_id=1</span><br><span class="line">不使用：goods_sku_list=1%3A1&amp;leavemessage=&amp;use_coupon=0&amp;integral=0&amp;account_balance=0&amp;pay_type=0&amp;buyer_invoice=&amp;pick_up_id=0&amp;express_company_id=1</span><br><span class="line"> </span><br><span class="line">use_coupon这个值是不同的。</span><br><span class="line"> </span><br><span class="line">优惠券 </span><br><span class="line">		只能领取一次</span><br><span class="line">    重复使用-重放数据包</span><br><span class="line">    </span><br><span class="line">暂定认为这个优惠券是有个编号的，再次领取优惠券进行购买查看一下数据包</span><br><span class="line"> </span><br><span class="line">goods_sku_list=1%3A1&amp;leavemessage=&amp;use_coupon=4&amp;integral=0&amp;account_balance=0&amp;pay_type=0&amp;buyer_invoice=&amp;pick_up_id=0&amp;express_company_id=1</span><br><span class="line">这个时候的use_coupon=4，所以这个use_coupon的值来判断优惠券	</span><br><span class="line"> </span><br><span class="line">那么是不是可以尝试不使用优惠券，把use_coupon这个值修改，也可以达到享受优惠券这个效果呢？</span><br><span class="line"> </span><br><span class="line">抓取未使用优惠券的数据包，进行修改：</span><br><span class="line"> </span><br><span class="line">goods_sku_list=1%3A1&amp;leavemessage=&amp;use_coupon=10&amp;integral=0&amp;account_balance=0&amp;pay_type=0&amp;buyer_invoice=&amp;pick_up_id=0&amp;express_company_id=1</span><br><span class="line">放出数据包，得到800的价格。</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133224821-1878511801.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133224821-1878511801.png"  alt="1648271175618-763e378e-03a3-4e6f-aebf-3a521081194b.png" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">能不能再次使用这个优惠券，抓包</span><br><span class="line">goods_sku_list=1%3A1&amp;leavemessage=&amp;use_coupon=10&amp;integral=0&amp;account_balance=0&amp;pay_type=0&amp;buyer_invoice=&amp;pick_up_id=0&amp;express_company_id=1</span><br><span class="line">修改，重放，还是能使用这张优惠券</span><br><span class="line"> </span><br><span class="line">修复：把优惠券加密，或者存放在数据库中，加密放在别的地方，让别人猜。</span><br></pre></td></tr></table></figure>
+
+
+
+<h6 id="大米cms-商品订购数量篡改"><a href="#大米cms-商品订购数量篡改" class="headerlink" title="大米cms-商品订购数量篡改"></a>大米cms-商品订购数量篡改</h6><p>来到首页之后先进行登陆</p>
+<p>产品展示页面</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906114751819.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906114751819.png"  alt="image-20230906114751819" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906115609594.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906115609594.png"  alt="image-20230906115609594" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906115652621.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906115652621.png"  alt="image-20230906115652621" lazyload></a></p>
+<p>打开<code>BurpSuite</code>，提交订单</p>
+<p>原始数据包：</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906115733007.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906115733007.png"  alt="image-20230906115733007" lazyload></a></p>
+<p>修改后数据包：</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906115839313.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906115839313.png"  alt="image-20230906115839313" lazyload></a></p>
+<p>点击<code>Forward</code>放包，订单提前成功</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906115908852.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906115908852.png"  alt="image-20230906115908852" lazyload></a></p>
+<p>显示订单已经付款</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906115927020.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906115927020.png"  alt="image-20230906115927020" lazyload></a></p>
+<p>查看余额</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906120023139.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906120023139.png"  alt="image-20230906120023139" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906120150835.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906120150835.png"  alt="image-20230906120150835" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906120241027.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906120241027.png"  alt="image-20230906120241027" lazyload></a></p>
+<p>再次 查看金额</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906120252006.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906120252006.png"  alt="image-20230906120252006" lazyload></a></p>
+<h6 id="portswigger-商品⽀付⾦额篡改"><a href="#portswigger-商品⽀付⾦额篡改" class="headerlink" title="portswigger-商品⽀付⾦额篡改"></a>portswigger-商品⽀付⾦额篡改</h6><p>地址：<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/all-labs">https://portswigger.net/web-security/all-labs</a></p>
+<p>需要注册，密码系统随机给定一个复杂的密码</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906114326060.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906114326060.png"  alt="image-20230906114326060" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906112524851.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906112524851.png"  alt="image-20230906112524851" lazyload></a></p>
+<p>根据提示：可以使用账户<code>wiener</code>，密码<code>peter</code>登录，然后买一个夹克<code>buy a &quot;Lightweight l33t leather jacket&quot;.</code></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906112715801.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906112715801.png"  alt="image-20230906112715801" lazyload></a></p>
+<p>使用给的账号登陆<code>My account</code>，登陆后发现只有<code>$100.00</code></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906112841768.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906112841768.png"  alt="image-20230906112841768" lazyload></a></p>
+<p>然后在查看皮夹克的详情</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906113057161.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906113057161.png"  alt="image-20230906113057161" lazyload></a></p>
+<p>点击<code>Add to cart</code>，<code>BurpSuite</code>抓取数据包</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906113236676.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906113236676.png"  alt="image-20230906113236676" lazyload></a></p>
+<p>修改数据包，然后<code>Forward</code>放包</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906113330244.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906113330244.png"  alt="image-20230906113330244" lazyload></a></p>
+<p>放包后，查看购物车，提交订单</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906113731391.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906113731391.png"  alt="image-20230906113731391" lazyload></a></p>
+<p>通关</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906113750826.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906113750826.png"  alt="image-20230906113750826" lazyload></a></p>
+<hr>
+<h2 id="7、验证码-密码找回-密码重置"><a href="#7、验证码-密码找回-密码重置" class="headerlink" title="7、验证码&amp;密码找回&amp;密码重置"></a>7、验证码&amp;密码找回&amp;密码重置</h2><p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231164858451.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231164858451.png"  alt="image-20231231164858451" lazyload></a><br><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180012.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180012.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180025.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180025.png"  lazyload></a></p>
+<blockquote>
+<p>参考<a href="../../%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/%E7%99%BB%E5%BD%95%E6%A1%86%E6%94%BB%E5%87%BB%E9%9D%A2%E6%80%9D%E8%B7%AF.md">登录框攻击面思路</a> 中涉及到验证码相关逻辑问题</p>
+</blockquote>
+<ul>
+<li>找回密码流程安全：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、用回显状态判断-res前端判断不安全（以前端接受返回状态）</span><br><span class="line">2、用用户名重定向-修改标示绕过验证（将修改目录换成其他用户）</span><br><span class="line">3、验证码回显显示-验证码泄漏验证虚设（有没有在数据包显示）</span><br><span class="line">4、验证码简单机制-验证码过于简单爆破（4位和6位，验证码提交次数没有限制）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>验证码绕过安全：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、验证码简单机制-验证码过于简单爆破</span><br><span class="line">2、验证码重复使用-验证码验证机制绕过</span><br><span class="line">3、验证码智能识别-验证码图形码被识别</span><br><span class="line">4、验证码接口调用-验证码触发机制枚举</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安全修复方案：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-找回机制要进行每一步验证-防绕过重定向</span><br><span class="line">-找回机制要进行服务端验证-防res数据修改</span><br><span class="line">-找回机制要控制验证码安全-防验证码攻击</span><br><span class="line">-验证码接口需验证后被调用-防接口被乱调用</span><br><span class="line">-验证码引用智能化人工判断-防验证码被识别</span><br><span class="line">-验证码采用时间段生效失效-防验证码被复用</span><br></pre></td></tr></table></figure>
+
+<h4 id="验证码识别工具"><a href="#验证码识别工具" class="headerlink" title="验证码识别工具"></a>验证码识别工具</h4><ul>
+<li>项目地址：<a target="_blank" rel="noopener" href="https://github.com/smxiazi/NEW_xp_CAPTCHA">https://github.com/smxiazi/NEW_xp_CAPTCHA</a></li>
+<li>安装使用教程1  ：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/punished/p/14746970.html">https://www.cnblogs.com/punished/p/14746970.html</a></li>
+<li>安装使用教程2  ：<a target="_blank" rel="noopener" href="http://www.nmd5.com/posts/2021-04-24-26/">http://www.nmd5.com/posts/2021-04-24-26/</a></li>
+</ul>
+<h4 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h4><ul>
+<li><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1JgkojYrg-uP2elk9ETMgWg">seacms7.2&amp;提取码：m8tq </a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/haorancracker/articles/17699533.html">参考</a></li>
+</ul>
+<h5 id="验证码突破-回传显示-规律爆破"><a href="#验证码突破-回传显示-规律爆破" class="headerlink" title="验证码突破-回传显示&amp;规律爆破"></a>验证码突破-回传显示&amp;规律爆破</h5><h6 id="某目标验证码回显"><a href="#某目标验证码回显" class="headerlink" title="某目标验证码回显"></a>某目标验证码回显</h6><p>通过手机找回密码，响应包中包含<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E7%9F%AD%E4%BF%A1%E9%AA%8C%E8%AF%81%E7%A0%81&spm=1001.2101.3001.7020" title="短信验证码">短信验证码</a>。<br><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180331.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180331.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180342.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180342.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180350.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180350.png"  lazyload></a></p>
+<h6 id="某APP验证码爆破"><a href="#某APP验证码爆破" class="headerlink" title="某APP验证码爆破"></a>某APP验证码爆破</h6><p>找回密码时使用位数较少的<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E7%9F%AD%E4%BF%A1%E9%AA%8C%E8%AF%81%E7%A0%81&spm=1001.2101.3001.7020">短信验证码</a>，或者验证码没有设置有效时间限制，导致攻击者借助<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B7%A5%E5%85%B7&spm=1001.2101.3001.7020" title="自动化工具">自动化工具</a>在一定时间范围内爆破获得短信验证码，从而导致重置任意账号密码。</p>
+<p>该APP实际上是发送6位验证码，但是并没有时间限制</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180656.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180656.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180708.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180708.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180715.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180715.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109180727.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109180727.png"  lazyload></a></p>
+<h5 id="验证目标-重定向用户-重定向发送"><a href="#验证目标-重定向用户-重定向发送" class="headerlink" title="验证目标-重定向用户&amp;重定向发送"></a>验证目标-重定向用户&amp;重定向发送</h5><h6 id="某CMS重定向用户"><a href="#某CMS重定向用户" class="headerlink" title="某CMS重定向用户"></a>某CMS重定向用户</h6><p>当我们输入正确的手机号和正确的短信验证码，然后进入重置密码的最后一步，也就是输入新的密码，输入密码后提交到服务端的post数据包需要包含当前用户的身份信息。而一般网站是通过用户名或用户ID来标识用户身份的，如果这个用户名或用户ID没有和当前手机号、短信验证码进行绑定。也就是说服务端只验证用户名、ID是否存在，而不去验证用户和当前手机号是否匹配，那么我们就可以通过修改用户名、ID去修改其他用户的密码了。当然可以修改的地方不限于找回密码的数据包，比如修改资料的地方也可能存在这样的漏洞。</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109181851.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109181851.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109181858.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109181858.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109181905.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109181905.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109181917.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109181917.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109181924.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109181924.png"  lazyload></a><br><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109181934.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109181934.png"  lazyload></a></p>
+<h6 id="某CMS重定向发送"><a href="#某CMS重定向发送" class="headerlink" title="某CMS重定向发送"></a>某CMS重定向发送</h6><p>如果数据包存在发送验证邮箱或目标地址，尝试修改到自己接受地，实现拦截获取</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182028.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182028.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182038.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182038.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182054.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182054.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182121.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182121.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182130.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182130.png"  lazyload></a></p>
+<h5 id="验证逻辑-修改响应包-跳过步骤URL"><a href="#验证逻辑-修改响应包-跳过步骤URL" class="headerlink" title="验证逻辑-修改响应包&amp;跳过步骤URL"></a>验证逻辑-修改响应包&amp;跳过步骤URL</h5><h6 id="某APP修改响应包"><a href="#某APP修改响应包" class="headerlink" title="某APP修改响应包"></a>某APP修改响应包</h6><p>通过手机找回密码一般需要短信验证码验证，服务端需要告诉客户端，输入的验证码是否正确，如果客户端收到true的信息，那么就会向带着true的信息向服务端请求进入下一步，而服务端收到true的信息，就会允许客户端进入下一步，反之，如果是false的信息，服务端就不会允许客户端进入下一步。也就是说我们进入下一步的关键是让服务端收到客户端的true信息，而借助burpsuite，我们可以修改服务端返回到客户端的信息，这样一来，我们就可以输入任意短信验证码，然后将服务端返回的false信息改为true就可以绕过短信验证码的验证</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182349.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182349.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182356.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182356.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182403.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182403.png"  lazyload></a><br>或者直接替换掉整个响应包(自己先注册一个用户走一遍密码找回流程，然后重点关注这个验证手机验证码的响应数据包)</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182437.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182437.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182449.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182449.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182457.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182457.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/Pasted%20image%2020241109182504.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/Pasted%20image%2020241109182504.png"  lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">正确的验证码返回包：</span><br><span class="line">&#123;&quot;code&quot;:200,&quot;data&quot;:&quot;13554365566&quot;,&quot;msg&quot;:&quot;&quot;&#125;</span><br><span class="line"></span><br><span class="line">错误的验证码返回包：</span><br><span class="line">&#123;&quot;code&quot;:207,&quot;data&quot;:&quot;&quot;,&quot;msg&quot;:&quot;验证码错误&quot;&#125;</span><br><span class="line">&#123;&quot;code&quot;:206,&quot;data&quot;:&quot;&quot;,&quot;msg&quot;:&quot;短信验证码不正确&quot;&#125;</span><br><span class="line"></span><br><span class="line">用错误的验证码，抓取返回包，修改状态码：&#123;&quot;code&quot;:200,&quot;data&quot;:&quot;13554365566&quot;,&quot;msg&quot;:&quot;&quot;&#125;放出数据包，就能重置验证码。</span><br></pre></td></tr></table></figure>
+
+<h6 id="某APP跳过步骤URL"><a href="#某APP跳过步骤URL" class="headerlink" title="某APP跳过步骤URL"></a>某APP跳过步骤URL</h6><p>找回密码流程一般需要四个步骤：<br>流程：验证用户名-验证短信验证码-输入新密码-重置成功</p>
+<p>这四个步骤应该紧紧相连，互相相关，只有通过了第一个步骤验证才可以进入下一个步骤，如果每个步骤之间没有进行关联性验证，就可能导致跳过关键验证步骤，从而导致重置任意账号密码。</p>
+<h5 id="phpyun-res值修改-验证码回显泄露-爆破"><a href="#phpyun-res值修改-验证码回显泄露-爆破" class="headerlink" title="phpyun-res值修改&amp;验证码回显泄露&amp;爆破"></a>phpyun-res值修改&amp;验证码回显泄露&amp;爆破</h5><h6 id="1、验证码回显-绑定手机号时验证码前端泄漏被获取"><a href="#1、验证码回显-绑定手机号时验证码前端泄漏被获取" class="headerlink" title="1、验证码回显-绑定手机号时验证码前端泄漏被获取"></a><strong>1、验证码回显-绑定手机号时验证码前端泄漏被获取</strong></h6><p>点击发送验证码</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231150735854.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231150735854.png"  alt="image-20231231150735854" lazyload></a></p>
+<p>随意输入一个验证码，bp抓包</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231150814818.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231150814818.png"  alt="image-20231231150814818" lazyload></a></p>
+<p>验证码回显，只需要把<code>code</code>的值改为<code>moblie_code</code>的值就可以绕过</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231150854019.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231150854019.png"  alt="image-20231231150854019" lazyload></a></p>
+<h6 id="2、res修改-绑定手机号时修改返回状态值判定通过"><a href="#2、res修改-绑定手机号时修改返回状态值判定通过" class="headerlink" title="2、res修改-绑定手机号时修改返回状态值判定通过"></a><strong>2、res修改-绑定手机号时修改返回状态值判定通过</strong></h6><p>（抓返回包1正确，3错误）验证码只传给浏览器，但实际上服务器上还是3（没有绑定）</p>
+<p>验证码提交抓包（提交不正确的验证码），可以明显看到验证码与mobile_code的值不正确，用到do intercept的response to this request模块来抓返回包。</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/2504969-20230913133411980-1260335049.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/2504969-20230913133411980-1260335049.png"  alt="1648428684643-c8ba43f7-169b-48bb-a2b1-a7d8bc975c67.png" lazyload></a></p>
+<p>抓到的返回包的值为3（对应短信验证码不正确）</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231151219648.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231151219648.png"  alt="image-20231231151219648" lazyload></a></p>
+<p>提交一个正确的验证码数据包，抓到返回包为1（提示验证码正确）</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231151332197.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231151332197.png"  alt="image-20231231151332197" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231151352598.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231151352598.png"  alt="image-20231231151352598" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20231231151416934.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20231231151416934.png"  alt="image-20231231151416934" lazyload></a></p>
+<p>那么提交一个错误的验证码，然后把他的返回包修改为1后，也是提示验证码正确，但是没有绑定成功。</p>
+<p>为什么没有成功呢？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">错误验证--服务器判断3--浏览器</span><br><span class="line">错误验证--服务器判断3--burp代码修改为1--浏览器  提示成功</span><br><span class="line">但是这里实际上是以服务器验证了。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">有res修改攻击隐患</span><br><span class="line">前端验证1--进入下一步逻辑--成功逻辑</span><br><span class="line">前端验证3--进入下一步逻辑--错误逻辑</span><br><span class="line"> </span><br><span class="line">服务器为准就不会。</span><br></pre></td></tr></table></figure>
+
+<h6 id="3、验证码爆破-知道验证码规矩进行无次数限制爆破（建立在对方没有验证次数）"><a href="#3、验证码爆破-知道验证码规矩进行无次数限制爆破（建立在对方没有验证次数）" class="headerlink" title="3、验证码爆破-知道验证码规矩进行无次数限制爆破（建立在对方没有验证次数）"></a><strong>3、验证码爆破-知道验证码规矩进行无次数限制爆破（建立在对方没有验证次数）</strong></h6><p>抓到数据包，放到intruder模式下面，通过返回包的状态来判断成功。</p>
+<p>在payload中选择number类</p>
+<h2 id="8、密码找回"><a href="#8、密码找回" class="headerlink" title="8、密码找回"></a>8、密码找回</h2><ul>
+<li>用户提交修改密码请求； </li>
+<li>账号认证：服务器发送唯一ID（例如短信验证码）只有账户所有者才能看的地方，完成身份验证； </li>
+<li>身份验证：用户提交验证码完成身份验证；</li>
+<li>修改密码：用户修改密码</li>
+</ul>
+<h4 id="8-1、验证码客户端-回显测试"><a href="#8-1、验证码客户端-回显测试" class="headerlink" title="8.1、验证码客户端 回显测试"></a>8.1、验证码客户端 回显测试</h4><p>典型场景： </p>
+<ul>
+<li>任意用户登录</li>
+</ul>
+<p>使用验证码的场景： </p>
+<ul>
+<li><p>人机验证：防止机器操作，爆破表单。 </p>
+</li>
+<li><p>唯一凭据：唯一性判断，任意账户登录。</p>
+</li>
+</ul>
+<p>找回密码测试中要注意验证码是否会回显在响应中，有些网站程序会选择将验证码回显在响应中，来判断用户输入的验证码是否和响应中的验证码 一致，如果一致就会通过校验。</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906152555589.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906152555589.png"  alt="image-20230906152555589" lazyload></a></p>
+<h4 id="8-2、验证码暴力破解"><a href="#8-2、验证码暴力破解" class="headerlink" title="8.2、验证码暴力破解"></a>8.2、验证码暴力破解</h4><p>典型案例： </p>
+<ul>
+<li>验证码无使用次数限制</li>
+</ul>
+<p>找回密码功能模块中通常会将用户凭证（一般为验证码）发送到用户自己才可以看到的手机号或者邮箱中，只要用户不泄露自己的验证码就不会被 攻击者利用，但是有些应用程序在验证码发送功能模块中验证码位数及复杂性较弱，也没有对验证码使用次数做限制而导致验证码可被暴力枚举并修改 任意用户密码。</p>
+<p> 在测试验证码是否可以被暴力枚举时，可以先将验证码多次发送给自己的账号，观察验证码是否有规律，如每次接收到的验证码为纯数字并且是4 位数。</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906152643890.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906152643890.png"  alt="image-20230906152643890" lazyload></a></p>
+<h4 id="8-3、Response状态码值修改测试"><a href="#8-3、Response状态码值修改测试" class="headerlink" title="8.3、Response状态码值修改测试"></a>8.3、Response状态码值修改测试</h4><p>Response 状态值修改测试，即修改请求的响应结果来达到密码重置的目的，存在这种漏洞的网站或者手机App 往往因为校验不严格而导致了非常 危险的重置密码操作。 </p>
+<p>这种漏洞的利用方式通常是在服务端发送某个密码重置的凭证请求后，出现特定的响应值，比如：</p>
+<ul>
+<li>true </li>
+<li>1 </li>
+<li>ok </li>
+<li>success</li>
+<li>200 </li>
+<li>…</li>
+</ul>
+<p>网站看到回显内容为特定值后即修改密码或者登陆，通常这种漏洞的回显值校验是在客户端进行的，所以只需要修改服务器的响应数据包即可</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906152759795.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906152759795.png"  alt="image-20230906152759795" lazyload></a></p>
+<h4 id="8-4、Session覆盖"><a href="#8-4、Session覆盖" class="headerlink" title="8.4、Session覆盖"></a>8.4、Session覆盖</h4><p>Session ID 也叫会话ID，服务器对浏览器客户端用户身份进行唯一性标志。</p>
+<p> 找回密码逻辑漏洞测试中也会遇到参数不可控的情况，比如要修改的用户名或者绑定的手机号无法在提交参数时修改，服务端通过读取当前 session 会话来判断要修改密码的账号，这种情况下能否对session 中的内容做修改以达到任意密码重置的目的呢？ </p>
+<p>在某网站中的找回密码功能中，业务逻辑是：由用户使用手机进行密码重置，然后服务端向手机发送验证码短信，用户输入验证码提交后，进入密 码重置页面。 </p>
+<p>对网站中Session 覆盖的测试如下： </p>
+<ul>
+<li>打开浏览器，访问重置密码页面，并提交自己的手机号（133），同时浏览器接收Session ID； </li>
+<li>用自己的账号（手机号，133）接收凭证（短信验证码）； </li>
+<li>获得凭证校验成功后，进入密码重置页面； </li>
+<li>在浏览器新标签重新打开找回密码页面，输入目标手机号(177)，此时服务器就会重新下发Session ID； </li>
+<li>此时当前SessionID 已经被覆盖，重新回到第三步中打开的重置密码页面即可重置目标手机号密码。</li>
+</ul>
+<p>漏洞原因： </p>
+<ul>
+<li>在验证码校验之后，没有及时更新Session ID，或者没有及时更新服务器端SESSION 信息。 </li>
+<li>SessionID 不仅要与手机号绑定，还要与验证码绑定</li>
+</ul>
+<h4 id="8-5、弱Token设计缺陷测试"><a href="#8-5、弱Token设计缺陷测试" class="headerlink" title="8.5、弱Token设计缺陷测试"></a>8.5、弱Token设计缺陷测试</h4><p>在找回密码功能中，很多网站会向用户邮箱发送找回密码页面链接。用户只需要进入邮箱，打开找回密码邮件中的链接，就可以进入密码重置页面 了。找回密码的链接通常会加入校验参数来确认链接的有效性，通过校验参数的值与数据库生成的值是否一致来判断当前找回密码的链接是否有效</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.xxx.com/findpwd?uid=jaychou&amp;token=jaychou-2018-0906-1314</span><br></pre></td></tr></table></figure>
+
+<p>上面这串链接，能看出<code>token</code>是由<code>uid-年-月日-数字</code>组成，这样的设计很不安全</p>
+<h5 id="portswigger-在线靶场演示"><a href="#portswigger-在线靶场演示" class="headerlink" title="portswigger-在线靶场演示"></a>portswigger-在线靶场演示</h5><p><a target="_blank" rel="noopener" href="https://portswigger.net/users">login_user</a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906153715227.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906153715227.png"  alt="image-20230906153715227" lazyload></a></p>
+<p>点击<code>Forgot your password?</code>会给邮箱发送链接</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906153855178.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906153855178.png"  alt="image-20230906153855178" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906153906930.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906153906930.png"  alt="image-20230906153906930" lazyload></a></p>
+<p>链接如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//portswigger.net/users/retrieve-password-td449832696b5dsf88526a5166bb8992br73s92f8fdcdm8f8n86f822aj8fb7183?tid=7zfPWC7QrC9YwJTXeaE8prvdj5zg-s1J6EVB-_6_BNUM0i2UMRutfw3b455sipX2</span></span><br></pre></td></tr></table></figure>
+
+<p>看不出链接的组成，看不出链接的规律</p>
+<h4 id="8-6-密码找回流程绕过测试"><a href="#8-6-密码找回流程绕过测试" class="headerlink" title="8.6 密码找回流程绕过测试"></a>8.6 密码找回流程绕过测试</h4><p>很多网站的密码找回功能一般有以下几个步骤： </p>
+<ul>
+<li>用户输入找回密码的账号；</li>
+<li>校验凭证：向用户发送短信验证码或者找回密码链接，用户回填验证码或单击链接进入密码重置页面， 以此方式证明当前操作用户是账号主人； </li>
+<li>校验成功进入重置密码页面（接口）</li>
+</ul>
+<p>在找回密码逻辑中，第二步校验凭证最为重要。不是账号主人是无法收到校验凭证的，试想有没有办法可以绕过第二步凭证校验，直接进入第三步 重置密码呢？ </p>
+<p>用户修改密码需要向服务器发送修改密码请求，服务器通过后再修改数据库中相应的密码，所以在测试中我们首先要收集三个步骤的请求接口，重 点是收集到最后一步重置密码的接口，这样我们可以直接跳过凭证校验的接口去尝试直接重置密码</p>
+<h4 id="8-7-接⼝参数账号修改"><a href="#8-7-接⼝参数账号修改" class="headerlink" title="8.7 接⼝参数账号修改"></a>8.7 接⼝参数账号修改</h4><p>典型案例：</p>
+<ul>
+<li>metinfo_4.0 任意账号密码重置</li>
+</ul>
+<p> 找回密码功能逻辑中常常会在用户修改密码的接口提交的参数中存在传递用户账号的参数，而用户账号参数作为一个可控变量是可以被篡改的，从 而导致修改账号密码的凭证或修改的目标账号出现偏差，最终造成任意账号密码修改的漏洞。</p>
+<p> 通常在找回密码逻辑中，服务端会要求用户提供要修改的账号，然后给这个账号发送只有账号主人才能看到的凭证。比如给这个账号主人绑定的邮 箱或者手机号发送验证码，或者找回密码链接，这样可以保证只有账号主人才可以看到这些凭证。但是如果服务器对账号的控制逻辑不当，就会导致原 有账号被篡改为其他账号，服务器端把凭证发送给篡改后的账号的邮箱或手机，最终造成可利用凭证重置任意账号密码的漏洞。 </p>
+<p>接口参数账号修改流程测试为拦截前端请求，通过修改请求内的账号ID 、名称或者邮箱、手机号等参数，将修改后的数据发送给服务器进行欺骗 达到密码重置的目的。</p>
+<h5 id="metinfo-4-0-任意账号密码重置案例演示"><a href="#metinfo-4-0-任意账号密码重置案例演示" class="headerlink" title="metinfo_4.0 任意账号密码重置案例演示"></a>metinfo_4.0 任意账号密码重置案例演示</h5><p><a target="_blank" rel="noopener" href="http://v.metinfo.cn/dowload.php?ver=4.0">下载地址</a></p>
+<p>下载完环境部署</p>
+<p>在虚拟机里访问，来到登陆界面<code>/admin/login/login.php</code></p>
+<p>使用<code>BurpSuite</code>拦截请求的数据包</p>
+<p>登陆后来都首页底部，点击<code>会员中心</code></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906155054720.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906155054720.png"  alt="image-20230906155054720" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906155156957.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906155156957.png"  alt="image-20230906155156957" lazyload></a></p>
+<p>填写基本信息后点击·<code>提交信息</code></p>
+<p>然后在来到来到登陆界面<code>/admin/login/login.php</code></p>
+<p>使用原来的密码登陆，发现登陆不上了</p>
+<hr>
+<p>分析数据包：</p>
+<p>第一次登陆的数据包</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906160645026.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906160645026.png"  alt="image-20230906160645026" lazyload></a></p>
+<p>修改密码的数据包</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906161043655.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906161043655.png"  alt="image-20230906161043655" lazyload></a></p>
+<p>使用原密码的登陆的数据包</p>
+<p><a class="simple-lightbox" href="/imgs/business-logic/image-20230906161111467.png"><img   src="/images/loading.svg" data-src="/imgs/business-logic/image-20230906161111467.png"  alt="image-20230906161111467" lazyload></a></p>
+<p>提示密码错误，说明用户名是正确存在的</p>
+<p>假如说这里用的 其他用户登陆，而不是<code>admin</code>账户登陆，那么就可以对修改密码的数据包进行修改，把<code>userid</code>换成<code>admin</code></p>
+<p>，那么就把管理员的密码给改了。</p>
+<h2 id="9、参考"><a href="#9、参考" class="headerlink" title="9、参考"></a>9、参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/2302_79885863/article/details/137181931">业务逻辑支付漏洞</a></li>
+<li><a target="_blank" rel="noopener" href="https://forum.butian.net/share/1453">业务逻辑漏洞简介</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youwei.site/course/websecurity/slides/chapter10.pdf">服务端安全-业务逻辑漏洞</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43531669/article/details/129263607">业务逻辑漏洞</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2091084">https://cloud.tencent.com/developer/article/2091084</a></li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#1%E3%80%81%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8%E6%A6%82%E8%BF%B0"><span class="top-box-text">1、业务安全概述</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-1%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8%E7%8E%B0%E7%8A%B6"><span class="top-box-text">1.1业务安全现状</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#2%E3%80%81%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="top-box-text">2、业务安全测试流程</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#3%E3%80%81%E2%80%8B%E2%80%8B%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="top-box-text">3、​​访问权限</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#6%E3%80%81%E6%95%B0%E6%8D%AE%E7%AF%A1%E6%94%B9-%E8%B4%AD%E4%B9%B0%E6%94%AF%E4%BB%98"><span class="top-box-text">6、数据篡改&amp;购买支付</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#7%E3%80%81%E9%AA%8C%E8%AF%81%E7%A0%81-%E5%AF%86%E7%A0%81%E6%89%BE%E5%9B%9E-%E5%AF%86%E7%A0%81%E9%87%8D%E7%BD%AE"><span class="top-box-text">7、验证码&amp;密码找回&amp;密码重置</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#8%E3%80%81%E5%AF%86%E7%A0%81%E6%89%BE%E5%9B%9E"><span class="top-box-text">8、密码找回</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#9%E3%80%81%E5%8F%82%E8%80%83"><span class="top-box-text">9、参考</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/09/03/firewalld/">
+          <h3 class="post-title">
+            
+            下一篇：包过滤防火墙——firewalld动态防火墙的简单使用
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

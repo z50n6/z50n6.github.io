@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>服务号渗透测试抓包问题解决(使用Burpsuite抓取手机app数据)</title>
+<meta name="keywords" content="服务号渗透测试抓包问题解决(使用Burpsuite抓取手机app数据), 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="这里渗透目标的服务号在PC端不能正常访问，且在手机上访问时可以的
+所以，这里将手机数据转发至BurpSuite上。如何转发呢？过程如下：
+
+使用Burpsuite抓取手机app数据前提条件：
+
+电脑和手机连接同一个WIFI，即同一个局网下
+">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="服务号渗透测试抓包问题解决(使用Burpsuite抓取手机app数据)">
+<meta property="og:description" content="这里渗透目标的服务号在PC端不能正常访问，且在手机上访问时可以的
+所以，这里将手机数据转发至BurpSuite上。如何转发呢？过程如下：
+
+使用Burpsuite抓取手机app数据前提条件：
+
+电脑和手机连接同一个WIFI，即同一个局网下
+">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">服务号渗透测试抓包问题解决(使用Burpsuite抓取手机app数据)</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-08-14</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+              渗透测试
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E6%8A%93%E5%8C%85/">
+              抓包
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>这里渗透目标的服务号在PC端不能正常访问，且在手机上访问时可以的</p>
+<p>所以，这里将手机数据转发至BurpSuite上。如何转发呢？过程如下：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111229.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111229.png"  lazyload></a></p>
+<h2 id="使用Burpsuite抓取手机app数据"><a href="#使用Burpsuite抓取手机app数据" class="headerlink" title="使用Burpsuite抓取手机app数据"></a>使用Burpsuite抓取手机app数据</h2><p><strong>前提条件</strong>：</p>
+<ul>
+<li>电脑和手机连接同一个WIFI，即同一个局网下</li>
+<li>电脑装有burpsuit软件</li>
+<li>安卓手机（也可以使用安卓模拟器）</li>
+</ul>
+<p><mark style="background:#40a9ff">这里使用的手机为一加 ACE 3</mark></p>
+<h5 id="电脑端"><a href="#电脑端" class="headerlink" title="电脑端"></a>电脑端</h5><p> 电脑端IP地址： 172.168.101.230</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111437.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111437.png"  lazyload></a></p>
+<h5 id="burpsuite设置"><a href="#burpsuite设置" class="headerlink" title="burpsuite设置"></a>burpsuite设置</h5><p>bp中设置代理为我们本地电脑的ip，端口自定义</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111511.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111511.png"  lazyload></a></p>
+<h5 id="burpsuite-证书"><a href="#burpsuite-证书" class="headerlink" title="burpsuite 证书"></a>burpsuite 证书</h5><p>在电脑端使用浏览器访问设置的代理ip:端口，下载burpsuite证书，比如我<br>上面的ip为172.168.101.230，端口为8081，就访问<br><code>http://172.168.101.230:8081/</code>然后去下载证书，点击<code>CA certificate</code>下载burpsuite的证书，保存证书文件</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111807.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111807.png"  lazyload></a></p>
+<p>将证书通过微信传输，手机端下载保存证书</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111942.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814111942.png"  lazyload></a></p>
+<h5 id="手机端设置"><a href="#手机端设置" class="headerlink" title="手机端设置"></a>手机端设置</h5><p>打开wifi的设置：</p>
+<blockquote>
+<p>备注：不同的手机进入wifi的方式不同，设置代理的操作也不同，这里无法对所有手机的设置进行详细说明。仅以本人手机为例。</p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112201.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112201.png"  lazyload></a></p>
+<h5 id="手机端导入burpsuite-证书"><a href="#手机端导入burpsuite-证书" class="headerlink" title="手机端导入burpsuite 证书"></a>手机端导入burpsuite 证书</h5><p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112319.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112319.png"  lazyload></a></p>
+<p><mark style="background:#affad1">这里 WLAN 证书安装完后，再点击 CA 证书再安装一下 cacert. der 才行</mark></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112432.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112432.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112358.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112358.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112611.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112611.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112531.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112531.png"  lazyload></a></p>
+<p>可以看到证书安装成功了。</p>
+<h5 id="电脑端burp正常拦截手机端流量"><a href="#电脑端burp正常拦截手机端流量" class="headerlink" title="电脑端burp正常拦截手机端流量"></a>电脑端burp正常拦截手机端流量</h5><p>我们可以回到电脑端的burpsuite中，看到捕获到的手机流量。接下来，我们就可以进行流量篡改等操作。</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112841.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-service-account-capture/Pasted%20image%2020250814112841.png"  lazyload></a></p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BD%BF%E7%94%A8Burpsuite%E6%8A%93%E5%8F%96%E6%89%8B%E6%9C%BAapp%E6%95%B0%E6%8D%AE"><span class="top-box-text">使用Burpsuite抓取手机app数据</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2025/06/16/seeyon-oa-vulns/">
+          <h3 class="post-title">
+            
+            下一篇：致远OA前台和后台的几个中危漏洞
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

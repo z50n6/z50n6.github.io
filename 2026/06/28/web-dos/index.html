@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>Web 拒绝服务（DoS）</title>
+<meta name="keywords" content="Web 拒绝服务（DoS）, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、是什么Web 拒绝服务的本质：服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
+和传统网络层 ">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="Web 拒绝服务（DoS）">
+<meta property="og:description" content="
+一、是什么Web 拒绝服务的本质：服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
+和传统网络层 ">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">Web 拒绝服务（DoS）</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、是什么"><a href="#一、是什么" class="headerlink" title="一、是什么"></a>一、是什么</h2><p>Web 拒绝服务的本质：<strong>服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。</strong></p>
+<p>和传统网络层 DDoS 不一样——不需要成千上万的肉鸡，一个 HTTP 请求就能把服务器打趴。</p>
+<p>常见触发的点：</p>
+<ul>
+<li>图片生成接口的参数可控（验证码、头像裁剪等）</li>
+<li>文件上传接口无次数&#x2F;大小限制</li>
+<li>压缩包上传后自动解压，内容远超预期</li>
+<li>JSON&#x2F;XML 解析时的递归展开（Billion Laughs 攻击）</li>
+</ul>
+<hr>
+<h2 id="二、验证码拒绝服务（Captcha-DoS）"><a href="#二、验证码拒绝服务（Captcha-DoS）" class="headerlink" title="二、验证码拒绝服务（Captcha DoS）"></a>二、验证码拒绝服务（Captcha DoS）</h2><p>这是最常见的 Web DoS 类型。开发者为了让验证码在不同设备上显示正常，会接受尺寸参数——但往往没有上限校验。</p>
+<h3 id="2-1-漏洞代码"><a href="#2-1-漏洞代码" class="headerlink" title="2.1 漏洞代码"></a>2.1 漏洞代码</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// 典型的漏洞代码</span></span><br><span class="line"><span class="variable">$width</span>  = <span class="variable">$_GET</span>[<span class="string">&#x27;w&#x27;</span>];</span><br><span class="line"><span class="variable">$height</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;h&#x27;</span>];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;img src=&#x27;1.jpg&#x27; width=<span class="subst">$width</span> height=<span class="subst">$height</span>&gt;&quot;</span>;</span><br><span class="line"><span class="comment">// 攻击者传 w=99999&amp;h=99999 → 服务端渲染超大图片</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/web-dos/image-20240101140933243.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/image-20240101140933243.png"  alt="验证码尺寸参数可控" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/image-20240101140959885.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/image-20240101140959885.png"  alt="验证码被放大" lazyload></a></p>
+<p>不只是前端 HTML 属性被放大——很多验证码接口是<strong>服务端实时渲染生成的</strong>（GD 库、ImageMagick），服务器要根据 width&#x2F;height 在内存里画图。<code>9999×9999</code> 意味着分配几百 MB 内存去处理，一堆请求同时来，服务器直接 OOM。</p>
+<h3 id="2-2-测试方法"><a href="#2-2-测试方法" class="headerlink" title="2.2 测试方法"></a>2.2 测试方法</h3><ol>
+<li>打开登录页，找到图片验证码的请求</li>
+<li>Burp 抓取验证码请求包</li>
+<li>在 URL 参数中尝试拼接隐藏参数：<code>height</code>、<code>width</code>、<code>size</code>、<code>margin</code>、<code>h</code>、<code>w</code></li>
+<li>逐步增大数值，观察响应差异：<code>h=111</code> → <code>h=222</code> → <code>h=9999</code></li>
+</ol>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020260616113522.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020260616113522.png"  alt="抓取验证码请求" lazyload></a></p>
+<p>增大参数后看两个指标：</p>
+<ul>
+<li><strong>响应时间</strong>：Burp 右下角的耗时是否明显变长</li>
+<li><strong>响应字节</strong>：返回图片的大小是否随参数变大</li>
+</ul>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020260616113633.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020260616113633.png"  alt="观察响应字节差异" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020260616113718.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020260616113718.png"  alt="响应明显增大" lazyload></a></p>
+<p>也可以在 Burp 的 <strong>Render 模块</strong>直接看渲染效果——图片被拉长、拉扁、整体变大，就说明参数生效了：</p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020260616113724.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020260616113724.png"  alt="Render 观察图片变化" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020260616113754.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020260616113754.png"  alt="验证码被拉宽变形" lazyload></a></p>
+<p>看到图片变形&#x2F;放大，漏洞确认。</p>
+<h3 id="2-3-bp-插件快速验证"><a href="#2-3-bp-插件快速验证" class="headerlink" title="2.3 bp 插件快速验证"></a>2.3 bp 插件快速验证</h3><p>手动挨个改参数太慢，用 <a target="_blank" rel="noopener" href="https://github.com/z50n6/CaptchaDos">CaptchaDos</a> 插件批量 fuzz：</p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020260616114209.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020260616114209.png"  alt="CaptchaDos 插件界面" lazyload></a></p>
+<p>自动 fuzz 隐藏参数，同时展示各参数值对应的响应时间&#x2F;大小变化：</p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020260616114232.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020260616114232.png"  alt="fuzz 结果列表" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020260616114245.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020260616114245.png"  alt="确认漏洞" lazyload></a></p>
+<hr>
+<h2 id="三、压缩包解压炸弹（Zip-Bomb）"><a href="#三、压缩包解压炸弹（Zip-Bomb）" class="headerlink" title="三、压缩包解压炸弹（Zip Bomb）"></a>三、压缩包解压炸弹（Zip Bomb）</h2><p>上传功能支持 <code>.zip</code> 且自动解压——攻击者构造一个解压后体积远超压缩体积的炸弹文件。</p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132043.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132043.png"  alt="压缩包炸弹原理" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132059.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132059.png"  alt="磁盘占用飙升" lazyload></a></p>
+<p>压缩包里再套压缩包，层层嵌套。几个 KB 的 zip 解压后膨胀到几十 GB。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&quot;Content-type:text/html;charset=utf-8&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_zip_originalsize</span>(<span class="params"><span class="variable">$filename</span>, <span class="variable">$path</span></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!<span class="title function_ invoke__">file_exists</span>(<span class="variable">$filename</span>))&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;文件 <span class="subst">$filename</span> 不存在！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable">$starttime</span> = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27; &#x27;</span>, <span class="title function_ invoke__">microtime</span>());</span><br><span class="line">    <span class="variable">$filename</span> = <span class="title function_ invoke__">iconv</span>(<span class="string">&quot;utf-8&quot;</span>, <span class="string">&quot;gb2312&quot;</span>, <span class="variable">$filename</span>);</span><br><span class="line">    <span class="variable">$path</span> = <span class="title function_ invoke__">iconv</span>(<span class="string">&quot;utf-8&quot;</span>, <span class="string">&quot;gb2312&quot;</span>, <span class="variable">$path</span>);</span><br><span class="line">    <span class="variable">$resource</span> = <span class="title function_ invoke__">zip_open</span>(<span class="variable">$filename</span>);</span><br><span class="line">    <span class="variable">$i</span> = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="variable">$dir_resource</span> = <span class="title function_ invoke__">zip_read</span>(<span class="variable">$resource</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_ invoke__">zip_entry_open</span>(<span class="variable">$resource</span>, <span class="variable">$dir_resource</span>)) &#123;</span><br><span class="line">            <span class="variable">$file_name</span> = <span class="variable">$path</span> . <span class="title function_ invoke__">zip_entry_name</span>(<span class="variable">$dir_resource</span>);</span><br><span class="line">            <span class="variable">$file_path</span> = <span class="title function_ invoke__">substr</span>(<span class="variable">$file_name</span>, <span class="number">0</span>, <span class="title function_ invoke__">strrpos</span>(<span class="variable">$file_name</span>, <span class="string">&quot;/&quot;</span>));</span><br><span class="line">            <span class="keyword">if</span>(!<span class="title function_ invoke__">is_dir</span>(<span class="variable">$file_path</span>))&#123;</span><br><span class="line">                <span class="title function_ invoke__">mkdir</span>(<span class="variable">$file_path</span>, <span class="number">0777</span>, <span class="literal">true</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(!<span class="title function_ invoke__">is_dir</span>(<span class="variable">$file_name</span>))&#123;</span><br><span class="line">                <span class="variable">$file_size</span> = <span class="title function_ invoke__">zip_entry_filesize</span>(<span class="variable">$dir_resource</span>);</span><br><span class="line">                <span class="keyword">if</span>(<span class="variable">$file_size</span> &lt; (<span class="number">1024</span>*<span class="number">1024</span>*<span class="number">6</span>))&#123;</span><br><span class="line">                    <span class="variable">$file_content</span> = <span class="title function_ invoke__">zip_entry_read</span>(<span class="variable">$dir_resource</span>, <span class="variable">$file_size</span>);</span><br><span class="line">                    <span class="title function_ invoke__">file_put_contents</span>(<span class="variable">$file_name</span>, <span class="variable">$file_content</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt; &quot;</span> . <span class="variable">$i</span>++ . <span class="string">&quot; 此文件已被跳过，原因：文件过大， -&gt; &quot;</span></span><br><span class="line">                       . <span class="title function_ invoke__">iconv</span>(<span class="string">&quot;gb2312&quot;</span>,<span class="string">&quot;utf-8&quot;</span>,<span class="variable">$file_name</span>) . <span class="string">&quot; &lt;/p&gt;&quot;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="title function_ invoke__">zip_entry_close</span>(<span class="variable">$dir_resource</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_ invoke__">zip_close</span>(<span class="variable">$resource</span>);</span><br><span class="line">    <span class="variable">$endtime</span> = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27; &#x27;</span>, <span class="title function_ invoke__">microtime</span>());</span><br><span class="line">    <span class="variable">$thistime</span> = <span class="variable">$endtime</span>[<span class="number">0</span>]+<span class="variable">$endtime</span>[<span class="number">1</span>]-(<span class="variable">$starttime</span>[<span class="number">0</span>]+<span class="variable">$starttime</span>[<span class="number">1</span>]);</span><br><span class="line">    <span class="variable">$thistime</span> = <span class="title function_ invoke__">round</span>(<span class="variable">$thistime</span>, <span class="number">3</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;解压完毕！本次解压花费：<span class="subst">$thistime</span> 秒。&lt;/p&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 死循环套娃解压——磁盘 + CPU 一起满</span></span><br><span class="line"><span class="variable">$size</span> = <span class="title function_ invoke__">get_zip_originalsize</span>(<span class="string">&#x27;42.zip&#x27;</span>, <span class="string">&#x27;uploads/&#x27;</span>);</span><br><span class="line"><span class="variable">$dir</span> = <span class="title function_ invoke__">opendir</span>(<span class="string">&quot;uploads/&quot;</span>);</span><br><span class="line"><span class="keyword">while</span> ((<span class="variable">$file</span> = <span class="title function_ invoke__">readdir</span>(<span class="variable">$dir</span>)) !== <span class="literal">false</span>) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;filename: &quot;</span> . <span class="variable">$file</span> . <span class="string">&quot;&lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">        <span class="title function_ invoke__">get_zip_originalsize</span>(<span class="string">&#x27;uploads/&#x27;</span> . <span class="variable">$file</span>, <span class="string">&#x27;uploads/&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_ invoke__">closedir</span>(<span class="variable">$dir</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、文件上传拒绝服务"><a href="#四、文件上传拒绝服务" class="headerlink" title="四、文件上传拒绝服务"></a>四、文件上传拒绝服务</h2><h3 id="4-1-无限制上传"><a href="#4-1-无限制上传" class="headerlink" title="4.1 无限制上传"></a>4.1 无限制上传</h3><p>无上传次数限制、图片大小不限的情况下，Burp Intruder 高并发上传：</p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132303.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132303.png"  alt="上传轰炸1" lazyload></a><br><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132328.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132328.png"  alt="上传轰炸2" lazyload></a><br><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132338.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132338.png"  alt="上传轰炸3" lazyload></a><br><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132344.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132344.png"  alt="上传轰炸4" lazyload></a></p>
+<p>用空 payload 配合 Intruder 持续发送：</p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132359.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132359.png"  alt="Intruder 配置1" lazyload></a><br><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132416.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132416.png"  alt="Intruder 配置2" lazyload></a><br><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132425.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132425.png"  alt="Intruder 配置3" lazyload></a><br><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132434.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132434.png"  alt="Intruder 配置4" lazyload></a></p>
+<p>只发了 800 张图片就占 625MB，10000 张呢？</p>
+<p><a class="simple-lightbox" href="/imgs/web-dos/Pasted%20image%2020241110132448.png"><img   src="/images/loading.svg" data-src="/imgs/web-dos/Pasted%20image%2020241110132448.png"  alt="CPU 拉满" lazyload></a></p>
+<h3 id="4-2-图片大小有限制"><a href="#4-2-图片大小有限制" class="headerlink" title="4.2 图片大小有限制"></a>4.2 图片大小有限制</h3><p>单个文件限制 300KB 又怎样——积少成多，发几千个一样塞满磁盘。限制单文件大小挡不住频率型 DoS。</p>
+<hr>
+<h2 id="五、防御"><a href="#五、防御" class="headerlink" title="五、防御"></a>五、防御</h2><table>
+<thead>
+<tr>
+<th>攻击类型</th>
+<th>措施</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>验证码 DoS</strong></td>
+<td>限制 <code>width</code>&#x2F;<code>height</code> 最大值（如不超过 500）；拒绝超范围的参数值</td>
+</tr>
+<tr>
+<td><strong>Zip Bomb</strong></td>
+<td>限制解压总大小、解压层数（最多 2 层）、解压文件数；不上传后自动解压</td>
+</tr>
+<tr>
+<td><strong>文件上传 DoS</strong></td>
+<td>限制单 IP 上传频率和总次数；设置磁盘配额</td>
+</tr>
+<tr>
+<td><strong>通用</strong></td>
+<td>凡是资源消耗由客户端参数决定的逻辑，全加上上限校验</td>
+</tr>
+<tr>
+<td><strong>应急</strong></td>
+<td>服务停止&#x2F;重启；攻击者浏览器端关闭卡死的页面释放连接</td>
+</tr>
+</tbody></table>
+<hr>
+<blockquote>
+<p><strong>一句话</strong>：只要服务端有一段逻辑的资源消耗由客户端参数决定、且没有上限——它就是一个潜在 DoS 点。验证码的 <code>h</code>&#x2F;<code>w</code> 是最常见的入口，但不是唯一的。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%98%AF%E4%BB%80%E4%B9%88"><span class="top-box-text">一、是什么</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E9%AA%8C%E8%AF%81%E7%A0%81%E6%8B%92%E7%BB%9D%E6%9C%8D%E5%8A%A1%EF%BC%88Captcha-DoS%EF%BC%89"><span class="top-box-text">二、验证码拒绝服务（Captcha DoS）</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-%E6%BC%8F%E6%B4%9E%E4%BB%A3%E7%A0%81"><span class="top-box-text">2.1 漏洞代码</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="top-box-text">2.2 测试方法</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-bp-%E6%8F%92%E4%BB%B6%E5%BF%AB%E9%80%9F%E9%AA%8C%E8%AF%81"><span class="top-box-text">2.3 bp 插件快速验证</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E5%8E%8B%E7%BC%A9%E5%8C%85%E8%A7%A3%E5%8E%8B%E7%82%B8%E5%BC%B9%EF%BC%88Zip-Bomb%EF%BC%89"><span class="top-box-text">三、压缩包解压炸弹（Zip Bomb）</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%8B%92%E7%BB%9D%E6%9C%8D%E5%8A%A1"><span class="top-box-text">四、文件上传拒绝服务</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-%E6%97%A0%E9%99%90%E5%88%B6%E4%B8%8A%E4%BC%A0"><span class="top-box-text">4.1 无限制上传</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-%E5%9B%BE%E7%89%87%E5%A4%A7%E5%B0%8F%E6%9C%89%E9%99%90%E5%88%B6"><span class="top-box-text">4.2 图片大小有限制</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E9%98%B2%E5%BE%A1"><span class="top-box-text">五、防御</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/weak-password/">
+          <h3 class="post-title">
+            
+            下一篇：弱口令
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

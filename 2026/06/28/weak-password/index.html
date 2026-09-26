@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>弱口令</title>
+<meta name="keywords" content="弱口令, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、概述弱口令（Weak Password）没有严格定义——凡是容易被猜解或能被工具快速破解的口令都是弱口令。
+两个主要成因：
+
+管理员安全意识不足，用了简单密码
+平台默认初始密码，部署后没改
+
+弱口令危害极大——不需要 0day，不需要">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="弱口令">
+<meta property="og:description" content="
+一、概述弱口令（Weak Password）没有严格定义——凡是容易被猜解或能被工具快速破解的口令都是弱口令。
+两个主要成因：
+
+管理员安全意识不足，用了简单密码
+平台默认初始密码，部署后没改
+
+弱口令危害极大——不需要 0day，不需要">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">弱口令</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>弱口令（Weak Password）没有严格定义——凡是<strong>容易被猜解或能被工具快速破解的口令</strong>都是弱口令。</p>
+<p>两个主要成因：</p>
+<ol>
+<li>管理员安全意识不足，用了简单密码</li>
+<li>平台默认初始密码，部署后没改</li>
+</ol>
+<p>弱口令危害极大——不需要 0day，不需要复杂利用链，猜对了就直接拿权限。</p>
+<hr>
+<h2 id="二、Web-后台爆破"><a href="#二、Web-后台爆破" class="headerlink" title="二、Web 后台爆破"></a>二、Web 后台爆破</h2><h3 id="2-1-MD5-加密传输（Zblog-案例）"><a href="#2-1-MD5-加密传输（Zblog-案例）" class="headerlink" title="2.1 MD5 加密传输（Zblog 案例）"></a>2.1 MD5 加密传输（Zblog 案例）</h3><p>登录抓包发现密码字段是 MD5 密文：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">edtUserName=admin&amp;password=21232f297a57a5a743894a0e4a801fc3</span><br></pre></td></tr></table></figure>
+
+<p>Burp Intruder 爆破 → Payload Processing → <code>Hash → MD5</code>，明文字典自动转 MD5 发送。</p>
+<p><a class="simple-lightbox" href="/imgs/weak-password/2504969-20230913133651841-1404154387.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/2504969-20230913133651841-1404154387.png"  alt="Burp MD5 配置" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/weak-password/2504969-20230913133652489-2053324066.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/2504969-20230913133652489-2053324066.png"  alt="爆破结果" lazyload></a></p>
+<h3 id="2-2-验证码识别爆破"><a href="#2-2-验证码识别爆破" class="headerlink" title="2.2 验证码识别爆破"></a>2.2 验证码识别爆破</h3><p>有验证码配合识别插件：<a target="_blank" rel="noopener" href="https://github.com/smxiazi/NEW_xp_CAPTCHA">NEW_xp_CAPTCHA</a></p>
+<h3 id="2-3-批量检测"><a href="#2-3-批量检测" class="headerlink" title="2.3 批量检测"></a>2.3 批量检测</h3><p><a target="_blank" rel="noopener" href="https://github.com/yzddmr6/WebCrack">WebCrack</a> — 导入后台地址自动化检测弱口令&#x2F;万能密码。</p>
+<hr>
+<h2 id="三、服务类爆破"><a href="#三、服务类爆破" class="headerlink" title="三、服务类爆破"></a>三、服务类爆破</h2><h3 id="3-1-Hydra"><a href="#3-1-Hydra" class="headerlink" title="3.1 Hydra"></a>3.1 Hydra</h3><p>Kali 内置，支持 30+ 协议：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hydra -l root -P pass.txt -t 5 -vV 192.168.1.1 ssh -f</span><br><span class="line">hydra -l administrator -P pass.txt -t 5 -vV 192.168.1.1 rdp -f</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-l</code> &#x2F; <code>-L</code></td>
+<td>指定用户名 &#x2F; 用户名字典</td>
+</tr>
+<tr>
+<td><code>-p</code> &#x2F; <code>-P</code></td>
+<td>指定密码 &#x2F; 密码字典</td>
+</tr>
+<tr>
+<td><code>-t</code></td>
+<td>线程数</td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>找到第一对就停</td>
+</tr>
+<tr>
+<td><code>-s</code></td>
+<td>指定非默认端口</td>
+</tr>
+<tr>
+<td><code>-e ns</code></td>
+<td>n&#x3D;空密码，s&#x3D;用户名作密码</td>
+</tr>
+</tbody></table>
+<h3 id="3-2-超级弱口令检查工具"><a href="#3-2-超级弱口令检查工具" class="headerlink" title="3.2 超级弱口令检查工具"></a>3.2 超级弱口令检查工具</h3><p>Windows GUI 工具，支持 SSH &#x2F; RDP &#x2F; SMB &#x2F; MySQL &#x2F; SQLServer &#x2F; Redis 等 20+ 服务。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/shack2/SNETCracker">GitHub — SNETCracker</a></p>
+<hr>
+<h2 id="四、文件密码破解"><a href="#四、文件密码破解" class="headerlink" title="四、文件密码破解"></a>四、文件密码破解</h2><h3 id="4-1-ZIP"><a href="#4-1-ZIP" class="headerlink" title="4.1 ZIP"></a>4.1 ZIP</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zip2john archive.zip &gt; hash.txt   <span class="comment"># 提取 hash</span></span><br><span class="line">john hash.txt                      <span class="comment"># 字典模式</span></span><br><span class="line">fcrackzip -b -c <span class="string">&#x27;aA1&#x27;</span> -l 1-6 -u archive.zip</span><br><span class="line">rarcrack 123.zip -threads 12 -<span class="built_in">type</span> zip</span><br></pre></td></tr></table></figure>
+
+<p>GUI：Advanced Archive Password Recovery</p>
+<p><a class="simple-lightbox" href="/imgs/weak-password/image-20231231193957076.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/image-20231231193957076.png"  alt="ZIP 破解" lazyload></a></p>
+<h3 id="4-2-RAR-7z"><a href="#4-2-RAR-7z" class="headerlink" title="4.2 RAR &#x2F; 7z"></a>4.2 RAR &#x2F; 7z</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rarcrack archive.rar -threads 12 -<span class="built_in">type</span> rar</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-Office-PDF"><a href="#4-3-Office-PDF" class="headerlink" title="4.3 Office &#x2F; PDF"></a>4.3 Office &#x2F; PDF</h3><p>Word：PassFab for Word（收费）<a target="_blank" rel="noopener" href="https://www.passfab.com/">https://www.passfab.com/</a></p>
+<p><a class="simple-lightbox" href="/imgs/weak-password/2504969-20230913133652043-1086423137.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/2504969-20230913133652043-1086423137.png"  alt="Word 破解" lazyload></a></p>
+<p>PDF：<a target="_blank" rel="noopener" href="https://smallpdf.com/unlock-pdf">smallpdf 在线解锁</a></p>
+<p><a class="simple-lightbox" href="/imgs/weak-password/image-20231231194603795.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/image-20231231194603795.png"  alt="PDF 解锁" lazyload></a></p>
+<hr>
+<h2 id="五、字典资源"><a href="#五、字典资源" class="headerlink" title="五、字典资源"></a>五、字典资源</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>通用字典</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/danielmiessler/SecLists">SecLists</a></td>
+</tr>
+<tr>
+<td>平台默认口令</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/hetianlab/DefaultCreds-cheat-sheet">DefaultCreds-cheat-sheet</a></td>
+</tr>
+<tr>
+<td>社工字典生成</td>
+<td><a target="_blank" rel="noopener" href="https://www.bugku.com/mima">bugku 密码生成器</a></td>
+</tr>
+<tr>
+<td>FOFA 搜集</td>
+<td>搜目标平台 → 查默认口令</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="六、相关参考"><a href="#六、相关参考" class="headerlink" title="六、相关参考"></a>六、相关参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://sgk66.cc/">社工库</a>（违法，慎用）</li>
+<li><a target="_blank" rel="noopener" href="https://www.reg007.com/">reg007 — 查手机&#x2F;邮箱注册过哪些网站</a></li>
+<li><a target="_blank" rel="noopener" href="https://monitor.firefox.com/">Firefox Monitor — 个人信息泄露查询</a></li>
+<li><a target="_blank" rel="noopener" href="https://haveibeenpwned.com/">Have I Been Pwned — 邮箱泄露查询</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/732d9d960411">彩虹表原理</a></li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>弱口令是门槛最低的攻击方式</strong>——<code>admin/admin</code> 和 <code>root/root</code> 先试一下，有时候比挖半天漏洞快得多。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="top-box-text">一、概述</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81Web-%E5%90%8E%E5%8F%B0%E7%88%86%E7%A0%B4"><span class="top-box-text">二、Web 后台爆破</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-MD5-%E5%8A%A0%E5%AF%86%E4%BC%A0%E8%BE%93%EF%BC%88Zblog-%E6%A1%88%E4%BE%8B%EF%BC%89"><span class="top-box-text">2.1 MD5 加密传输（Zblog 案例）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-%E9%AA%8C%E8%AF%81%E7%A0%81%E8%AF%86%E5%88%AB%E7%88%86%E7%A0%B4"><span class="top-box-text">2.2 验证码识别爆破</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-%E6%89%B9%E9%87%8F%E6%A3%80%E6%B5%8B"><span class="top-box-text">2.3 批量检测</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E6%9C%8D%E5%8A%A1%E7%B1%BB%E7%88%86%E7%A0%B4"><span class="top-box-text">三、服务类爆破</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-1-Hydra"><span class="top-box-text">3.1 Hydra</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-2-%E8%B6%85%E7%BA%A7%E5%BC%B1%E5%8F%A3%E4%BB%A4%E6%A3%80%E6%9F%A5%E5%B7%A5%E5%85%B7"><span class="top-box-text">3.2 超级弱口令检查工具</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E6%96%87%E4%BB%B6%E5%AF%86%E7%A0%81%E7%A0%B4%E8%A7%A3"><span class="top-box-text">四、文件密码破解</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-ZIP"><span class="top-box-text">4.1 ZIP</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-RAR-7z"><span class="top-box-text">4.2 RAR &#x2F; 7z</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-3-Office-PDF"><span class="top-box-text">4.3 Office &#x2F; PDF</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E5%AD%97%E5%85%B8%E8%B5%84%E6%BA%90"><span class="top-box-text">五、字典资源</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E7%9B%B8%E5%85%B3%E5%8F%82%E8%80%83"><span class="top-box-text">六、相关参考</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/xss/">
+          <h3 class="post-title">
+            
+            下一篇：XSS 跨站脚本攻击
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

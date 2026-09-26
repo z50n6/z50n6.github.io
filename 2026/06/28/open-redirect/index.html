@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>URL 重定向（开放重定向）</title>
+<meta name="keywords" content="URL 重定向（开放重定向）, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、是什么URL 重定向漏洞（Open Redirect），一句话：网站接受用户输入的链接作为跳转目标，没有或仅做了很弱的校验，导致攻击者可以把用户从正常站点重定向到恶意站点。
+
+危害不算”致命级”，但配合钓鱼非常好用——用户看到浏览器地">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="URL 重定向（开放重定向）">
+<meta property="og:description" content="
+一、是什么URL 重定向漏洞（Open Redirect），一句话：网站接受用户输入的链接作为跳转目标，没有或仅做了很弱的校验，导致攻击者可以把用户从正常站点重定向到恶意站点。
+
+危害不算”致命级”，但配合钓鱼非常好用——用户看到浏览器地">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">URL 重定向（开放重定向）</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、是什么"><a href="#一、是什么" class="headerlink" title="一、是什么"></a>一、是什么</h2><p>URL 重定向漏洞（Open Redirect），一句话：<strong>网站接受用户输入的链接作为跳转目标，没有或仅做了很弱的校验，导致攻击者可以把用户从正常站点重定向到恶意站点。</strong></p>
+<p><a class="simple-lightbox" href="/imgs/open-redirect/PixPin_2024-01-01_15-40-03.png"><img   src="/images/loading.svg" data-src="/imgs/open-redirect/PixPin_2024-01-01_15-40-03.png"  alt="URL 重定向概念" lazyload></a></p>
+<p>危害不算”致命级”，但配合钓鱼非常好用——用户看到浏览器地址栏里是 <code>trusted-site.com</code>，一晃眼就被带到攻击者伪造的登录页面，毫无防备地输密码。</p>
+<p>国外大厂一个任意 URL 跳转的赏金大概 $500～$1000，国内看运气。</p>
+<hr>
+<h2 id="二、产生原因"><a href="#二、产生原因" class="headerlink" title="二、产生原因"></a>二、产生原因</h2><ul>
+<li>开发时完全没意识到 URL 跳转也算漏洞</li>
+<li>用取子串、取后缀等简单方式校验，逻辑可被绕过</li>
+<li>对传入参数做域名拼接 &#x2F; 剪切 &#x2F; 重组的”骚操作”，适得其反</li>
+<li>底层语言 &#x2F; 框架自带的 URL 解析库存在逻辑缺陷</li>
+<li>不同浏览器、服务器对 URL 标准解析的差异导致绕过</li>
+</ul>
+<hr>
+<h2 id="三、常见场景"><a href="#三、常见场景" class="headerlink" title="三、常见场景"></a>三、常见场景</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">用户登录 / 统一身份认证 → 认证完跳回原页面</span><br><span class="line">用户分享 / 收藏内容 → 跳转到分享目标页</span><br><span class="line">跨站点认证 / OAuth 授权 → 授权完回调跳转</span><br><span class="line">站内点击外部链接 → 中间页统计点击后跳转</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、挖洞线索"><a href="#四、挖洞线索" class="headerlink" title="四、挖洞线索"></a>四、挖洞线索</h2><h3 id="4-1-黑盒：盯参数名"><a href="#4-1-黑盒：盯参数名" class="headerlink" title="4.1 黑盒：盯参数名"></a>4.1 黑盒：盯参数名</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">redirect    redirect_to    redirect_url    url</span><br><span class="line">jump        jump_to        target          to</span><br><span class="line">link        linkto         domain          return</span><br><span class="line">next        callback       goto            rurl</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-白盒：搜代码模式"><a href="#4-2-白盒：搜代码模式" class="headerlink" title="4.2 白盒：搜代码模式"></a>4.2 白盒：搜代码模式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java</span></span><br><span class="line">response.sendRedirect(request.getParameter(<span class="string">&quot;url&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PHP</span></span><br><span class="line"><span class="variable">$redirect_url</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&quot;Location: &quot;</span> . <span class="variable">$redirect_url</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// .NET</span></span><br><span class="line"><span class="built_in">string</span> redirect_url = request.QueryString[<span class="string">&quot;url&quot;</span>];</span><br><span class="line">Response.Redirect(redirect_url);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Django</span></span><br><span class="line">redirect_url = request.GET.get(<span class="string">&quot;url&quot;</span>)</span><br><span class="line"><span class="keyword">return</span> HttpResponseRedirect(redirect_url)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Flask</span></span><br><span class="line">redirect_url = request.form[<span class="string">&#x27;url&#x27;</span>]</span><br><span class="line"><span class="keyword">return</span> redirect(redirect_url)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Rails</span></span><br><span class="line">redirect_to params[<span class="symbol">:url</span>]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、绕过手法"><a href="#五、绕过手法" class="headerlink" title="五、绕过手法"></a>五、绕过手法</h2><p>以下示例假设目标域名为 <code>landgrey.me</code>，校验逻辑通常只判断”跳转目标是否包含本域名”。</p>
+<h3 id="5-1-单斜线"><a href="#5-1-单斜线" class="headerlink" title="5.1 单斜线"></a>5.1 单斜线</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=/www.evil.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-协议省略（双斜线）"><a href="#5-2-协议省略（双斜线）" class="headerlink" title="5.2 协议省略（双斜线）"></a>5.2 协议省略（双斜线）</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=//www.evil.com</span><br><span class="line"># 浏览器视作协议相对 URL，跳转到 evil.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-多斜线前缀"><a href="#5-3-多斜线前缀" class="headerlink" title="5.3 多斜线前缀"></a>5.3 多斜线前缀</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=///www.evil.com</span><br><span class="line">https://landgrey.me/redirect.php?url=www.evil.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-4-符号（URL-凭证劫持）"><a href="#5-4-符号（URL-凭证劫持）" class="headerlink" title="5.4 @ 符号（URL 凭证劫持）"></a>5.4 @ 符号（URL 凭证劫持）</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=https://landgrey.me@www.evil.com</span><br><span class="line"># @ 前被当作用户名，实际跳转目标是 @ 后的 evil.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-5-反斜线混淆"><a href="#5-5-反斜线混淆" class="headerlink" title="5.5 反斜线混淆"></a>5.5 反斜线混淆</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=https://www.evil.com\www.landgrey.me</span><br><span class="line"># 部分浏览器将 \ 当作 / 处理</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-6-片段绕过"><a href="#5-6-片段绕过" class="headerlink" title="5.6 # 片段绕过"></a>5.6 # 片段绕过</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=https://www.evil.com#www.landgrey.me</span><br><span class="line"># # 后内容不发给服务端，服务端可能取不到真正跳转域</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-7-参数混淆"><a href="#5-7-参数混淆" class="headerlink" title="5.7 ? 参数混淆"></a>5.7 ? 参数混淆</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=https://www.evil.com?www.landgrey.me</span><br><span class="line"># landgrey.me 变成 evil.com 的查询参数，通过&quot;包含域名&quot;校验</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-8-双反斜线"><a href="#5-8-双反斜线" class="headerlink" title="5.8 双反斜线"></a>5.8 双反斜线</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=https://www.evil.com\\www.landgrey.me</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-9-点号绕过"><a href="#5-9-点号绕过" class="headerlink" title="5.9 点号绕过"></a>5.9 点号绕过</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=.evil</span><br><span class="line"># 可能跳转到 landgrey.me.evil 或直接解析为 evil 域名</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-10-重复特殊字符"><a href="#5-10-重复特殊字符" class="headerlink" title="5.10 重复特殊字符"></a>5.10 重复特殊字符</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=///www.evil.com//..</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-11-双重-URL-编码"><a href="#5-11-双重-URL-编码" class="headerlink" title="5.11 双重 URL 编码"></a>5.11 双重 URL 编码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https://landgrey.me/redirect.php?url=%2F%2Fwww.evil.com</span><br><span class="line"># 第一次解码 → //www.evil.com → 通过校验</span><br><span class="line"># 第二次 decode → 协议相对 URL 跳转 evil.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-12-javascript-data-伪协议"><a href="#5-12-javascript-data-伪协议" class="headerlink" title="5.12 javascript: &#x2F; data: 伪协议"></a>5.12 javascript: &#x2F; data: 伪协议</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">?url=javascript:alert(document.cookie)</span><br><span class="line">?url=data:text/html,&lt;script&gt;alert(1)&lt;/script&gt;</span><br><span class="line"># 跳转变成 JS 执行 / HTML 渲染，危害升级为 XSS</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-13-CRLF-重定向"><a href="#5-13-CRLF-重定向" class="headerlink" title="5.13 CRLF + 重定向"></a>5.13 CRLF + 重定向</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?url=%0d%0aLocation:%20http://evil.com</span><br><span class="line"># 注入第二个 Location 头，部分中间件取后者</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、经典利用链"><a href="#六、经典利用链" class="headerlink" title="六、经典利用链"></a>六、经典利用链</h2><h3 id="6-1-OAuth-回调劫持"><a href="#6-1-OAuth-回调劫持" class="headerlink" title="6.1 OAuth 回调劫持"></a>6.1 OAuth 回调劫持</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1. 攻击者构造恶意链接：</span><br><span class="line">   https://auth.target.com/oauth/authorize?redirect_uri=https://evil.com/callback</span><br><span class="line"></span><br><span class="line">2. 受害者点击 → 正常完成 OAuth 登录</span><br><span class="line"></span><br><span class="line">3. 授权码/Token 被 redirect_uri 带到了 evil.com</span><br><span class="line"></span><br><span class="line">4. 攻击者拿到 Token → 以受害者身份登录</span><br></pre></td></tr></table></figure>
+
+<p>OAuth 场景下开放重定向的危害从”钓鱼辅助”直接升级为”账户接管”。</p>
+<h3 id="6-2-钓鱼组合"><a href="#6-2-钓鱼组合" class="headerlink" title="6.2 钓鱼组合"></a>6.2 钓鱼组合</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 搭建和原站一模一样的登录页</span><br><span class="line">2. 发链接：https://trusted.com/redirect?url=https://trusted.com.evil.com/</span><br><span class="line">3. 受害者看到域名开头是 trusted.com → 放心点</span><br><span class="line">4. 跳转到钓鱼站 → 输密码 → 账号到手</span><br></pre></td></tr></table></figure>
+
+<p>Google 搜索语法找存在跳转的站点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">inurl:url=http:// site:edu.cn</span><br><span class="line">inurl:redirect= site:target.com</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、防御"><a href="#七、防御" class="headerlink" title="七、防御"></a>七、防御</h2><table>
+<thead>
+<tr>
+<th>措施</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>白名单</strong></td>
+<td>跳转目标限定为已知合法域名，其余一律拒绝</td>
+</tr>
+<tr>
+<td><strong>相对路径</strong></td>
+<td>只接受相对路径跳转，拒绝完整 URL</td>
+</tr>
+<tr>
+<td><strong>Token 绑定</strong></td>
+<td>跳转前生成一次性 Token，不把真实 URL 暴露在参数里</td>
+</tr>
+<tr>
+<td><strong>用户确认页</strong></td>
+<td>跳转前弹确认页”你即将离开本站，是否继续？”</td>
+</tr>
+<tr>
+<td><strong>Referer 校验</strong></td>
+<td>配合跳转来源做二次校验，不能作为唯一防御</td>
+</tr>
+<tr>
+<td><strong>禁止伪协议</strong></td>
+<td>过滤 <code>javascript:</code>、<code>data:</code>、<code>vbscript:</code></td>
+</tr>
+</tbody></table>
+<h3 id="无效防御（别用）"><a href="#无效防御（别用）" class="headerlink" title="无效防御（别用）"></a>无效防御（别用）</h3><ul>
+<li>仅判断是否”包含”域名字符串 → <code>evil.com?trusted.com</code> 直接过</li>
+<li>仅判断是否以 <code>https://</code> 开头 → 完全没用</li>
+<li>仅判断 URL 后缀（<code>.com</code>、<code>.cn</code>） → 形同虚设</li>
+<li>前端 JS 校验 → 抓个包就绕过去了</li>
+</ul>
+<hr>
+<h2 id="八、案例参考"><a href="#八、案例参考" class="headerlink" title="八、案例参考"></a>八、案例参考</h2><ul>
+<li><a href="../%E5%AE%9E%E6%88%98/%E7%BB%87%E6%A2%A6dedecmsURL%E9%87%8D%E5%AE%9A%E5%90%91.md">织梦dedecmsURL重定向</a></li>
+</ul>
+<hr>
+<blockquote>
+<p>URL 跳转本身分低，但配合钓鱼、OAuth、XSS 就是另外一回事了。挖洞时看到 <code>redirect_url</code> 参数，别手快跳过。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%98%AF%E4%BB%80%E4%B9%88"><span class="top-box-text">一、是什么</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0"><span class="top-box-text">二、产生原因</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF"><span class="top-box-text">三、常见场景</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E6%8C%96%E6%B4%9E%E7%BA%BF%E7%B4%A2"><span class="top-box-text">四、挖洞线索</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-%E9%BB%91%E7%9B%92%EF%BC%9A%E7%9B%AF%E5%8F%82%E6%95%B0%E5%90%8D"><span class="top-box-text">4.1 黑盒：盯参数名</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-%E7%99%BD%E7%9B%92%EF%BC%9A%E6%90%9C%E4%BB%A3%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="top-box-text">4.2 白盒：搜代码模式</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E7%BB%95%E8%BF%87%E6%89%8B%E6%B3%95"><span class="top-box-text">五、绕过手法</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-1-%E5%8D%95%E6%96%9C%E7%BA%BF"><span class="top-box-text">5.1 单斜线</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-2-%E5%8D%8F%E8%AE%AE%E7%9C%81%E7%95%A5%EF%BC%88%E5%8F%8C%E6%96%9C%E7%BA%BF%EF%BC%89"><span class="top-box-text">5.2 协议省略（双斜线）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-3-%E5%A4%9A%E6%96%9C%E7%BA%BF%E5%89%8D%E7%BC%80"><span class="top-box-text">5.3 多斜线前缀</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-4-%E7%AC%A6%E5%8F%B7%EF%BC%88URL-%E5%87%AD%E8%AF%81%E5%8A%AB%E6%8C%81%EF%BC%89"><span class="top-box-text">5.4 @ 符号（URL 凭证劫持）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-5-%E5%8F%8D%E6%96%9C%E7%BA%BF%E6%B7%B7%E6%B7%86"><span class="top-box-text">5.5 反斜线混淆</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-6-%E7%89%87%E6%AE%B5%E7%BB%95%E8%BF%87"><span class="top-box-text">5.6 # 片段绕过</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-7-%E5%8F%82%E6%95%B0%E6%B7%B7%E6%B7%86"><span class="top-box-text">5.7 ? 参数混淆</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-8-%E5%8F%8C%E5%8F%8D%E6%96%9C%E7%BA%BF"><span class="top-box-text">5.8 双反斜线</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-9-%E7%82%B9%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="top-box-text">5.9 点号绕过</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-10-%E9%87%8D%E5%A4%8D%E7%89%B9%E6%AE%8A%E5%AD%97%E7%AC%A6"><span class="top-box-text">5.10 重复特殊字符</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-11-%E5%8F%8C%E9%87%8D-URL-%E7%BC%96%E7%A0%81"><span class="top-box-text">5.11 双重 URL 编码</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-12-javascript-data-%E4%BC%AA%E5%8D%8F%E8%AE%AE"><span class="top-box-text">5.12 javascript: &#x2F; data: 伪协议</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-13-CRLF-%E9%87%8D%E5%AE%9A%E5%90%91"><span class="top-box-text">5.13 CRLF + 重定向</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E7%BB%8F%E5%85%B8%E5%88%A9%E7%94%A8%E9%93%BE"><span class="top-box-text">六、经典利用链</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-1-OAuth-%E5%9B%9E%E8%B0%83%E5%8A%AB%E6%8C%81"><span class="top-box-text">6.1 OAuth 回调劫持</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-2-%E9%92%93%E9%B1%BC%E7%BB%84%E5%90%88"><span class="top-box-text">6.2 钓鱼组合</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81%E9%98%B2%E5%BE%A1"><span class="top-box-text">七、防御</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E6%97%A0%E6%95%88%E9%98%B2%E5%BE%A1%EF%BC%88%E5%88%AB%E7%94%A8%EF%BC%89"><span class="top-box-text">无效防御（别用）</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AB%E3%80%81%E6%A1%88%E4%BE%8B%E5%8F%82%E8%80%83"><span class="top-box-text">八、案例参考</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+          <h3 class="post-title">
+            
+            下一篇：子域名接管 / CORS 跨域 / JSONP 回调
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

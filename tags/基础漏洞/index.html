@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>54ury</title>
+<meta name="keywords" content="54ury, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="一个安服从业者的个人 wiki——记录渗透测试、应急响应和漏洞分析中的踩坑与思考。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="54ury">
+<meta property="og:description" content="一个安服从业者的个人 wiki——记录渗透测试、应急响应和漏洞分析中的踩坑与思考。">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+<div class="content-container">
+
+  <div class="current-tag-container">
+    <h2 class="title">
+      <i class="icon icon-pricetags-outline"></i> 基础漏洞
+    </h2>
+  </div>
+
+  
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/crlf-injection/">
+        <h2 class="post-title">CRLF 注入（HTTP 响应拆分）</h2>
+      </a>
+      <a href="/2026/06/28/crlf-injection/">
+          <div class="post-abstract">
+            
+            一、什么是 CRLF CRLF 是 CR（回车， \r ， %0d ）+ LF（换行， \n ， %0a ） 的组合。在 HTTP 协议里，这个组合子是骨架级的角色： 请求行 &#x2F;
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/arbitrary-file-read/">
+        <h2 class="post-title">任意文件读取 / 下载</h2>
+      </a>
+      <a href="/2026/06/28/arbitrary-file-read/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 是什么 一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。 任意文件读取和下载本质无区别： 信息都是从服务端流向浏览器 ，差异只在表现形态（页面展示 vs 触发下载行为）。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/csrf/">
+        <h2 class="post-title">CSRF 跨站请求伪造</h2>
+      </a>
+      <a href="/2026/06/28/csrf/">
+          <div class="post-abstract">
+            
+            一、基本原理 1.1 是什么 CSRF（Cross-Site Request Forgery，跨站请求伪造），也叫 One Click Attack 或 Session Riding。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/file-inclusion/">
+        <h2 class="post-title">任意文件包含（LFI / RFI）</h2>
+      </a>
+      <a href="/2026/06/28/file-inclusion/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 什么是文件包含 开发者把可复用的函数或代码段写到单个文件里形成”封装”，调用时直接 include ，不用重复编写。 这种调用文件的过程就叫文件包含。 为了让代码更灵活，被包含文件的路径通常设为变量来动态调用。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/file-upload/">
+        <h2 class="post-title">任意文件上传</h2>
+      </a>
+      <a href="/2026/06/28/file-upload/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 是什么 文件上传是 Web 应用的必备功能——头像上传、附件分享等。如果服务器配置不当或没有充分过滤，用户可以上传任意文件（恶意脚本、exe 程序等），这就是 任意文件上传漏洞 。通过它获取的网站后门叫 WebShell 。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/open-redirect/">
+        <h2 class="post-title">URL 重定向（开放重定向）</h2>
+      </a>
+      <a href="/2026/06/28/open-redirect/">
+          <div class="post-abstract">
+            
+            一、是什么 URL 重定向漏洞（Open Redirect），一句话： 网站接受用户输入的链接作为跳转目标，没有或仅做了很弱的校验，导致攻击者可以把用户从正常站点重定向到恶意站点。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      </a>
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+          <div class="post-abstract">
+            
+            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/ssrf/">
+        <h2 class="post-title">SSRF 服务器端请求伪造</h2>
+      </a>
+      <a href="/2026/06/28/ssrf/">
+          <div class="post-abstract">
+            
+            一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/sql-injection/">
+        <h2 class="post-title">SQL 注入</h2>
+      </a>
+      <a href="/2026/06/28/sql-injection/">
+          <div class="post-abstract">
+            
+            环境： SQLi-Labs | CMS靶场 提取码：xcuw | phpStudy 低版本 一、SQL 注入原理 1.1 是什么 SQL 注入（SQL Injection）——攻击者通过 用户可控参数 中注入 SQL 语法，破坏原有 SQL 结构，达到程序意料之外的结果。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/web-dos/">
+        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
+      </a>
+      <a href="/2026/06/28/web-dos/">
+          <div class="post-abstract">
+            
+            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+
+    <div class="pagination-container">
+      
+      
+      
+        <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/page/2/" class="next">下一页 <i class="icon icon-arrow-ios-forward-outline"></i></a>
+      
+    </div>
+
+
+
+</div>
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = false; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+
+

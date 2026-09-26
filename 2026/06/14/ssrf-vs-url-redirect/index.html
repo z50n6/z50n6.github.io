@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>SSRF 和 URL 跳转的误区及测试插件介绍</title>
+<meta name="keywords" content="SSRF 和 URL 跳转的误区及测试插件介绍, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+SSRF 和 URL 跳转的区别用大白话来讲（不看官方定义，按我的理解写）：
+
+SSRF（服务端请求伪造）： 攻击者通过前端的输入点，让服务器主动向该服务器内网或其他网站发起了一个请求。
+URL 跳转： 攻击者往 URL 参数里写入一个恶">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="SSRF 和 URL 跳转的误区及测试插件介绍">
+<meta property="og:description" content="
+SSRF 和 URL 跳转的区别用大白话来讲（不看官方定义，按我的理解写）：
+
+SSRF（服务端请求伪造）： 攻击者通过前端的输入点，让服务器主动向该服务器内网或其他网站发起了一个请求。
+URL 跳转： 攻击者往 URL 参数里写入一个恶">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">SSRF 和 URL 跳转的误区及测试插件介绍</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-14</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+              渗透测试
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/">
+              漏洞挖掘
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="SSRF-和-URL-跳转的区别"><a href="#SSRF-和-URL-跳转的区别" class="headerlink" title="SSRF 和 URL 跳转的区别"></a>SSRF 和 URL 跳转的区别</h2><p>用大白话来讲（不看官方定义，按我的理解写）：</p>
+<ul>
+<li><strong>SSRF（服务端请求伪造）：</strong> 攻击者通过前端的输入点，让<strong>服务器</strong>主动向该服务器内网或其他网站发起了一个请求。</li>
+<li><strong>URL 跳转：</strong> 攻击者往 URL 参数里写入一个恶意链接，然后发给受害者，受害者打开后页面<strong>直接跳转</strong>到攻击者准备好的钓鱼网站。</li>
+</ul>
+<blockquote>
+<p>一句话区分：<strong>SSRF 是服务器在”偷偷”发请求，URL 跳转是浏览器在”明着”跳页面。</strong></p>
+</blockquote>
+<h2 id="经常会陷入的误区"><a href="#经常会陷入的误区" class="headerlink" title="经常会陷入的误区"></a>经常会陷入的误区</h2><p><strong>为什么容易搞混？</strong></p>
+<p>因为在测试 URL 跳转漏洞时，需要把存在 URL 的地方替换成其他网站。有时候替换后页面<strong>并没有跳转</strong>，但浏览器本地却向外发出了一次请求（比如页面里有 img 标签加载了远程资源、或者 JS 触发了本地请求等）。</p>
+<p>这时候用外带平台（dnslog &#x2F; Collaborator）一测，发现收到了请求，就<strong>误以为这是 SSRF 产生的</strong>，但实际上是浏览器本地发出的。</p>
+<blockquote>
+<p><strong>核心教训：收到外带请求 ≠ 一定是 SSRF，要先确认请求来源是服务器还是你本地。</strong></p>
+</blockquote>
+<h2 id="实战中如何区分-URL-跳转和-SSRF"><a href="#实战中如何区分-URL-跳转和-SSRF" class="headerlink" title="实战中如何区分 URL 跳转和 SSRF"></a>实战中如何区分 URL 跳转和 SSRF</h2><p>最简单的方法：</p>
+<p><strong>1. URL 跳转 → 网页会直接跳转到另一个网站</strong></p>
+<blockquote>
+<p>一般习惯用 <code>www.baidu.com</code> 来测试，但有些网站把 <code>baidu.com</code> 加了白名单，只能跳百度，其他域名不让跳。所以建议多备几个测试域名，比如 <code>www.4399.com</code> 来交叉验证。</p>
+</blockquote>
+<p><strong>2. SSRF → 网页不会跳转</strong></p>
+<ul>
+<li><p><strong>可回显的 SSRF：</strong> 目标 URL 的内容会在当前页面中加载显示出来（比如页面渲染了请求结果）。<br><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614115613.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614115613.png"  lazyload></a></p>
+</li>
+<li><p><strong>盲 SSRF：</strong> 完全没有任何肉眼可见的反应，只能靠外带平台来验证。</p>
+</li>
+</ul>
+<h2 id="利用-Burp-Collaborator-进行验证"><a href="#利用-Burp-Collaborator-进行验证" class="headerlink" title="利用 Burp Collaborator 进行验证"></a>利用 Burp Collaborator 进行验证</h2><p><strong>Collaborator 是什么？</strong></p>
+<p>说白了就和 dnslog、ceye 差不多，它是 Burp Suite <strong>自带的外带平台</strong>。外带平台通常会收到两种请求：</p>
+<table>
+<thead>
+<tr>
+<th>请求类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>DNS</strong></td>
+<td>目标对域名做了解析查询</td>
+</tr>
+<tr>
+<td><strong>HTTP</strong></td>
+<td>目标主动向平台发起了 HTTP 请求</td>
+</tr>
+</tbody></table>
+<p>拿到 HTTP 请求的来源 IP 后，结合 <a target="_blank" rel="noopener" href="https://www.ip138.com/">ip138.com</a> 等 IP 查询工具，就能判断这个请求到底是<strong>本地浏览器发的</strong>还是<strong>目标服务器发的</strong>，从而准确区分 URL 跳转和 SSRF。</p>
+<h2 id="自建外带平台：HiDnsLog"><a href="#自建外带平台：HiDnsLog" class="headerlink" title="自建外带平台：HiDnsLog"></a>自建外带平台：HiDnsLog</h2><p><a target="_blank" rel="noopener" href="https://github.com/hicode0101/HiDnsLog-Release">HiDnsLog</a> 是 B站 UP主「犀利的远哥」用 Go 写的一款自建 DNSLog 工具，部署简单，支持 DNS 和 HTTP 两种外带方式。</p>
+<p><strong>为什么要用自己的 DNSLog？</strong> 三个场景，公开平台搞不定：</p>
+<ol>
+<li><p><strong>厂商黑名单</strong>：<code>dnslog.cn</code>、<code>eyes.sh</code> 这些常用域名的根域已经进了大部分厂商的 WAF 黑名单，请求到 DNSLog 服务器的流量直接被拦。SSRF 明明存在，但你的外带收不到回显，等于白测。</p>
+</li>
+<li><p><strong>SRC 内网靶机需要绕过</strong>：有些厂商 SRC 提供了内网 SSRF 靶机域名，目标的访问路径不是直连的，而是先经过目标服务器再 302 跳转到内网地址。公开 DNSLog 处理不了这种跳转链路，自己的平台可以在跳转路径上加一层适配。</p>
+</li>
+<li><p><strong>域名重绑定绕过</strong>：后台逻辑可能先检查你填的域名解析结果是不是内网 IP，是就拒绝。这时候需要把域名的 A 记录或 CNAME 记录做<strong>重绑定</strong>——先解析到一个合法公网 IP 过检查，过几秒再切到内网 IP，公开平台没这个灵活性。自己搭的 DNS 服务器可以精确控制解析策略。</p>
+</li>
+</ol>
+<h2 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h2><p>验证 Collaborator 与远端服务器连接是否正常</p>
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614112302.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614112302.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614112426.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614112426.png"  lazyload></a></p>
+<p>hunter：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web.body=&quot;pikachu 漏洞练习平台&quot;</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113149.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113149.png"  lazyload></a></p>
+<p>这里输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://120.53.234.128:8080/vul/urlredirect/urlredirect.php?url=https://4399.com</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113213.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113213.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113237.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113237.png"  lazyload></a></p>
+<p>但是！ 重点来了，有些时候并不会跳转，这是可以使用带外平台测试一下看看</p>
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113520.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113520.png"  lazyload></a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c9mi0ejt3hz41dyqq1ek819e75dw1opd.oastify.com</span><br></pre></td></tr></table></figure>
+
+
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113548.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113548.png"  lazyload></a></p>
+<p>bp这里接收到了请求，看HTTP类型的IP是我们本地的还是这个靶场的IP</p>
+<blockquote>
+<p>这个靶场IP是：120.53.234.128，说明不是靶场服务器端发送的请求</p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113834.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614113834.png"  lazyload></a></p>
+<p>而我们电脑本地的IP 我找了几个网站结果都不一样。我的出口IP不固定。如果出口IP 固定那查询的IP就是 123.112.23.197。</p>
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614114249.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614114249.png"  lazyload></a></p>
+<p>现在确认了这是我们本地发起的一个请求，不是SSRF漏洞。</p>
+<p>现在来演示存在SSRF漏洞的场景：</p>
+<p><a class="simple-lightbox" href="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614114840.png"><img   src="/images/loading.svg" data-src="/imgs/ssrf-vs-url-redirect/Pasted%20image%2020260614114840.png"  lazyload></a></p>
+<p>上图结果显示是靶场服务器自己发起的请求，那就说明这里存在SSRF漏洞。</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#SSRF-%E5%92%8C-URL-%E8%B7%B3%E8%BD%AC%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="top-box-text">SSRF 和 URL 跳转的区别</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%BB%8F%E5%B8%B8%E4%BC%9A%E9%99%B7%E5%85%A5%E7%9A%84%E8%AF%AF%E5%8C%BA"><span class="top-box-text">经常会陷入的误区</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%AE%9E%E6%88%98%E4%B8%AD%E5%A6%82%E4%BD%95%E5%8C%BA%E5%88%86-URL-%E8%B7%B3%E8%BD%AC%E5%92%8C-SSRF"><span class="top-box-text">实战中如何区分 URL 跳转和 SSRF</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%88%A9%E7%94%A8-Burp-Collaborator-%E8%BF%9B%E8%A1%8C%E9%AA%8C%E8%AF%81"><span class="top-box-text">利用 Burp Collaborator 进行验证</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E8%87%AA%E5%BB%BA%E5%A4%96%E5%B8%A6%E5%B9%B3%E5%8F%B0%EF%BC%9AHiDnsLog"><span class="top-box-text">自建外带平台：HiDnsLog</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%A1%88%E4%BE%8B%E6%BC%94%E7%A4%BA"><span class="top-box-text">案例演示</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/05/24/dns-hijacking/">
+          <h3 class="post-title">
+            
+            下一篇：DNS劫持原理与防护
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

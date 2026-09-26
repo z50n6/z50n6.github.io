@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>微信小程序抓包配置教程</title>
+<meta name="keywords" content="微信小程序抓包配置教程, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="安卓系统抓包（微信小程序）：1、安卓系统7.0以下版本，不管微信任意版本，都会信任系统提供的证书2、安卓系统7.0以上版本，微信7.0以下版本，微信会信任系统提供的证书3、安卓系统7.0以上版本，微信7.0以上版本，微信只信任它自己配置的证">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="微信小程序抓包配置教程">
+<meta property="og:description" content="安卓系统抓包（微信小程序）：1、安卓系统7.0以下版本，不管微信任意版本，都会信任系统提供的证书2、安卓系统7.0以上版本，微信7.0以下版本，微信会信任系统提供的证书3、安卓系统7.0以上版本，微信7.0以上版本，微信只信任它自己配置的证">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">微信小程序抓包配置教程</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-03-25</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+              渗透测试
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E6%8A%93%E5%8C%85/">
+              抓包
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>安卓系统抓包（微信小程序）：<br>1、安卓系统7.0以下版本，不管微信任意版本，都会信任系统提供的证书<br>2、安卓系统7.0以上版本，微信7.0以下版本，微信会信任系统提供的证书<br>3、安卓系统7.0以上版本，微信7.0以上版本，微信只信任它自己配置的证书列表</p>
+<p>基于上述我们解决的方式如下：</p>
+<p>1、将证书安装到系统证书中（需要root）</p>
+<p>2、苹果手机（苹果手机不受此影响）</p>
+<p>3、<strong>采用安卓系统低于7.0的模拟器</strong></p>
+<p>4、使用低版本电脑版微信小程序抓包</p>
+<blockquote>
+<p>在进行微信小程序抓包的时候一般会遇到第三种情况也就是安卓系统7.0以上，微信7.0以上。对于这个微信版本基本现在都是7.0以上了，因为i有的你用的版本过低，他会强制你更新，不然就不能用。而我们常用的解决方法就是2，3，4。一般是用3，因为当安卓版本低于7.0的时候，不管微信版本是啥都能抓包了。这个时候我们就没有阻碍了。</p>
+</blockquote>
+<h2 id="Reqable-bp（好使）"><a href="#Reqable-bp（好使）" class="headerlink" title="Reqable+bp（好使）"></a>Reqable+bp（好使）</h2><p>在Reqable客户端中，进入<strong>代理设置</strong> → <strong>二级代理</strong>，将目标代理地址设置为<code>127.0.0.1:8080</code>（BurpSuite默认监听端口）</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250325114531389.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250325114531389.png"  alt="image-20250325114531389" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250325114544297.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250325114544297.png"  alt="image-20250325114544297" lazyload></a></p>
+<p>确保Reqable与BurpSuite在同一台设备上运行，且BurpSuite已开启代理监听（默认端口8080）</p>
+<p>在Reqable中启动抓包，所有流量将自动通过二级代理转发至BurpSuite。此时，BurpSuite的Proxy模块会显示Reqable转发的请求，可进行拦截、修改或重放</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250325114759397.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250325114759397.png"  alt="image-20250325114759397" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250325114851845.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250325114851845.png"  alt="image-20250325114851845" lazyload></a></p>
+<h2 id="Charles-bp（好使）"><a href="#Charles-bp（好使）" class="headerlink" title="Charles+bp（好使）"></a>Charles+bp（好使）</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.zzzmode.com/mytools/charles/">Charles破解工具</a></p>
+<p>参考</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/a2542447400/article/details/137058451">https://blog.csdn.net/a2542447400/article/details/137058451</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Arched/article/details/135777104">https://blog.csdn.net/Arched/article/details/135777104</a></li>
+</ul>
+</blockquote>
+<p>首先介绍Charles-proxy的配置，打开Charles-proxy后，依次进行以下步骤：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172515226.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172515226.png"  alt="image-20250324172515226" lazyload></a></p>
+<p>在弹出的窗口中选择安装证书，然后点击下一步，在弹出的窗口里选择下图里面的选项：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172526975.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172526975.png"  alt="image-20250324172526975" lazyload></a></p>
+<p>证书安装完成，接下来继续配置代{过}{滤}理信息，点击proxy选项，选择下面图示内容：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172552375.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172552375.png"  alt="image-20250324172552375" lazyload></a></p>
+<p>按照下图内容进行配置：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172608697.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172608697.png"  alt="image-20250324172608697" lazyload></a></p>
+<p>8888端口是默认端口，配置完成后点击ok即可。</p>
+<p>接下来点击SSL Proxying Settings：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172636276.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172636276.png"  alt="image-20250324172636276" lazyload></a></p>
+<p>打开后，按照下图配置（注意两个写*的位置）：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172800089.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172800089.png"  alt="image-20250324172800089" lazyload></a></p>
+<p>写上*是代表抓取任意端口和域名，如果只抓取固定的端口or域名可自行设置。</p>
+<p>接下来配置将数据包代{过}{滤}理到BurpSuite的代{过}{滤}理选项：</p>
+<p>选择下图选项：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172845543.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172845543.png"  alt="image-20250324172845543" lazyload></a></p>
+<p>按照下图配置：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172913915.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172913915.png"  alt="image-20250324172913915" lazyload></a></p>
+<p>注意，Web Proxy（HTTP）和Secure Web Peoxy（HTTPS）都需要填写127.0.0.1以及端口（这里填的都是8091），这和后续配置BurpSuite代{过}{滤}理的端口一致。</p>
+<p>配置完成点击ok即可。</p>
+<p>配置BurpSuite，与之相比较简单，打开BurpSuite代{过}{滤}理配置选项：配置刚刚我们绑定的端口</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324172950249.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324172950249.png"  alt="image-20250324172950249" lazyload></a></p>
+<p>大功告成。</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20250324173149281.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20250324173149281.png"  alt="image-20250324173149281" lazyload></a></p>
+<h2 id="Clash配置"><a href="#Clash配置" class="headerlink" title="Clash配置"></a>Clash配置</h2><p>1、首先先启动Burp，然后打开Clash，左边的“主页”，设置端口为8080，注意其他配置都默认即可，例如“配置”项，只选择默认软件自带的”config.yaml”即可。</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240907161308501.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240907161308501.png"  alt="image-20240907161308501" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240907161336042.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240907161336042.png"  alt="image-20240907161336042" lazyload></a></p>
+<p>之后直接右键任务栏的图标，先点击选中“全局”，再点击选中“系统代理”即可，成功后任务栏的图标会变成图下那样:</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240907161409653.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240907161409653.png"  alt="image-20240907161409653" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240907161416683.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240907161416683.png"  alt="image-20240907161416683" lazyload></a></p>
+<p>之后再打开Burp，进入Proxy模块，开启拦截包，我们随意打开一个微信小程序，发现已经抓到了微信小程序有关的包</p>
+<p>利用这个方法，就可以实现Clash+Burp实现抓取微信小程序的请求包，</p>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/w5RkErH1zlSHLIe23Gu1_w">https://mp.weixin.qq.com/s/w5RkErH1zlSHLIe23Gu1_w</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gvKpiUdRaQZ1YrqUFP2bIA">https://mp.weixin.qq.com/s/gvKpiUdRaQZ1YrqUFP2bIA</a></li>
+</ul>
+<h2 id="Proxifier配置"><a href="#Proxifier配置" class="headerlink" title="Proxifier配置"></a>Proxifier配置</h2><p>通过<code>Proxifier</code>把微信小程序的流量转发到Burpsuite，先确定Burpsuite是可以抓取到正常网页的数据包的</p>
+<p>设置代理服务器</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915223654400.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915223654400.png"  alt="image-20240915223654400" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915223705796.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915223705796.png"  alt="image-20240915223705796" lazyload></a></p>
+<p>要与Burpsuite设置的代理相同</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915223722017.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915223722017.png"  alt="image-20240915223722017" lazyload></a></p>
+<p>设置代理规则</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915223732884.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915223732884.png"  alt="image-20240915223732884" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915223744042.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915223744042.png"  alt="image-20240915223744042" lazyload></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WeChat.exe;WeChatAppEx.exe;WeChatPlayer.exe;WechatBrowser.exe;WeChatAppEx*.exe</span><br></pre></td></tr></table></figure>
+
+<p>上述配置不止可以抓取小程序的数据包，还可以抓微信内置游览器的数据包</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915223818012.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915223818012.png"  alt="image-20240915223818012" lazyload></a></p>
+<h2 id="fiddler转发"><a href="#fiddler转发" class="headerlink" title="fiddler转发"></a>fiddler转发</h2><p>如果上述配置抓取不了数据包，可以使用fiddler转发流量到Bp<br>下载地址：<a target="_blank" rel="noopener" href="https://www.telerik.com/fiddler">https://www.telerik.com/fiddler</a></p>
+<p>路径：tools -&gt; options -&gt; HTTPS -&gt; Actions -&gt; Export root certificate to Desktop 导出证书并安装，选择<strong>受信任的根证书颁发机构</strong></p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224011936.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224011936.png"  alt="image-20240915224011936" lazyload></a></p>
+<p><strong>设置fiddler</strong>：</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224026716.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224026716.png"  alt="image-20240915224026716" lazyload></a></p>
+<p>根据下图进行勾选，其中<strong>act as system proxy on startup</strong>为开启时自动开启全局代理，根据自己需要进行勾选，然后点击ok就可以</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224045740.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224045740.png"  alt="image-20240915224045740" lazyload></a></p>
+<p>给fiddler挂上bp的代理</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224117629.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224117629.png"  alt="image-20240915224117629" lazyload></a></p>
+<h2 id="模拟器配置"><a href="#模拟器配置" class="headerlink" title="模拟器配置"></a>模拟器配置</h2><p>夜神模拟器配合 burpsuite 进行抓包</p>
+<p>夜神模拟器我使用的是<code>6.6.1.1</code>的版本，算是很老的版本了，内设系统为<code>Android5.0</code>。新的版本中安卓似乎都是7.0以上了，抓取 HTTPS 包会比较麻烦，所以我就一直没有换版本。</p>
+<p>1、首先我们需要设置好抓包环境，先通过<code>ipconfig</code>查看我们当前 ip，这里我用的是以太网，也就是插着网线；如果是连着 WIFI，则找对应的即可</p>
+<p>2、在 burpsuite 添加上，这里我设置端口为<code>8888</code>，可以按照自己需求更改</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224404083.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224404083.png"  alt="image-20240915224404083" lazyload></a></p>
+<p>打开夜神模拟器，在 WLAN 选择手动代理，并设置代理地址和代理端口，和 burpsuite 对应</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224423186.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224423186.png"  alt="image-20240915224423186" lazyload></a></p>
+<p>保存后，打开浏览器访问<code>ip:port</code>，这里的话为<code>192.168.1.102:8888</code>，点击<code>CA Certificate</code>下载证书</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224442221.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224442221.png"  alt="image-20240915224442221" lazyload></a></p>
+<p>打开文件管理器，在<code>sdcard-&gt;Download</code>目录中可以看到下载下来的证书</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224457261.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224457261.png"  alt="image-20240915224457261" lazyload></a></p>
+<p>将<code>cacert.der</code>更名为<code>cacert.cer</code>，也就是将后缀改成<code>cer</code>，然后到手机设置-&gt;安全中，选择从 SD 卡安装</p>
+<p>安装证书</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/image-20240915224532128.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/image-20240915224532128.png"  alt="image-20240915224532128" lazyload></a></p>
+<h2 id="使用-Yakit-ProxyBridge-抓包小程序"><a href="#使用-Yakit-ProxyBridge-抓包小程序" class="headerlink" title="使用 Yakit+ProxyBridge 抓包小程序"></a>使用 Yakit+ProxyBridge 抓包小程序</h2><p><a target="_blank" rel="noopener" href="https://github.com/InterceptSuite/ProxyBridge">GitHub - InterceptSuite&#x2F;ProxyBridge: Proxifier Alternative to redirect any Windows&#x2F;MacOS TCP and UDP traffic to HTTP&#x2F;Socks5 proxy</a></p>
+<blockquote>
+<p>Proxifier 需要收费或者用学习版，就找到了一个替代的开源的</p>
+</blockquote>
+<p>打开软件 记得先设置语言</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094127.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094127.png"  lazyload></a></p>
+<p>用任务管理器找到对应的路径</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094159.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094159.png"  lazyload></a></p>
+<p>点击添加代理规则<br><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094218.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094218.png"  lazyload></a></p>
+<p>这样的效果就好啦</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094229.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094229.png"  lazyload></a></p>
+<p>点击代理设置设置为 Yakit 地址</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094251.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094251.png"  lazyload></a></p>
+<p>yakit 这边点击劫持然后测试就好啦</p>
+<p><a class="simple-lightbox" href="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094428.png"><img   src="/images/loading.svg" data-src="/imgs/wechat-miniprogram-capture/Pasted%20image%2020260204094428.png"  lazyload></a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u014582342/article/details/126691419">微信小程序抓包-夜神模拟器结合BurpSuite抓包(可用于现在最新版本微信)</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_58609150/article/details/133622637">夜神模拟器+burp抓包微信小程序</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gvKpiUdRaQZ1YrqUFP2bIA?sessionid=1725730500&subscene=0&ascene=0&fasttmpl_type=0&fasttmpl_fullversion=7372120-zh_CN-zip&fasttmpl_flag=0&realreporttime=1725730832999&clicktime=1725730832&enterid=1725730832">比proxifier更好用的PC端小程序抓包方案</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/a9WuXYssB_kkmAI6i_aY-Q">渗透测试最详小程序抓包教程</a></li>
+<li><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/14833">可用的微信小程序抓包方式（Charles + bp）</a></li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#Reqable-bp%EF%BC%88%E5%A5%BD%E4%BD%BF%EF%BC%89"><span class="top-box-text">Reqable+bp（好使）</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#Charles-bp%EF%BC%88%E5%A5%BD%E4%BD%BF%EF%BC%89"><span class="top-box-text">Charles+bp（好使）</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#Clash%E9%85%8D%E7%BD%AE"><span class="top-box-text">Clash配置</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#Proxifier%E9%85%8D%E7%BD%AE"><span class="top-box-text">Proxifier配置</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#fiddler%E8%BD%AC%E5%8F%91"><span class="top-box-text">fiddler转发</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%A8%A1%E6%8B%9F%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="top-box-text">模拟器配置</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BD%BF%E7%94%A8-Yakit-ProxyBridge-%E6%8A%93%E5%8C%85%E5%B0%8F%E7%A8%8B%E5%BA%8F"><span class="top-box-text">使用 Yakit+ProxyBridge 抓包小程序</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8F%82%E8%80%83"><span class="top-box-text">参考</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2025/01/21/linux-basic-commands/">
+          <h3 class="post-title">
+            
+            下一篇：Linux基本命令
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

