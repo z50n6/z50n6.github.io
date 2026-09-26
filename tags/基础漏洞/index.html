@@ -36,6 +36,14 @@
         <h1 class="site-title">54ury</h1>
       </a>
     </div>
+    
+    
+    <div class="site-marquee" aria-hidden="true">
+      <span class="site-marquee-text" style="animation-duration: 14s; color: #9a6b1f;">
+        <i class="site-marquee-dot" style="background: #9a6b1f;"></i>写点东西，保持思考 · 安全学习之路
+      </span>
+    </div>
+    
     <div class="right">
         
         <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
@@ -114,13 +122,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/crlf-injection/">
-        <h2 class="post-title">CRLF 注入（HTTP 响应拆分）</h2>
+      <a href="/2026/06/28/arbitrary-file-read/">
+        <h2 class="post-title">任意文件读取 / 下载</h2>
       </a>
-      <a href="/2026/06/28/crlf-injection/">
+      <a href="/2026/06/28/arbitrary-file-read/">
           <div class="post-abstract">
             
-            一、什么是 CRLF CRLF 是 CR（回车， \r ， %0d ）+ LF（换行， \n ， %0a ） 的组合。在 HTTP 协议里，这个组合子是骨架级的角色： 请求行 &#x2F;
+            一、概述 1.1 是什么 一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。 任意文件读取和下载本质无区别： 信息都是从服务端流向浏览器 ，差异只在表现形态（页面展示 vs 触发下载行为）。
           </div>
       </a>
       <div class="post-info">
@@ -149,13 +157,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/arbitrary-file-read/">
-        <h2 class="post-title">任意文件读取 / 下载</h2>
+      <a href="/2026/06/28/crlf-injection/">
+        <h2 class="post-title">CRLF 注入（HTTP 响应拆分）</h2>
       </a>
-      <a href="/2026/06/28/arbitrary-file-read/">
+      <a href="/2026/06/28/crlf-injection/">
           <div class="post-abstract">
             
-            一、概述 1.1 是什么 一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。 任意文件读取和下载本质无区别： 信息都是从服务端流向浏览器 ，差异只在表现形态（页面展示 vs 触发下载行为）。
+            一、什么是 CRLF CRLF 是 CR（回车， \r ， %0d ）+ LF（换行， \n ， %0a ） 的组合。在 HTTP 协议里，这个组合子是骨架级的角色： 请求行 &#x2F;
           </div>
       </a>
       <div class="post-info">
@@ -324,13 +332,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
-        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      <a href="/2026/06/28/ssrf/">
+        <h2 class="post-title">SSRF 服务器端请求伪造</h2>
       </a>
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+      <a href="/2026/06/28/ssrf/">
           <div class="post-abstract">
             
-            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
+            一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
           </div>
       </a>
       <div class="post-info">
@@ -359,13 +367,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/ssrf/">
-        <h2 class="post-title">SSRF 服务器端请求伪造</h2>
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
       </a>
-      <a href="/2026/06/28/ssrf/">
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
           <div class="post-abstract">
             
-            一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
+            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
           </div>
       </a>
       <div class="post-info">
@@ -429,13 +437,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/web-dos/">
-        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
+      <a href="/2026/06/28/weak-password/">
+        <h2 class="post-title">弱口令</h2>
       </a>
-      <a href="/2026/06/28/web-dos/">
+      <a href="/2026/06/28/weak-password/">
           <div class="post-abstract">
             
-            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
+            一、概述 弱口令（Weak Password）没有严格定义——凡是 容易被猜解或能被工具快速破解的口令 都是弱口令。 两个主要成因： 管理员安全意识不足，用了简单密码 平台默认初始密码，部署后没改 弱口令危害极大——不需要 0day，不需要复杂利用链，猜对了就直接拿权限。
           </div>
       </a>
       <div class="post-info">

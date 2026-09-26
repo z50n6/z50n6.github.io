@@ -36,6 +36,14 @@
         <h1 class="site-title">54ury</h1>
       </a>
     </div>
+    
+    
+    <div class="site-marquee" aria-hidden="true">
+      <span class="site-marquee-text" style="animation-duration: 14s; color: #9a6b1f;">
+        <i class="site-marquee-dot" style="background: #9a6b1f;"></i>写点东西，保持思考 · 安全学习之路
+      </span>
+    </div>
+    
     <div class="right">
         
         <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
@@ -114,13 +122,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/weak-password/">
-        <h2 class="post-title">弱口令</h2>
+      <a href="/2026/06/28/web-dos/">
+        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
       </a>
-      <a href="/2026/06/28/weak-password/">
+      <a href="/2026/06/28/web-dos/">
           <div class="post-abstract">
             
-            一、概述 弱口令（Weak Password）没有严格定义——凡是 容易被猜解或能被工具快速破解的口令 都是弱口令。 两个主要成因： 管理员安全意识不足，用了简单密码 平台默认初始密码，部署后没改 弱口令危害极大——不需要 0day，不需要复杂利用链，猜对了就直接拿权限。
+            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
           </div>
       </a>
       <div class="post-info">
