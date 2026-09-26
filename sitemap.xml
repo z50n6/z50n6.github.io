@@ -2,6 +2,249 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://z50n6.github.io/2023/07/04/vm-install/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2025/01/21/linux-basic-commands/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/09/02/iptables/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/09/03/firewalld/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2026/05/24/doh-dot/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2026/05/24/dns-hijacking/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2026/08/13/zi-dong-hua-shen-tou-claudecode/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/08/windows-users-groups/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2025/01/21/windows-overview/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2024/06/09/windows-multiple-connection/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/15/windows-domain/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2025/01/21/vim-usage/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/08/sam-crack/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/12/rdp-ftp-bruteforce/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/15/pki/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/10/ntfs-permissions/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/10/ip-details/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/14/iis-website/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/12/ftp-server/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/14/file-share-server/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/12/dos-commands/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/14/dns-deploy/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/05/disk-array-2008/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/12/dhcp/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/06/batch-script/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2023/07/08/arp-attack/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://z50n6.github.io/2026/04/02/ren-ren-du-neng-cheng-wei-dai-ma-shen-ji-zhuan-jia/</loc>
+    
+    <lastmod>2026-09-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://z50n6.github.io/categories/index.html</loc>
     
     <lastmod>2026-09-26</lastmod>
@@ -28,150 +271,6 @@
     <priority>0.6</priority>
   </url>
   
-  <url>
-    <loc>https://z50n6.github.io/2026/03/27/hello-zblog/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/05/18/websocket-real-time-communication/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/03/28/ba-claude-skills-zhuang-jin-obsidian/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/07/05/tech-writing-workflow/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/05/28/typescript-type-challenges/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/06/25/tailwind-css-4-migration/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/06/20/react-19-server-components/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/06/08/obsidian-plugin-dev-notes/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/03/15/owasp-top-10-2025/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/06/30/frontend-performance-optimization/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/06/15/git-workflow-best-practices/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/05/10/linux-server-hardening/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/04/22/docker-compose-orchestration/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/04/05/cryptography-basics/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/07/03/ai-assisted-programming/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/2026/07/01/2026-security-landscape/</loc>
-    
-    <lastmod>2026-09-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
 
   <url>
     <loc>https://z50n6.github.io/</loc>
@@ -182,182 +281,168 @@
 
   
   <url>
-    <loc>https://z50n6.github.io/tags/docker/</loc>
+    <loc>https://z50n6.github.io/tags/Windows/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/devops/</loc>
+    <loc>https://z50n6.github.io/tags/ARP/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/%E5%AE%89%E5%85%A8/</loc>
+    <loc>https://z50n6.github.io/tags/%E6%89%B9%E5%A4%84%E7%90%86/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/%E5%A8%81%E8%83%81%E6%83%85%E6%8A%A5/</loc>
+    <loc>https://z50n6.github.io/tags/DHCP/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/ai/</loc>
+    <loc>https://z50n6.github.io/tags/%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/copilot/</loc>
+    <loc>https://z50n6.github.io/tags/DNS/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/engineering/</loc>
+    <loc>https://z50n6.github.io/tags/%E7%BD%91%E7%BB%9C/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/performance/</loc>
+    <loc>https://z50n6.github.io/tags/DOS/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/frontend/</loc>
+    <loc>https://z50n6.github.io/tags/Linux/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/nextjs/</loc>
+    <loc>https://z50n6.github.io/tags/%E9%98%B2%E7%81%AB%E5%A2%99/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/markdown/</loc>
+    <loc>https://z50n6.github.io/tags/FTP/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/crypto/</loc>
+    <loc>https://z50n6.github.io/tags/IIS/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/git/</loc>
+    <loc>https://z50n6.github.io/tags/%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/linux/</loc>
+    <loc>https://z50n6.github.io/tags/PKI/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/obsidian/</loc>
+    <loc>https://z50n6.github.io/tags/NTFS/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/plugin/</loc>
+    <loc>https://z50n6.github.io/tags/%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/typescript/</loc>
+    <loc>https://z50n6.github.io/tags/SAM/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/owasp/</loc>
+    <loc>https://z50n6.github.io/tags/vim/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/web/</loc>
+    <loc>https://z50n6.github.io/tags/%E8%99%9A%E6%8B%9F%E6%9C%BA/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/writing/</loc>
+    <loc>https://z50n6.github.io/tags/%E5%9F%9F/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/react/</loc>
+    <loc>https://z50n6.github.io/tags/%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/tailwind/</loc>
+    <loc>https://z50n6.github.io/tags/AI%E8%B5%8B%E8%83%BD/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/css/</loc>
+    <loc>https://z50n6.github.io/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z50n6.github.io/tags/websocket/</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/tags/nodejs/</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/tags/skills/</loc>
+    <loc>https://z50n6.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B8%97%E9%80%8F/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -366,7 +451,7 @@
 
   
   <url>
-    <loc>https://z50n6.github.io/categories/%E5%B7%A5%E7%A8%8B/</loc>
+    <loc>https://z50n6.github.io/categories/%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -374,41 +459,6 @@
   
   <url>
     <loc>https://z50n6.github.io/categories/%E5%AE%89%E5%85%A8/</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/categories/AI/</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/categories/%E5%89%8D%E7%AB%AF/</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/categories/%E5%AE%89%E5%85%A8%E8%BF%90%E7%BB%B4/</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/categories/ai/</loc>
-    <lastmod>2026-09-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z50n6.github.io/categories/ai/obsidian/</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>人人都能成为代码审计专家</title>
+<meta name="keywords" content="人人都能成为代码审计专家, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="本文以 Cursor 为例进行演示（Trae 的 Solo 模式同样适用）。
+
+一、整体工作流程
+阶段 1：调用 code-audit Skill，生成审计初稿。
+阶段 2：调用 Yakit MCP 接口，进行漏洞二次实战验证。
+阶段 3：">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="人人都能成为代码审计专家">
+<meta property="og:description" content="本文以 Cursor 为例进行演示（Trae 的 Solo 模式同样适用）。
+
+一、整体工作流程
+阶段 1：调用 code-audit Skill，生成审计初稿。
+阶段 2：调用 Yakit MCP 接口，进行漏洞二次实战验证。
+阶段 3：">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">人人都能成为代码审计专家</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-04-02</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/AI%E8%B5%8B%E8%83%BD/">
+              AI赋能
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">
+              代码审计
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>本文以 Cursor 为例进行演示（Trae 的 Solo 模式同样适用）。</p>
+<hr>
+<h2 id="一、整体工作流程"><a href="#一、整体工作流程" class="headerlink" title="一、整体工作流程"></a>一、整体工作流程</h2><ol>
+<li><strong>阶段 1</strong>：调用 <code>code-audit</code> Skill，生成审计初稿。</li>
+<li><strong>阶段 2</strong>：调用 Yakit MCP 接口，进行漏洞二次实战验证。</li>
+<li><strong>阶段 3</strong>：迭代修正并交付最终报告，实现零误报。</li>
+</ol>
+<h2 id="二、启动-Yakit-MCP-服务"><a href="#二、启动-Yakit-MCP-服务" class="headerlink" title="二、启动 Yakit MCP 服务"></a>二、启动 Yakit MCP 服务</h2><p>进入设置路径：<strong>设置 &gt; 试验性功能 &gt; Yakit MCP</strong>。</p>
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402173459.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402173459.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402173441.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402173441.png"  lazyload></a></p>
+<h2 id="三、配置-Skill"><a href="#三、配置-Skill" class="headerlink" title="三、配置 Skill"></a>三、配置 Skill</h2><p><strong>代码审计技能仓库</strong>：<a target="_blank" rel="noopener" href="https://github.com/3stoneBrother/code-audit">https://github.com/3stoneBrother/code-audit</a></p>
+<p>请将技能文件放置于以下目录：</p>
+<ul>
+<li><strong>Cursor 用户</strong>：<code>~/.cursor/skills-cursor</code></li>
+<li><strong>Claude Code 用户</strong>：<code>~/.claude/skills/</code></li>
+</ul>
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402173644.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402173644.png"  lazyload></a></p>
+<p>在 Cursor 中确认代码审计 Skill 是否已成功加载：</p>
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402173824.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402173824.png"  lazyload></a></p>
+<h2 id="四、MCP-配置"><a href="#四、MCP-配置" class="headerlink" title="四、MCP 配置"></a>四、MCP 配置</h2><p>在配置文件中添加如下 JSON 内容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;yakit&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span> <span class="string">&quot;http://127.0.0.1:11432/sse&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402173927.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402173927.png"  lazyload></a></p>
+<p>配置完成后，请检查连接状态：</p>
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402173953.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402173953.png"  lazyload></a></p>
+<h2 id="五、演示"><a href="#五、演示" class="headerlink" title="五、演示"></a>五、演示</h2><p>本次测试使用 <strong>Pikachu</strong> 靶场环境。</p>
+<blockquote>
+<p><strong>提示词参考</strong>：嗨嗨安全 | <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/cRMXN5rBIKblJjxwZ1vGIw">人人都能成为代码审计专家（可落地）</a></p>
+</blockquote>
+<h3 id="核心指令"><a href="#核心指令" class="headerlink" title="核心指令"></a>核心指令</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">角色设定：</span><br><span class="line"></span><br><span class="line">你是一位资深的网络安全行业的代码审计专家，擅长代码审计与漏洞验证。请针对当前项目执行一次“审计-验</span><br><span class="line"></span><br><span class="line">证-迭代”的深度安全分析任务。</span><br><span class="line"></span><br><span class="line">核心目标：</span><br><span class="line"></span><br><span class="line">生成一份零误报的最终审计报告。所有列出的漏洞必须经过 Yakit MCP 的实际验证，并附带可用的 PoC（概</span><br><span class="line"></span><br><span class="line">念验证）。</span><br><span class="line"></span><br><span class="line">执行工作流：第一阶段：深度扫描与初稿生成</span><br><span class="line"></span><br><span class="line">使用code-audit能力的 deep 模式（启动R1，R2，R3）对当前项目代码进行全量审计,并输出项目名称-日期-</span><br><span class="line"></span><br><span class="line">审计报告.md。</span><br><span class="line"></span><br><span class="line">第二阶段：自动化验证与 PoC 构建（核心循环）</span><br><span class="line"></span><br><span class="line">请利用 Yakit 的 MCP 模块 加载项目名称-日期-审计报告.md报告中存在的所有请求包，对每个请求包进行</span><br><span class="line"></span><br><span class="line">实战验证：</span><br><span class="line"></span><br><span class="line">发送请求： 配置目标 URL 为 http://127.0.0.1/pikachu ，并在请求中自动附加以下 Cookie:</span><br><span class="line"></span><br><span class="line">PHPSESSID=xxxxxx</span><br><span class="line"></span><br><span class="line">响应分析：</span><br><span class="line"></span><br><span class="line">验证成功： 如果响应包符合预期，则判定为真实漏洞并把请求包和真实的响应包更新在审计报告中。</span><br><span class="line"></span><br><span class="line">验证失败/存疑： 如果响应不明确或未命中，不要直接丢弃。</span><br><span class="line"></span><br><span class="line">第三阶段：迭代修正与最终交付</span><br><span class="line"></span><br><span class="line">针对第二阶段中“验证失败”或“存疑”的漏洞请求包，执行以下逻辑：</span><br><span class="line"></span><br><span class="line">重新审计： 针对该特定漏洞点，重新分析该漏洞点，，结合 Yakit 返回的实际响应包数据，分析该漏洞是否</span><br><span class="line"></span><br><span class="line">存在。</span><br><span class="line"></span><br><span class="line">循环验证： 修正请求包后再次通过 Yakit 验证。</span><br><span class="line"></span><br><span class="line">最终判定：</span><br><span class="line"></span><br><span class="line">若确认为误报（经过多次迭代仍无法复现），则在报告中剔除该项。</span><br><span class="line"></span><br><span class="line">若确认为真实高危漏洞，则更新报告。</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402174343.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402174343.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402174409.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402174409.png"  lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402174427.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402174427.png"  lazyload></a></p>
+<p>调用 MCP 接口进行验证：</p>
+<p><a class="simple-lightbox" href="/imgs/code-audit-expert/Pasted%20image%2020260402174445.png"><img   src="/images/loading.svg" data-src="/imgs/code-audit-expert/Pasted%20image%2020260402174445.png"  lazyload></a></p>
+<p>等待最终报告生成。</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%95%B4%E4%BD%93%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="top-box-text">一、整体工作流程</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E5%90%AF%E5%8A%A8-Yakit-MCP-%E6%9C%8D%E5%8A%A1"><span class="top-box-text">二、启动 Yakit MCP 服务</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E9%85%8D%E7%BD%AE-Skill"><span class="top-box-text">三、配置 Skill</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81MCP-%E9%85%8D%E7%BD%AE"><span class="top-box-text">四、MCP 配置</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E6%BC%94%E7%A4%BA"><span class="top-box-text">五、演示</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E6%A0%B8%E5%BF%83%E6%8C%87%E4%BB%A4"><span class="top-box-text">核心指令</span></a></li></ol></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2025/01/21/linux-basic-commands/">
+          <h3 class="post-title">
+            
+            下一篇：Linux基本命令
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+
