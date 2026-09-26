@@ -122,48 +122,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
-        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      <a href="/2026/06/28/web-dos/">
+        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
       </a>
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+      <a href="/2026/06/28/web-dos/">
           <div class="post-abstract">
             
-            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                WEB渗透
-                
-                  ，
-                
-            
-
-                基础漏洞
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-
-
-<section class="post-item">
-    <div class="content">
-      <a href="/2026/06/28/xss/">
-        <h2 class="post-title">XSS 跨站脚本攻击</h2>
-      </a>
-      <a href="/2026/06/28/xss/">
-          <div class="post-abstract">
-            
-            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
+            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
           </div>
       </a>
       <div class="post-info">
@@ -199,6 +164,41 @@
           <div class="post-abstract">
             
             一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/xss/">
+        <h2 class="post-title">XSS 跨站脚本攻击</h2>
+      </a>
+      <a href="/2026/06/28/xss/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
           </div>
       </a>
       <div class="post-info">
