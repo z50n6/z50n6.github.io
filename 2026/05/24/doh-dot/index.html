@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>DoH与DoT加密DNS</title>
+<meta name="keywords" content="DoH与DoT加密DNS, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="DoH 与 DoT：加密 DNS 解析
+一、为什么需要加密 DNS？传统 DNS 使用 UDP&#x2F;TCP 53 端口，查询和应答以明文传输：
+12你的设备 ──明文 DNS 查询──→ DNS 服务器         ←──明文 D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="DoH与DoT加密DNS">
+<meta property="og:description" content="DoH 与 DoT：加密 DNS 解析
+一、为什么需要加密 DNS？传统 DNS 使用 UDP&#x2F;TCP 53 端口，查询和应答以明文传输：
+12你的设备 ──明文 DNS 查询──→ DNS 服务器         ←──明文 D">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">DoH与DoT加密DNS</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-05-24</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/DNS/">
+              DNS
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E7%BD%91%E7%BB%9C/">
+              网络
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h1 id="DoH-与-DoT：加密-DNS-解析"><a href="#DoH-与-DoT：加密-DNS-解析" class="headerlink" title="DoH 与 DoT：加密 DNS 解析"></a>DoH 与 DoT：加密 DNS 解析</h1><hr>
+<h2 id="一、为什么需要加密-DNS？"><a href="#一、为什么需要加密-DNS？" class="headerlink" title="一、为什么需要加密 DNS？"></a>一、为什么需要加密 DNS？</h2><p>传统 DNS 使用 <strong>UDP&#x2F;TCP 53 端口</strong>，查询和应答以<strong>明文</strong>传输：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──明文 DNS 查询──→ DNS 服务器</span><br><span class="line">         ←──明文 DNS 应答──</span><br></pre></td></tr></table></figure>
+
+<p>这意味着：</p>
+<ul>
+<li>中间人（路由器、公共 WiFi、运营商）可以<strong>看到</strong>你访问了哪些域名</li>
+<li>攻击者可以<strong>篡改</strong> DNS 应答，把你导向恶意 IP（即 <a href="DNS%E5%8A%AB%E6%8C%81%E5%8E%9F%E7%90%86%E4%B8%8E%E9%98%B2%E6%8A%A4.md">DNS 劫持</a>）</li>
+<li>隐私泄露：浏览记录可被监控、记录</li>
+</ul>
+<p><strong>DoH</strong> 和 <strong>DoT</strong> 都是给 DNS 查询「加 TLS 加密」的方案，让解析过程既保密又更难被篡改。</p>
+<h2 id="二、DoT-是什么？"><a href="#二、DoT-是什么？" class="headerlink" title="二、DoT 是什么？"></a>二、DoT 是什么？</h2><p><strong>DoT</strong>（DNS over TLS）&#x3D; 在 <strong>TLS 加密通道</strong> 里传输 DNS 协议。</p>
+<table>
+<thead>
+<tr>
+<th align="left">项目</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">全称</td>
+<td align="left">DNS over TLS</td>
+</tr>
+<tr>
+<td align="left">标准</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc7858">RFC 7858</a></td>
+</tr>
+<tr>
+<td align="left">端口</td>
+<td align="left"><strong>853</strong>（专用端口）</td>
+</tr>
+<tr>
+<td align="left">加密</td>
+<td align="left">TLS 1.2 &#x2F; 1.3</td>
+</tr>
+<tr>
+<td align="left">协议形态</td>
+<td align="left">仍是标准 DNS 报文，只是外层包了 TLS</td>
+</tr>
+</tbody></table>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──TLS 853──→ DoT 服务器（如 1.1.1.1:853）</span><br><span class="line">         ←──加密的 DNS 应答──</span><br></pre></td></tr></table></figure>
+
+<p><strong>特点：</strong></p>
+<ul>
+<li>端口固定为 853，网络管理员容易识别和管控</li>
+<li>与操作系统 DNS 栈集成较好（Android 9+、部分 Linux 发行版原生支持）</li>
+<li>适合在系统层面统一启用</li>
+</ul>
+<h2 id="三、DoH-是什么？"><a href="#三、DoH-是什么？" class="headerlink" title="三、DoH 是什么？"></a>三、DoH 是什么？</h2><p><strong>DoH</strong>（DNS over HTTPS）&#x3D; 把 DNS 查询封装在 <strong>HTTPS 请求</strong> 里发送。</p>
+<table>
+<thead>
+<tr>
+<th align="left">项目</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">全称</td>
+<td align="left">DNS over HTTPS</td>
+</tr>
+<tr>
+<td align="left">标准</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8484">RFC 8484</a></td>
+</tr>
+<tr>
+<td align="left">端口</td>
+<td align="left"><strong>443</strong>（与普通 HTTPS 相同）</td>
+</tr>
+<tr>
+<td align="left">加密</td>
+<td align="left">TLS（走 HTTPS）</td>
+</tr>
+<tr>
+<td align="left">协议形态</td>
+<td align="left">DNS 报文编码为 HTTP GET&#x2F;POST 请求</td>
+</tr>
+</tbody></table>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──HTTPS 443──→ https://cloudflare-dns.com/dns-query</span><br><span class="line">         ←──加密的 DNS 应答──</span><br></pre></td></tr></table></figure>
+
+<p><strong>特点：</strong></p>
+<ul>
+<li>流量混在普通 HTTPS 里，<strong>不易被单独识别和封锁</strong></li>
+<li>浏览器（Firefox、Chrome、Edge）和应用层集成方便</li>
+<li>企业网络、防火墙更难按「DNS 流量」做策略分流</li>
+</ul>
+<h2 id="四、DoH-vs-DoT-vs-传统-DNS"><a href="#四、DoH-vs-DoT-vs-传统-DNS" class="headerlink" title="四、DoH vs DoT vs 传统 DNS"></a>四、DoH vs DoT vs 传统 DNS</h2><table>
+<thead>
+<tr>
+<th align="left">对比项</th>
+<th align="left">传统 DNS</th>
+<th align="left">DoT</th>
+<th align="left">DoH</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">端口</td>
+<td align="left">53</td>
+<td align="left">853</td>
+<td align="left">443</td>
+</tr>
+<tr>
+<td align="left">是否加密</td>
+<td align="left">否</td>
+<td align="left">是（TLS）</td>
+<td align="left">是（HTTPS&#x2F;TLS）</td>
+</tr>
+<tr>
+<td align="left">隐私保护</td>
+<td align="left">弱</td>
+<td align="left">强</td>
+<td align="left">强</td>
+</tr>
+<tr>
+<td align="left">防劫持</td>
+<td align="left">弱</td>
+<td align="left">强</td>
+<td align="left">强</td>
+</tr>
+<tr>
+<td align="left">流量特征</td>
+<td align="left">明显</td>
+<td align="left">较明显（853 专用）</td>
+<td align="left">隐蔽（像普通网页）</td>
+</tr>
+<tr>
+<td align="left">典型部署层</td>
+<td align="left">系统 &#x2F; 路由器</td>
+<td align="left">系统 &#x2F; 路由器</td>
+<td align="left">浏览器 &#x2F; 系统 &#x2F; 应用</td>
+</tr>
+<tr>
+<td align="left">企业管控难度</td>
+<td align="left">低</td>
+<td align="left">中</td>
+<td align="left">高</td>
+</tr>
+</tbody></table>
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">提示</p>
+
+<p>DNSSEC 补充<br>DoH 和 DoT <strong>解决的是传输层安全</strong>（加密 + 防篡改），不等于 DNSSEC。若要校验应答是否被权威源签名，还需配合 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/learning/dns/dnssec/how-dnssec-works/">DNSSEC</a>。</p>
+</div>
+
+<h2 id="五、公共-DoH-DoT-服务"><a href="#五、公共-DoH-DoT-服务" class="headerlink" title="五、公共 DoH &#x2F; DoT 服务"></a>五、公共 DoH &#x2F; DoT 服务</h2><table>
+<thead>
+<tr>
+<th align="left">服务商</th>
+<th align="left">DoT 地址</th>
+<th align="left">DoH 地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Cloudflare</strong></td>
+<td align="left"><code>1.1.1.1:853</code></td>
+<td align="left"><code>https://cloudflare-dns.com/dns-query</code></td>
+</tr>
+<tr>
+<td align="left"><strong>Google</strong></td>
+<td align="left"><code>8.8.8.8:853</code></td>
+<td align="left"><code>https://dns.google/dns-query</code></td>
+</tr>
+<tr>
+<td align="left"><strong>阿里 DNS</strong></td>
+<td align="left"><code>223.5.5.5:853</code></td>
+<td align="left"><code>https://dns.alidns.com/dns-query</code></td>
+</tr>
+<tr>
+<td align="left"><strong>腾讯 DNSPod</strong></td>
+<td align="left"><code>119.29.29.29:853</code></td>
+<td align="left"><code>https://doh.pub/dns-query</code></td>
+</tr>
+<tr>
+<td align="left"><strong>Quad9</strong></td>
+<td align="left"><code>9.9.9.9:853</code></td>
+<td align="left"><code>https://dns.quad9.net/dns-query</code></td>
+</tr>
+</tbody></table>
+<p>国内用户优先选阿里、腾讯节点，延迟通常更低；注重隐私可选 Cloudflare、Quad9。</p>
+<h2 id="六、如何启用"><a href="#六、如何启用" class="headerlink" title="六、如何启用"></a>六、如何启用</h2><h3 id="6-1-Windows-11（系统级-DoH）"><a href="#6-1-Windows-11（系统级-DoH）" class="headerlink" title="6.1 Windows 11（系统级 DoH）"></a>6.1 Windows 11（系统级 DoH）</h3><p><strong>图形界面：</strong></p>
+<p>设置 → 网络和 Internet → 以太网 &#x2F; WLAN → DNS 服务器分配 → 手动 → 填入 DNS IP → 开启「DNS over HTTPS」。</p>
+<p><strong>PowerShell（管理员）：</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Cloudflare DoH</span></span><br><span class="line"><span class="built_in">Add-DnsClientDohServerAddress</span> <span class="literal">-ServerAddress</span> <span class="string">&quot;1.1.1.1&quot;</span> `</span><br><span class="line">  <span class="literal">-DohTemplate</span> <span class="string">&quot;https://cloudflare-dns.com/dns-query&quot;</span> `</span><br><span class="line">  <span class="literal">-AllowFallbackToUdp</span> <span class="variable">$false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 阿里 DoH</span></span><br><span class="line"><span class="built_in">Add-DnsClientDohServerAddress</span> <span class="literal">-ServerAddress</span> <span class="string">&quot;223.5.5.5&quot;</span> `</span><br><span class="line">  <span class="literal">-DohTemplate</span> <span class="string">&quot;https://dns.alidns.com/dns-query&quot;</span> `</span><br><span class="line">  <span class="literal">-AllowFallbackToUdp</span> <span class="variable">$false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看已配置的 DoH</span></span><br><span class="line"><span class="built_in">Get-DnsClientDohServerAddress</span></span><br></pre></td></tr></table></figure>
+
+<p><code>AllowFallbackToUdp $false</code> 表示 DoH 失败时不回退到明文 DNS，安全性更高。</p>
+<h3 id="6-2-Android（系统级-DoT）"><a href="#6-2-Android（系统级-DoT）" class="headerlink" title="6.2 Android（系统级 DoT）"></a>6.2 Android（系统级 DoT）</h3><p>设置 → 网络和 Internet → 私人 DNS → 选择「私人 DNS 提供商主机名」→ 填入：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">one.one.one.one          # Cloudflare</span><br><span class="line">dns.google               # Google</span><br></pre></td></tr></table></figure>
+
+<p>Android 9 及以上原生支持 DoT，无需安装额外应用。</p>
+<h3 id="6-3-Linux（systemd-resolved-DoT）"><a href="#6-3-Linux（systemd-resolved-DoT）" class="headerlink" title="6.3 Linux（systemd-resolved + DoT）"></a>6.3 Linux（systemd-resolved + DoT）</h3><p>编辑 <code>/etc/systemd/resolved.conf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Resolve]</span></span><br><span class="line"><span class="attr">DNS</span>=<span class="number">1.1</span>.<span class="number">1.1</span><span class="comment">#cloudflare-dns.com</span></span><br><span class="line"><span class="attr">DNS</span>=<span class="number">223.5</span>.<span class="number">5.5</span><span class="comment">#dns.alidns.com</span></span><br><span class="line"><span class="attr">DNSOverTLS</span>=<span class="literal">yes</span></span><br></pre></td></tr></table></figure>
+
+<p>重启服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl restart systemd-resolved</span><br><span class="line">resolvectl status</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-4-浏览器级-DoH"><a href="#6-4-浏览器级-DoH" class="headerlink" title="6.4 浏览器级 DoH"></a>6.4 浏览器级 DoH</h3><p><strong>Firefox：</strong></p>
+<p>设置 → 隐私与安全 → 启用 DNS over HTTPS → 选择提供商或自定义。</p>
+<p><strong>Chrome &#x2F; Edge：</strong></p>
+<p>设置 → 隐私和安全 → 安全 → 使用安全 DNS → 选择 Cloudflare &#x2F; Google 或自定义。</p>
+<div class="markdown-alert markdown-alert-warning">
+<p class="markdown-alert-title">警告</p>
+
+<p>浏览器 DoH 的作用范围<br>浏览器 DoH 只保护<strong>浏览器内</strong>的 DNS 查询；系统其他程序仍走系统 DNS。若要全局生效，应在系统或路由器层配置。</p>
+</div>
+
+<h3 id="6-5-路由器-AdGuard-Home"><a href="#6-5-路由器-AdGuard-Home" class="headerlink" title="6.5 路由器 &#x2F; AdGuard Home"></a>6.5 路由器 &#x2F; AdGuard Home</h3><p>在 <a target="_blank" rel="noopener" href="https://github.com/AdguardTeam/AdGuardHome">AdGuard Home</a> 的上游 DNS 中勾选「DNS-over-HTTPS」或「DNS-over-TLS」，路由器 DNS 指向 AdGuard Home 后，全家设备统一走加密 DNS。</p>
+<h2 id="七、验证是否生效"><a href="#七、验证是否生效" class="headerlink" title="七、验证是否生效"></a>七、验证是否生效</h2><h3 id="7-1-检查-DoH-配置（Windows）"><a href="#7-1-检查-DoH-配置（Windows）" class="headerlink" title="7.1 检查 DoH 配置（Windows）"></a>7.1 检查 DoH 配置（Windows）</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-DnsClientDohServerAddress</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-在线检测"><a href="#7-2-在线检测" class="headerlink" title="7.2 在线检测"></a>7.2 在线检测</h3><p>访问以下站点，确认加密 DNS 已启用：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://1.1.1.1/help">Cloudflare 加密 DNS 检测</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.dnsleaktest.com/">DNS Leak Test</a></li>
+</ul>
+<h3 id="7-3-抓包对比"><a href="#7-3-抓包对比" class="headerlink" title="7.3 抓包对比"></a>7.3 抓包对比</h3><table>
+<thead>
+<tr>
+<th align="left">方式</th>
+<th align="left">Wireshark 中看到的内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">传统 DNS</td>
+<td align="left">UDP 53 明文，可直接看到查询域名</td>
+</tr>
+<tr>
+<td align="left">DoT</td>
+<td align="left">TCP 853 TLS 加密，看不到域名</td>
+</tr>
+<tr>
+<td align="left">DoH</td>
+<td align="left">TCP 443 TLS 加密，与普通 HTTPS 无法区分</td>
+</tr>
+</tbody></table>
+<h2 id="八、局限与注意事项"><a href="#八、局限与注意事项" class="headerlink" title="八、局限与注意事项"></a>八、局限与注意事项</h2><h3 id="8-1-不能替代-HTTPS"><a href="#8-1-不能替代-HTTPS" class="headerlink" title="8.1 不能替代 HTTPS"></a>8.1 不能替代 HTTPS</h3><p>DoH&#x2F;DoT 只加密 <strong>DNS 查询</strong>，网站内容仍需 HTTPS 保护。两者配合使用才是完整方案。</p>
+<h3 id="8-2-无法隐藏「你连了哪个-IP」"><a href="#8-2-无法隐藏「你连了哪个-IP」" class="headerlink" title="8.2 无法隐藏「你连了哪个 IP」"></a>8.2 无法隐藏「你连了哪个 IP」</h3><p>加密 DNS 隐藏的是<strong>域名查询</strong>，但连接目标 IP 的 TLS 流量仍可能被 SNI 等手段分析（DoH 对此无额外帮助）。</p>
+<h3 id="8-3-企业环境可能冲突"><a href="#8-3-企业环境可能冲突" class="headerlink" title="8.3 企业环境可能冲突"></a>8.3 企业环境可能冲突</h3><p>公司内网依赖内网 DNS 解析内部域名（如 <code>intranet.corp.local</code>）。全局 DoH 可能导致内网域名无法解析，企业通常采用<strong>分流策略</strong>（内网走公司 DNS，外网走 DoH）。</p>
+<h3 id="8-4-信任转移"><a href="#8-4-信任转移" class="headerlink" title="8.4 信任转移"></a>8.4 信任转移</h3><p>使用公共 DoH&#x2F;DoT 意味着把「谁能看到我的 DNS 查询」从 ISP 转移给了 DoH 提供商。选服务商时关注其<a target="_blank" rel="noopener" href="https://developers.cloudflare.com/1.1.1.1/privacy/public-dns-resolver/">隐私政策</a>。</p>
+<h3 id="8-5-与-DNS-劫持防护的关系"><a href="#8-5-与-DNS-劫持防护的关系" class="headerlink" title="8.5 与 DNS 劫持防护的关系"></a>8.5 与 DNS 劫持防护的关系</h3><p>DoH&#x2F;DoT 可显著降低链路上被篡改 DNS 应答的风险，是本机、路由器被劫持时的有效补救手段之一。详见 <a href="DNS%E5%8A%AB%E6%8C%81%E5%8E%9F%E7%90%86%E4%B8%8E%E9%98%B2%E6%8A%A4.md">DNS劫持原理与防护 — 进阶防御</a>。</p>
+<h2 id="九、速查清单"><a href="#九、速查清单" class="headerlink" title="九、速查清单"></a>九、速查清单</h2><ul>
+<li><input disabled="" type="checkbox"> 了解传统 DNS 明文传输的风险</li>
+<li><input disabled="" type="checkbox"> 选定可信 DoH&#x2F;DoT 提供商（国内推荐阿里 &#x2F; 腾讯）</li>
+<li><input disabled="" type="checkbox"> 在系统或路由器层启用加密 DNS（而非仅浏览器）</li>
+<li><input disabled="" type="checkbox"> 关闭回退到明文 DNS（<code>AllowFallbackToUdp $false</code>）</li>
+<li><input disabled="" type="checkbox"> 用检测工具验证加密 DNS 已生效</li>
+<li><input disabled="" type="checkbox"> 企业用户确认内网域名解析不受影响</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc7858">RFC 7858 — DNS over TLS</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8484">RFC 8484 — DNS over HTTPS</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.cloudflare.com/1.1.1.1/">Cloudflare 1.1.1.1 官方说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/speed/public-dns/docs/secure-transports">Google Public DNS — DoH&#x2F;DoT 配置</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.alibabacloud.com/help/zh/dns/alibaba-cloud-dns/latest/encrypted-dns">阿里公共 DNS — DoH 接入</a></li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-1"><a class="top-box-link" href="#DoH-%E4%B8%8E-DoT%EF%BC%9A%E5%8A%A0%E5%AF%86-DNS-%E8%A7%A3%E6%9E%90"><span class="top-box-text">DoH 与 DoT：加密 DNS 解析</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%8A%A0%E5%AF%86-DNS%EF%BC%9F"><span class="top-box-text">一、为什么需要加密 DNS？</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81DoT-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="top-box-text">二、DoT 是什么？</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81DoH-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="top-box-text">三、DoH 是什么？</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81DoH-vs-DoT-vs-%E4%BC%A0%E7%BB%9F-DNS"><span class="top-box-text">四、DoH vs DoT vs 传统 DNS</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E5%85%AC%E5%85%B1-DoH-DoT-%E6%9C%8D%E5%8A%A1"><span class="top-box-text">五、公共 DoH &#x2F; DoT 服务</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E5%A6%82%E4%BD%95%E5%90%AF%E7%94%A8"><span class="top-box-text">六、如何启用</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-1-Windows-11%EF%BC%88%E7%B3%BB%E7%BB%9F%E7%BA%A7-DoH%EF%BC%89"><span class="top-box-text">6.1 Windows 11（系统级 DoH）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-2-Android%EF%BC%88%E7%B3%BB%E7%BB%9F%E7%BA%A7-DoT%EF%BC%89"><span class="top-box-text">6.2 Android（系统级 DoT）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-3-Linux%EF%BC%88systemd-resolved-DoT%EF%BC%89"><span class="top-box-text">6.3 Linux（systemd-resolved + DoT）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-4-%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BA%A7-DoH"><span class="top-box-text">6.4 浏览器级 DoH</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-5-%E8%B7%AF%E7%94%B1%E5%99%A8-AdGuard-Home"><span class="top-box-text">6.5 路由器 &#x2F; AdGuard Home</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E7%94%9F%E6%95%88"><span class="top-box-text">七、验证是否生效</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-1-%E6%A3%80%E6%9F%A5-DoH-%E9%85%8D%E7%BD%AE%EF%BC%88Windows%EF%BC%89"><span class="top-box-text">7.1 检查 DoH 配置（Windows）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-2-%E5%9C%A8%E7%BA%BF%E6%A3%80%E6%B5%8B"><span class="top-box-text">7.2 在线检测</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-3-%E6%8A%93%E5%8C%85%E5%AF%B9%E6%AF%94"><span class="top-box-text">7.3 抓包对比</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AB%E3%80%81%E5%B1%80%E9%99%90%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="top-box-text">八、局限与注意事项</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-1-%E4%B8%8D%E8%83%BD%E6%9B%BF%E4%BB%A3-HTTPS"><span class="top-box-text">8.1 不能替代 HTTPS</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-2-%E6%97%A0%E6%B3%95%E9%9A%90%E8%97%8F%E3%80%8C%E4%BD%A0%E8%BF%9E%E4%BA%86%E5%93%AA%E4%B8%AA-IP%E3%80%8D"><span class="top-box-text">8.2 无法隐藏「你连了哪个 IP」</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-3-%E4%BC%81%E4%B8%9A%E7%8E%AF%E5%A2%83%E5%8F%AF%E8%83%BD%E5%86%B2%E7%AA%81"><span class="top-box-text">8.3 企业环境可能冲突</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-4-%E4%BF%A1%E4%BB%BB%E8%BD%AC%E7%A7%BB"><span class="top-box-text">8.4 信任转移</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-5-%E4%B8%8E-DNS-%E5%8A%AB%E6%8C%81%E9%98%B2%E6%8A%A4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="top-box-text">8.5 与 DNS 劫持防护的关系</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B9%9D%E3%80%81%E9%80%9F%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="top-box-text">九、速查清单</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="top-box-text">参考链接</span></a></li></ol></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/05/24/dns-hijacking/">
+          <h3 class="post-title">
+            
+            下一篇：DNS劫持原理与防护
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

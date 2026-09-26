@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>包过滤防火墙——firewalld动态防火墙的简单使用</title>
+<meta name="keywords" content="包过滤防火墙——firewalld动态防火墙的简单使用, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+firewalld不要与iptables混用
+
+firewald与iptables区别
+iptables 主要是基于接口，来设置规则，从而判断网络的安全性。firewalld 是基于区域，根据不同的区域来设置不同的规则，从而保证网络的安全">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="包过滤防火墙——firewalld动态防火墙的简单使用">
+<meta property="og:description" content="
+firewalld不要与iptables混用
+
+firewald与iptables区别
+iptables 主要是基于接口，来设置规则，从而判断网络的安全性。firewalld 是基于区域，根据不同的区域来设置不同的规则，从而保证网络的安全">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">包过滤防火墙——firewalld动态防火墙的简单使用</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-09-03</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Linux/">
+              Linux
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E9%98%B2%E7%81%AB%E5%A2%99/">
+              防火墙
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <blockquote>
+<p>firewalld不要与iptables混用</p>
+</blockquote>
+<h2 id="firewald与iptables区别"><a href="#firewald与iptables区别" class="headerlink" title="firewald与iptables区别"></a>firewald与iptables区别</h2><ol>
+<li>iptables 主要是基于接口，来设置规则，从而判断网络的安全性。firewalld 是基于区域，根据不同的区域来设置不同的规则，从而保证网络的安全，与硬件防火墙的设置相类似。</li>
+<li>iptables 防火墙类型为静态防火墙。firewalld 防火墙类型为动态防火墙。</li>
+<li>使用 iptables 每一个单独更改意味着清除所有旧有的规则从 &#x2F;etc&#x2F;sysconfig&#x2F;iptables 里读取所有新的规则。使用 firewalld 却不会再创建任何新的规则，仅仅运行规则中的不同之处。因此 firewalld 可以在运行时间内，改变设置而不丢失现行连接</li>
+<li>iptables 在 &#x2F;etc&#x2F;sysconfig&#x2F;iptables 中储存配置。firewalld 将配置储存在 &#x2F;etc&#x2F;firewalld&#x2F; (优先加载) 和 &#x2F;usr&#x2F;lib&#x2F; firewalld&#x2F; ( 默认的配置文件) 中的各种 XML 文件里。</li>
+</ol>
+<hr>
+<p>  firewalld防火墙为了简化管理，将所有网络流量分为多个区域(zone)。然后根据数据包的源IP地址或传入的网络接口等条件将流量传入相应区域。每个区域都定义了自己打开或者关闭的端口和服务列表 </p>
+<h2 id="firewalld九个区域"><a href="#firewalld九个区域" class="headerlink" title="firewalld九个区域"></a>firewalld九个区域</h2><ul>
+<li>trusted(信任区域)：允许所有的数据包。</li>
+<li>public(公共区域)：拒绝流入的流量，除非与流出的流量相关；而如果是与ssh或dhcpv6-client服务相关 流量，则允许通过</li>
+<li>external(外部区域)：拒绝流入的流量，除非与流出的流量相关；而如果与ssh服务相关流量，则运行通过</li>
+<li>home(家庭区域)：拒绝流入的流量，除非与流出的流量相关；如果是与ssh、mdns、amba-client或dhcpv6-client服务相关 流量，则允许通过</li>
+<li>internal(内部区域)：默认值时与homel区域相同。</li>
+<li>work(工作区域)：拒绝流入的流量，除非与流出的流量相关；而如果是与 ssh、dhcpv6-client服务相关 流量，则允许通过</li>
+<li>dmz(隔离区域也称为非军事区域)：允许与ssh 预定义服务匹配的传入流量，其余均拒绝。</li>
+<li>block(限制区域)：拒绝所有传入流量。</li>
+<li>drop(丢弃区域)：丢弃所有传入流量，并且不产生包含ICMP的错误响应。</li>
+</ul>
+<h2 id="firewalld配置方法"><a href="#firewalld配置方法" class="headerlink" title="firewalld配置方法"></a>firewalld配置方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">使用 firewall-cmd 命令行工具</span><br><span class="line">使用 firewall-config 图形工具</span><br><span class="line">编写 /etc/firewalld/ 中的配置文件</span><br></pre></td></tr></table></figure>
+
+<h2 id="firewalld参数和命令"><a href="#firewalld参数和命令" class="headerlink" title="firewalld参数和命令"></a>firewalld参数和命令</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>–get-default-zone</td>
+<td>查询默认区域</td>
+</tr>
+<tr>
+<td>–set-default-zone&#x3D;区域名称</td>
+<td>设置默认区域，使其永久生效</td>
+</tr>
+<tr>
+<td>–get-zones</td>
+<td>显示可用区域</td>
+</tr>
+<tr>
+<td>–get-active-zones</td>
+<td>显示当前区域与网卡的名称</td>
+</tr>
+<tr>
+<td>–add-source&#x3D;ip</td>
+<td>将源自此的ip或子网的流量导向指定的区域</td>
+</tr>
+<tr>
+<td>–remove-source&#x3D;ip</td>
+<td><strong>不再</strong>将源自此的ip或子网的流量导向指定的区域</td>
+</tr>
+<tr>
+<td>–add-interface&#x3D;网卡 名称</td>
+<td>将源自此的网卡的流量导向指定的区域</td>
+</tr>
+<tr>
+<td>–change-interface&#x3D;网卡名称</td>
+<td>将某个网卡与区域进行关联</td>
+</tr>
+<tr>
+<td>–list-all</td>
+<td>显示<strong>当前区域</strong>的网卡配置参数、资源、端口及服务信息</td>
+</tr>
+<tr>
+<td>–list-all-zones</td>
+<td>显示<strong>所有区域</strong>的网卡配置参数、资源、端口及服务信息</td>
+</tr>
+<tr>
+<td>–add-service&#x3D;服务名称</td>
+<td>设置默认区域允许该<strong>服务</strong>的流量</td>
+</tr>
+<tr>
+<td>–add-port&#x3D;端口&#x2F;协议</td>
+<td>设置默认区域允许该<strong>端口</strong>的流量</td>
+</tr>
+<tr>
+<td>–remove-service&#x3D;服务名称</td>
+<td><strong>不再</strong>设置默认区域允许该<strong>服务</strong>的流量</td>
+</tr>
+<tr>
+<td>–remove-port&#x3D;端口&#x2F;协议</td>
+<td><strong>不再</strong>设置默认区域允许该<strong>端口</strong>的流量</td>
+</tr>
+<tr>
+<td>–reload</td>
+<td>让永久生效的配置规则 立即生效，并覆盖当前的配置规则</td>
+</tr>
+<tr>
+<td>–panic-on</td>
+<td><strong>开启应急模式</strong></td>
+</tr>
+<tr>
+<td>–panic-off</td>
+<td><strong>关闭应急模式</strong></td>
+</tr>
+<tr>
+<td><strong>–query-masquerade</strong></td>
+<td><strong>检查是否允许伪装IP</strong></td>
+</tr>
+<tr>
+<td><strong>–add-masquerade</strong></td>
+<td><strong>允许防火墙伪装IP</strong></td>
+</tr>
+<tr>
+<td><strong>–remove-masquerade</strong></td>
+<td><strong>禁止防火墙伪装IP</strong></td>
+</tr>
+</tbody></table>
+<h2 id="firewalld两种模式"><a href="#firewalld两种模式" class="headerlink" title="firewalld两种模式"></a>firewalld两种模式</h2><p><strong>运行时模式   Runtime</strong>    </p>
+<ul>
+<li>配置后立即生效，重启后失效</li>
+</ul>
+<p><strong>永久生效模式   permanent</strong></p>
+<ul>
+<li>当前不生效，重启后生效</li>
+</ul>
+<h2 id="firewalld使用"><a href="#firewalld使用" class="headerlink" title="firewalld使用"></a>firewalld使用</h2><ul>
+<li><strong>&#x3D;&#x3D;查看当前使用的区域&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-default-zone</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/4d7961752576bd472758d512afbd8b16.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/4d7961752576bd472758d512afbd8b16.png"  alt="image-20230902213939584" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;查看指定网卡所在的区域&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-zone-of-interface=ens33</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/2411a0d1a36e6eb6ef9e68cd73ecd4e5.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/2411a0d1a36e6eb6ef9e68cd73ecd4e5.png"  alt="image-20230902214044715" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;修改当前网卡所在的区域，并永久生效&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=external --change-interface=ens33</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/1d67ca841ba37bfd9040fe9b091bde29.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/1d67ca841ba37bfd9040fe9b091bde29.png"  alt="image-20230902214225267" lazyload></a></p>
+<p>重启服务器，查看网卡所在区域</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-zone-of-interface=ens33</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/9dd25006b67b9791e4afec339beeddcc.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/9dd25006b67b9791e4afec339beeddcc.png"  alt="image-20230902214340197" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;显示当前区域的网卡配置参数、资源、端口及服务信息&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --list-all</span><br></pre></td></tr></table></figure>
+
+<p>当前处于<code>public</code>区域</p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/82f76860a436b8dfc579b662e18e1e9c.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/82f76860a436b8dfc579b662e18e1e9c.png"  alt="image-20230903121331594" lazyload></a></p>
+<p>现在防火墙处于开启的状态</p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/0e2104e84b12abd7332493cd45faf19c.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/0e2104e84b12abd7332493cd45faf19c.png"  alt="image-20230903121417608" lazyload></a></p>
+<p>只能允许<code>ssh,dhcpv6-client服务</code>的流量通过</p>
+<p>假如说开启了<code>80端口</code>，要想访问是访问不了的</p>
+<ul>
+<li><strong>&#x3D;&#x3D;给public区域添加http服务&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-service=http</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/aa5b5553e33d42e78ee85097137ce0d9.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/aa5b5553e33d42e78ee85097137ce0d9.png"  alt="在这里插入图片描述" lazyload></a></p>
+<p>这个时候开启<code>http80端口</code>是可以访问的，但是<strong>上面的配置在重启后配置 会失效</strong></p>
+<p>要想 <code>永久生效</code>必须加上<code>--permanent</code>参数</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent  --zone=public --add-service=http</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><strong>&#x3D;&#x3D;public区域移除http服务&#x3D;&#x3D;</strong></li>
+</ul>
+<p>当前立即生效，如果想永久生效需要加<code>--permanent</code>参数</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --remove-service=http</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>&#x3D;&#x3D;在配置规则比较多情况下，让永久生效的配置立即生效，可以使用<code>--reload</code>立即生效&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>&#x3D;&#x3D;添加80端口规则&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --permanent --add-port=80/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/6f8a02b9bf73460ccdaa5cd0c32ff661.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/6f8a02b9bf73460ccdaa5cd0c32ff661.png"  alt="image-20230903123202853" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/37fb878c830eb168b2d912c822dbd488.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/37fb878c830eb168b2d912c822dbd488.png"  alt="image-20230903123223865" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;修改<code>ssh服务</code>默认端口&#x3D;&#x3D;</strong></li>
+</ul>
+<p>修改ssh默认端口之前需要禁用<code>selinux</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/selinux/config</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/43618595a5b0b7537eada2c85fe689e6.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/43618595a5b0b7537eada2c85fe689e6.png"  alt="image-20230903124508229" lazyload></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/82bee22bc292d1768f85f09a586c9420.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/82bee22bc292d1768f85f09a586c9420.png"  alt="image-20230903123711441" lazyload></a></p>
+<p>重启<code>sshd</code>服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart sshd.service</span><br></pre></td></tr></table></figure>
+
+<p>ssh服务默认是22端口，要想连接，需要设置防火墙规则运行<code>2222</code>端口通过</p>
+<p>设置规则</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --permanent --add-port=2222/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/9660ad9babb7b4040b493aeb36a66d94.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/9660ad9babb7b4040b493aeb36a66d94.png"  alt="image-20230903124156804" lazyload></a></p>
+<p>连接<code>2222端口</code></p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/7c76d70bb889f9b882f03dd2bb6ce826.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/7c76d70bb889f9b882f03dd2bb6ce826.png"  alt="image-20230903130340155" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;端口转发&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+
+<p>修改<code>ssh</code>连接端口为<code>8888</code></p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/f8c748a5f74e42c0ba458f577544a11b.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/f8c748a5f74e42c0ba458f577544a11b.png"  alt="在这里插入图片描述" lazyload></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart sshd.service</span><br></pre></td></tr></table></figure>
+
+<p>设置规则</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=2222:proto=tcp:toport=8888:toaddr=127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>--add-forward-port</code> 端口转发</li>
+<li><code>port</code> 从哪个端口来</li>
+<li><code>proto</code> 哪个协议</li>
+<li><code>toport</code>到目的地的哪个端口</li>
+<li><code>toaddr</code>到目的地的哪个地址</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/abae02a713784a66938209da065a7ce9.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/abae02a713784a66938209da065a7ce9.png"  alt="在这里插入图片描述" lazyload></a></p>
+<p>添加好端口转发规则后，是连不上的，从<code>2222</code>端口转发到<code>8888</code>端口，我们只开放了<code>2222</code>端口，并没有开放<code>8888</code>端口，需要再加一条规则</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8888/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/6153702bb30f99353444af52e1a02ebd.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/6153702bb30f99353444af52e1a02ebd.png"  alt="image-20230903132507065" lazyload></a></p>
+<p>发现还是连接不上，最后发现不能 用<code>127.0.0.1</code>这个地址</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=2222:proto=tcp:toport=8888:toaddr=192.168.80.131</span><br><span class="line"></span><br><span class="line">firewall-cmd  --reload</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/1bfc29726227732373a30974893c3235.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/1bfc29726227732373a30974893c3235.png"  alt="image-20230903133426268" lazyload></a></p>
+<p>再次连接就成功了</p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/7ffff0887c76c2d2cbbd96562d9baa3f.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/7ffff0887c76c2d2cbbd96562d9baa3f.png"  alt="image-20230903133501868" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;移除端口转发&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --remove-forward-port=port=2222:proto=tcp:toport=8888:toaddr=127.0.0.1</span><br><span class="line"></span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/95feaa1633f4451b9b9e5a17e45e08cc.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/95feaa1633f4451b9b9e5a17e45e08cc.png"  alt="在这里插入图片描述" lazyload></a></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><blockquote>
+<p><a class="simple-lightbox" href="/imgs/firewalld/abf1aaca3f358b3a85317f88a088ded0.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/abf1aaca3f358b3a85317f88a088ded0.png"  alt="image-20230903144305909" lazyload></a></p>
+</blockquote>
+<p>给Centos添加 一块网卡，划分到<code>LAN区段</code></p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/2b3eb88c4823e8d168af26a354cd652e.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/2b3eb88c4823e8d168af26a354cd652e.png"  alt="image-20230903143048472" lazyload></a></p>
+<p>手动配置 静态IP</p>
+<p>然后<code>ip a</code>，查看新添加的网卡名称为<code>ens36</code></p>
+<p><code>cd  /etc/sysconfig/network-scripts</code>     </p>
+<p><code> cp ifcfg-ens33 ifcfg-ens36</code></p>
+<p><code>vim ifcfg-ens36</code></p>
+<p>修改如下：</p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/5cad04b2b1448b9f4c799af3d1bf6f81.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/5cad04b2b1448b9f4c799af3d1bf6f81.png"  alt="image-20230903140628291" lazyload></a></p>
+<p>重启网卡</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart network.service</span><br></pre></td></tr></table></figure>
+<p>查看IP<br><a class="simple-lightbox" href="/imgs/firewalld/1b4008ddff01490b9349283bd1739e73.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/1b4008ddff01490b9349283bd1739e73.png"  alt="在这里插入图片描述" lazyload></a></p>
+<p>然后再开启一台<code>win7</code>，，网卡划分到同一<code>LAN区段</code></p>
+<p>手动配置IP地址</p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/fa3a9798196169fe45459ec230982cb2.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/fa3a9798196169fe45459ec230982cb2.png"  alt="image-20230903141431739" lazyload></a></p>
+<p>启动<code>80端口</code></p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/965ae939fdd7d0e94feb6d3f1fc5b7f1.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/965ae939fdd7d0e94feb6d3f1fc5b7f1.png"  alt="image-20230903141338991" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/282274c51d8d949a31777f81f01d4ac1.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/282274c51d8d949a31777f81f01d4ac1.png"  alt="image-20230903142549013" lazyload></a></p>
+<p>查看两台是否互通 </p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/f9bc83b4f69974795c394c1f8bc6d6d7.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/f9bc83b4f69974795c394c1f8bc6d6d7.png"  alt="image-20230903142154034" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/firewalld/0de7d81d3e7b405688aeae2f08339a5c.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/0de7d81d3e7b405688aeae2f08339a5c.png"  alt="在这里插入图片描述" lazyload></a></p>
+<p>这个时候<code>Centos</code>就能够访问<code>Win7</code>的网站了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl 10.1.1.2</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/077f59f99f3e498791dc95385dd0a6b9.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/077f59f99f3e498791dc95385dd0a6b9.png"  alt="在这里插入图片描述" lazyload></a></p>
+<p>首先要让<code>Win11</code>能够访问到<code>Centos</code>的<code>8080</code>端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br></pre></td></tr></table></figure>
+
+<p>端口转发，让<code>8080</code>端口，能访问到<code>10.1.1.2</code> 的<code>80</code>端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=8080:proto=tcp:toport=80:toaddr=10.1.1.2</span><br></pre></td></tr></table></figure>
+
+<p>立即生效防火墙配置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>允许防火墙伪装IP</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --add-masquerade</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/firewalld/66e9ef34809669dee7a397447543ead4.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/66e9ef34809669dee7a397447543ead4.png"  alt="image-20230903145217393" lazyload></a></p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#firewald%E4%B8%8Eiptables%E5%8C%BA%E5%88%AB"><span class="top-box-text">firewald与iptables区别</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#firewalld%E4%B9%9D%E4%B8%AA%E5%8C%BA%E5%9F%9F"><span class="top-box-text">firewalld九个区域</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#firewalld%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="top-box-text">firewalld配置方法</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#firewalld%E5%8F%82%E6%95%B0%E5%92%8C%E5%91%BD%E4%BB%A4"><span class="top-box-text">firewalld参数和命令</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#firewalld%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F"><span class="top-box-text">firewalld两种模式</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#firewalld%E4%BD%BF%E7%94%A8"><span class="top-box-text">firewalld使用</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%AE%9E%E9%AA%8C"><span class="top-box-text">实验</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/09/02/iptables/">
+          <h3 class="post-title">
+            
+            下一篇：包过滤防火墙——iptables静态防火墙的简单使用
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

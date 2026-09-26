@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>Domain域</title>
+<meta name="keywords" content="Domain域, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+ Domain
+
+相关概念1.Domain
+2.内网环境：
+121）工作组：默认模式，人人平等，不方便管理2）域：人人不平等，集中管理，同一管理
+
+3.&#x3D;&#x3D;域的特点&#x3D;&#x3D;：
+  1集中/统一管理
+
+4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="Domain域">
+<meta property="og:description" content="
+ Domain
+
+相关概念1.Domain
+2.内网环境：
+121）工作组：默认模式，人人平等，不方便管理2）域：人人不平等，集中管理，同一管理
+
+3.&#x3D;&#x3D;域的特点&#x3D;&#x3D;：
+  1集中/统一管理
+
+4">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">Domain域</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-15</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%9F%9F/">
+              域
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <blockquote>
+<p> Domain</p>
+</blockquote>
+<h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><p>1.Domain</p>
+<p>2.内网环境：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）工作组：默认模式，人人平等，不方便管理</span><br><span class="line"><span class="number">2</span>）域：人人不平等，集中管理，同一管理</span><br></pre></td></tr></table></figure>
+
+<p>3.&#x3D;&#x3D;域的特点&#x3D;&#x3D;：</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">集中/统一管理</span><br></pre></td></tr></table></figure>
+
+<p>4.域的组成:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）域控制器: DC（Domain Controller）</span><br><span class="line"><span class="number">2</span>）成员机</span><br></pre></td></tr></table></figure>
+
+<p>5.活动目录</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）AD :Active Directory</span><br><span class="line">  </span><br><span class="line"><span class="number">2</span>）活动目录实际上就是数据库，一张数据表</span><br><span class="line"></span><br><span class="line"><span class="number">3</span>）特点：集中管理/统一管理</span><br><span class="line"></span><br><span class="line"><span class="number">4</span>）安装了AD的服务器 称为域控制器DC</span><br><span class="line"><span class="number">5</span>）安装了活动目录--就生成了域控制器DC  -----&gt;就生成了域环境</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="域服务器部署"><a href="#域服务器部署" class="headerlink" title="域服务器部署"></a>域服务器部署</h2><ol>
+<li><strong>开启2008虚拟机，并桥接到vmnet2</strong></li>
+<li><strong>配置静态IP地址10.1.1.1&#x2F;24</strong></li>
+</ol>
+<h4 id="更改计算机名"><a href="#更改计算机名" class="headerlink" title="更改计算机名"></a>更改计算机名</h4><p>我的电脑右键属性，更改计算机名</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714190758195.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714190758195.png"  alt="image-20230714190758195" lazyload></a></p>
+<h4 id="安装活动目录"><a href="#安装活动目录" class="headerlink" title="安装活动目录"></a>安装活动目录</h4><p>开始-运行-输入<code>dcpromo</code>,安装活动目录。</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714190955652.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714190955652.png"  alt="image-20230714190955652" lazyload></a></p>
+<p>弹出向导：</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191042149.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191042149.png"  alt="image-20230714191042149" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191123855.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191123855.png"  alt="image-20230714191123855" lazyload></a>     </p>
+<p>勾选DNS</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191233391.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191233391.png"  alt="image-20230714191233391" lazyload></a></p>
+<p>新林中新建域</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191543291.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191543291.png"  alt="image-20230714191543291" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191609135.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191609135.png"  alt="image-20230714191609135" lazyload></a></p>
+<p>-功能级别都设置为<code>2008</code></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191702150.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191702150.png"  alt="image-20230714191702150" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191744592.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191744592.png"  alt="image-20230714191744592" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191801746.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191801746.png"  alt="image-20230714191801746" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191853898.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191853898.png"  alt="image-20230714191853898" lazyload></a></p>
+<p>–设置目录服务还原密码<code>!a123</code>-勾选安装后重启</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191926997.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191926997.png"  alt="image-20230714191926997" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714191947526.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714191947526.png"  alt="image-20230714191947526" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714192021149.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714192021149.png"  alt="image-20230714192021149" lazyload></a></p>
+<h4 id="登录域管理员"><a href="#登录域管理员" class="headerlink" title="登录域管理员"></a>登录域管理员</h4><p>在DC上登录域qf\administrator</p>
+<p>当服务器安装为DC之后，以前的本地管理员升级为域管理员</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714192443261.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714192443261.png"  alt="image-20230714192443261" lazyload></a></p>
+<h4 id="验证AD是否安装成功"><a href="#验证AD是否安装成功" class="headerlink" title="验证AD是否安装成功"></a>验证AD是否安装成功</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>-计算机右键属性-所属域</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714192522664.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714192522664.png"  alt="image-20230714192522664" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>-DNS服务器中是否自动创建qf.com区域文件 及自动注册DC的域名解析记录</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714192708229.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714192708229.png"  alt="image-20230714192708229" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">3</span>-开始-管理工具-A D 用户和计算机</span><br><span class="line">           computer：普通域成员机列表</span><br><span class="line">           Domain Controller：DC列表</span><br><span class="line">           users：域账号</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715090936397.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715090936397.png"  alt="image-20230715090936397" lazyload></a></p>
+<h4 id="新建域用户"><a href="#新建域用户" class="headerlink" title="新建域用户"></a>新建域用户</h4><p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714193742722.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714193742722.png"  alt="image-20230714193742722" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714193758872.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714193758872.png"  alt="image-20230714193758872" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714193954290.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714193954290.png"  alt="image-20230714193954290" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715091801413.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715091801413.png"  alt="image-20230715091801413" lazyload></a></p>
+<h4 id="PC加入域"><a href="#PC加入域" class="headerlink" title="PC加入域"></a>PC加入域</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span>网卡切换到vmnet2，配置IP，并指DNS</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714193124374.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714193124374.png"  alt="image-20230714193124374" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2.</span>计算机右键属性--更改设置--更改--隶属于 qf.com域  </span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714193254401.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714193254401.png"  alt="image-20230714193254401" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714193326905.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714193326905.png"  alt="image-20230714193326905" lazyload></a></p>
+<p>加入域后，该win7就是域上的成员机</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714193343024.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714193343024.png"  alt="image-20230714193343024" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">3.</span>重启加入域后，使用域用户登录成员机   </span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714193504225.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714193504225.png"  alt="image-20230714193504225" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714194139683.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714194139683.png"  alt="image-20230714194139683" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714194527995.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714194527995.png"  alt="image-20230714194527995" lazyload></a></p>
+<h2 id="OU-组织单位"><a href="#OU-组织单位" class="headerlink" title="OU 组织单位"></a>OU 组织单位</h2><blockquote>
+<p>Organizational Unit</p>
+</blockquote>
+<p>作用：用于归类域资源（域用户、域计算机、域组）</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714195354031.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714195354031.png"  alt="image-20230714195354031" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714195419552.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714195419552.png"  alt="image-20230714195419552" lazyload></a></p>
+<blockquote>
+<p>一个公司的组织架构</p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715093425560.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715093425560.png"  alt="image-20230715093425560" lazyload></a></p>
+<p>将域用户张三拉到 西建集团的IT部</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715093552112.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715093552112.png"  alt="image-20230715093552112" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715093627509.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715093627509.png"  alt="image-20230715093627509" lazyload></a></p>
+<p>把张三的电脑也移动到IT部</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715093921615.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715093921615.png"  alt="image-20230715093921615" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715093931943.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715093931943.png"  alt="image-20230715093931943" lazyload></a></p>
+<h2 id="组策略配置"><a href="#组策略配置" class="headerlink" title="组策略配置"></a>组策略配置</h2><p>组策略：Group Policy &#x3D; GPO</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">作用：通过组策略可以修改计算机的各种属性，如开始菜单、桌面背景、网络参数等。</span><br></pre></td></tr></table></figure>
+
+<p><strong>重点：组策略在域中，是基于OU来下发的！</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 应用原理：</span></span><br><span class="line">组策略在域中下发后，用户的应用顺序是：LSDOU，在应用过程中，如果出现冲突，后应用的生效！</span><br><span class="line"></span><br><span class="line">L  本地</span><br><span class="line">S  站点 林</span><br><span class="line">D  域  整个域的总组策略</span><br><span class="line">OU </span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714200219529.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714200219529.png"  alt="image-20230714200219529" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714200545905.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714200545905.png"  alt="image-20230714200545905" lazyload></a></p>
+<h4 id="新建组策略"><a href="#新建组策略" class="headerlink" title="新建组策略"></a>新建组策略</h4><p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714202024589.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714202024589.png"  alt="image-20230714202024589" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714202129318.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714202129318.png"  alt="image-20230714202129318" lazyload></a></p>
+<h4 id="下发组策略"><a href="#下发组策略" class="headerlink" title="下发组策略"></a>下发组策略</h4><h5 id="桌面下发"><a href="#桌面下发" class="headerlink" title="桌面下发"></a>桌面下发</h5><p>要求西建集团下的所有人桌面一样</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715095021240.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715095021240.png"  alt="image-20230715095021240" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715095251598.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715095251598.png"  alt="image-20230715095251598" lazyload></a></p>
+<p>设置远程共享文件夹</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715095533696.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715095533696.png"  alt="image-20230715095533696" lazyload></a></p>
+<p>设置共享文件夹，设置权限</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715100300081.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715100300081.png"  alt="image-20230715100300081" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715100458359.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715100458359.png"  alt="image-20230715100458359" lazyload></a></p>
+<p>设置UNC路径</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715100733390.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715100733390.png"  alt="image-20230715100733390" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715100802857.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715100802857.png"  alt="image-20230715100802857" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">win7电脑重启， 会先看自己本地的组策略，然后去域里向顶级域qf.com要，然后向西建集团要。。。</span><br></pre></td></tr></table></figure>
+
+<p>验证</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715102054524.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715102054524.png"  alt="image-20230715102054524" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">假如说 OU里西北地区里有个域成员  在西北区里添加组策略，</span><br><span class="line">对西北区进行桌面下发b.jpg，那么西北区里的成员会显示b.jpg  而不是上面的<span class="number">1.j</span>pg</span><br><span class="line"></span><br><span class="line">发生冲突，最后一个生效，所以西北区显示b.jpg</span><br></pre></td></tr></table></figure>
+
+<h5 id="禁止开始运行"><a href="#禁止开始运行" class="headerlink" title="禁止开始运行"></a>禁止开始运行</h5><p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715103405062.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715103405062.png"  alt="image-20230715103405062" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715103438776.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715103438776.png"  alt="image-20230715103438776" lazyload></a></p>
+<p>注销win7，再登录，按住win+r 报错</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715103939510.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715103939510.png"  alt="image-20230715103939510" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">上级OU：        桌面：<span class="number">1.j</span>pg      开始-运行：删除</span><br><span class="line"></span><br><span class="line">下级OU：        桌面：未配置      开始-运行：不删除</span><br><span class="line"></span><br><span class="line">下级OU用户结果：桌面：<span class="number">1.j</span>pg       开始-运行：不删除</span><br></pre></td></tr></table></figure>
+
+<p>组策略在域中下发后，用户的应用顺序是：LSDOU，在应用过程中，&#x3D;&#x3D;如果出现冲突，后应用的生效&#x3D;&#x3D;！</p>
+<p><strong>下级OU设置了阻止继承</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">上级OU：         桌面：aa     运行：删除</span><br><span class="line"></span><br><span class="line">下级OU：         桌面：未配置 运行：不删除</span><br><span class="line"></span><br><span class="line">下级OU用户结果： 桌面：未配置 运行：不删除</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715105952222.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715105952222.png"  alt="image-20230715105952222" lazyload></a></p>
+<p><strong>上级设置了强制</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">上级OU：           桌面：aa     运行：删除</span><br><span class="line"></span><br><span class="line">下级OU：           桌面：未配置 运行：不删除</span><br><span class="line"></span><br><span class="line">下级OU的用户结果： 桌面：aa   运行：删除</span><br></pre></td></tr></table></figure>
+
+<p>注意：当上级强制和下级阻止继承同时设置，强制生效！</p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230715105619224.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230715105619224.png"  alt="image-20230715105619224" lazyload></a></p>
+<h2 id="退出域管理"><a href="#退出域管理" class="headerlink" title="退出域管理"></a>退出域管理</h2><p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714202401405.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714202401405.png"  alt="image-20230714202401405" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714202406157.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714202406157.png"  alt="image-20230714202406157" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714202441880.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714202441880.png"  alt="image-20230714202441880" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-domain/image-20230714202447280.png"><img   src="/images/loading.svg" data-src="/imgs/windows-domain/image-20230714202447280.png"  alt="image-20230714202447280" lazyload></a></p>
+<p>重启电脑</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="top-box-text">相关概念</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9F%9F%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2"><span class="top-box-text">域服务器部署</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#OU-%E7%BB%84%E7%BB%87%E5%8D%95%E4%BD%8D"><span class="top-box-text">OU 组织单位</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%BB%84%E7%AD%96%E7%95%A5%E9%85%8D%E7%BD%AE"><span class="top-box-text">组策略配置</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E9%80%80%E5%87%BA%E5%9F%9F%E7%AE%A1%E7%90%86"><span class="top-box-text">退出域管理</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/14/dns-deploy/">
+          <h3 class="post-title">
+            
+            下一篇：DNS部署搭建
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

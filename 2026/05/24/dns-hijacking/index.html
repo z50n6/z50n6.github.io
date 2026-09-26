@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>DNS劫持原理与防护</title>
+<meta name="keywords" content="DNS劫持原理与防护, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="DNS 劫持原理与防护
+一、DNS 是什么？DNS（Domain Name System，域名系统）是互联网的「电话本」。
+当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="DNS劫持原理与防护">
+<meta property="og:description" content="DNS 劫持原理与防护
+一、DNS 是什么？DNS（Domain Name System，域名系统）是互联网的「电话本」。
+当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">DNS劫持原理与防护</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-05-24</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/DNS/">
+              DNS
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E7%BD%91%E7%BB%9C/">
+              网络
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h1 id="DNS-劫持原理与防护"><a href="#DNS-劫持原理与防护" class="headerlink" title="DNS 劫持原理与防护"></a>DNS 劫持原理与防护</h1><hr>
+<h2 id="一、DNS-是什么？"><a href="#一、DNS-是什么？" class="headerlink" title="一、DNS 是什么？"></a>一、DNS 是什么？</h2><p>DNS（Domain Name System，域名系统）是互联网的「电话本」。</p>
+<p>当你在浏览器输入 <code>www.baidu.com</code> 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名翻译成 IP 地址（如 <code>202.108.22.5</code>），浏览器再用 IP 去访问目标服务器。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">用户输入域名 → DNS 查询 → 返回 IP → 浏览器建立连接</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，你的 DNS 通常由路由器或运营商自动分配（电信&#x2F;联通&#x2F;移动等）。这些 DNS 解析速度一般，且存在被篡改、被劫持的风险。</p>
+<hr>
+<h2 id="二、什么是-DNS-劫持？"><a href="#二、什么是-DNS-劫持？" class="headerlink" title="二、什么是 DNS 劫持？"></a>二、什么是 DNS 劫持？</h2><p><strong>DNS 劫持</strong>：攻击者在你访问域名时，将本应解析到的正确 IP 替换为恶意 IP，把你导向假冒网站。整个网络请求流程表面看起来正常，但中间某个环节已被篡改，<strong>用户往往难以直观察觉</strong>。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">正常：www.example.com  →  1.2.3.4（真实服务器）</span><br><span class="line">劫持：www.example.com  →  9.9.9.9（钓鱼页 / 广告页 / 攻击者服务器）</span><br></pre></td></tr></table></figure>
+
+<p>相当于有人在互联网「电话本」里替换了你的正确号码——轻则看到广告，重则账号密码被窃取。</p>
+<h3 id="2-1-正常流程"><a href="#2-1-正常流程" class="headerlink" title="2.1 正常流程"></a>2.1 正常流程</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">浏览器输入域名</span><br><span class="line">  → 查本机 DNS 缓存</span><br><span class="line">  → 无缓存则询问路由器/ISP 分配的 DNS 服务器</span><br><span class="line">  → DNS 服务器递归向上查询（根域 → 顶级域 → 权威 DNS）</span><br><span class="line">  → 返回正确 IP → 浏览器访问真实网站</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-被劫持流程"><a href="#2-2-被劫持流程" class="headerlink" title="2.2 被劫持流程"></a>2.2 被劫持流程</h3><p>攻击者在以下任一环节动手脚，返回恶意 IP：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">本机（hosts / DNS 配置）→ 路由器 → 中间人（公共 WiFi）→ DNS 服务器 / 缓存 → ISP / 注册商</span><br></pre></td></tr></table></figure>
+
+<p>DNS 查询默认走 UDP 53 端口，应答可被伪造；谁控制了你使用的 DNS，谁就一定程度上控制了「你去哪」。</p>
+<h3 id="2-3-DNS-劫持-≠-破解-HTTPS"><a href="#2-3-DNS-劫持-≠-破解-HTTPS" class="headerlink" title="2.3 DNS 劫持 ≠ 破解 HTTPS"></a>2.3 DNS 劫持 ≠ 破解 HTTPS</h3><table>
+<thead>
+<tr>
+<th>协议</th>
+<th>劫持后的表现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HTTP</td>
+<td>可能直接看到钓鱼页面，用户不易察觉</td>
+</tr>
+<tr>
+<td>HTTPS</td>
+<td>浏览器通常报「连接不是私密连接」，证书域名不匹配</td>
+</tr>
+</tbody></table>
+<p>DNS 劫持主要影响<strong>流量导向</strong>，不能解密 HTTPS 内容。但配合钓鱼页面或用户忽略证书警告，仍可能造成账号泄露。</p>
+<hr>
+<h2 id="三、常见劫持方式"><a href="#三、常见劫持方式" class="headerlink" title="三、常见劫持方式"></a>三、常见劫持方式</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>发生位置</th>
+<th>典型手段</th>
+<th>技术门槛</th>
+<th>影响范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>本地劫持</strong></td>
+<td>单台设备</td>
+<td>恶意软件改 <code>hosts</code>、网卡 DNS 配置</td>
+<td>低</td>
+<td>单台设备</td>
+</tr>
+<tr>
+<td><strong>路由器劫持</strong></td>
+<td>局域网</td>
+<td>入侵路由器，篡改 DHCP 下发的 DNS</td>
+<td>低</td>
+<td>连接该路由器的所有设备</td>
+</tr>
+<tr>
+<td><strong>中间人攻击</strong></td>
+<td>公共 WiFi &#x2F; 局域网</td>
+<td>ARP 欺骗 + 伪造 DNS 应答</td>
+<td>中</td>
+<td>同一网络内的用户</td>
+</tr>
+<tr>
+<td><strong>DNS 缓存投毒</strong></td>
+<td>DNS 服务器缓存</td>
+<td>向缓存注入虚假解析记录</td>
+<td>中–高</td>
+<td>依赖缓存覆盖范围，可达大量用户</td>
+</tr>
+<tr>
+<td><strong>DNS 服务器攻击</strong></td>
+<td>权威&#x2F;递归 DNS</td>
+<td>入侵 DNS 服务器，篡改解析记录</td>
+<td>高</td>
+<td>成千上万用户</td>
+</tr>
+<tr>
+<td><strong>ISP &#x2F; 注册商劫持</strong></td>
+<td>运营商或域名注册商</td>
+<td>篡改解析记录、强制跳转、插入广告</td>
+<td>需内部权限</td>
+<td>极大，可波及整片用户群</td>
+</tr>
+</tbody></table>
+<p>几乎每一个环节都可能被利用，因此防护需要多层叠加，不能依赖单一手段。</p>
+<hr>
+<h2 id="四、危害"><a href="#四、危害" class="headerlink" title="四、危害"></a>四、危害</h2><p>DNS 劫持的危害覆盖个人、企业乃至更大范围的网络安全：</p>
+<table>
+<thead>
+<tr>
+<th>危害类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>账号密码泄露</strong></td>
+<td>假冒登录页骗取凭据</td>
+</tr>
+<tr>
+<td><strong>财产损失</strong></td>
+<td>银行卡盗刷、支付信息窃取</td>
+</tr>
+<tr>
+<td><strong>设备沦陷</strong></td>
+<td>植入后门，设备变为肉鸡（僵尸网络节点）</td>
+</tr>
+<tr>
+<td><strong>广告与诈骗</strong></td>
+<td>强制跳转广告页、钓鱼诈骗页面</td>
+</tr>
+<tr>
+<td><strong>隐私泄露</strong></td>
+<td>浏览行为、个人信息被监控或上传</td>
+</tr>
+<tr>
+<td><strong>企业级风险</strong></td>
+<td>大规模用户被重定向，业务中断、声誉受损</td>
+</tr>
+<tr>
+<td><strong>基础设施风险</strong></td>
+<td>权威 DNS 被攻破时，影响面可达千万级用户</td>
+</tr>
+</tbody></table>
+<p>本地和路由器劫持门槛低、普及性高；DNS 服务器级攻击门槛高，但一旦发生，波及范围极广。</p>
+<hr>
+<h2 id="五、为什么要换-DNS？"><a href="#五、为什么要换-DNS？" class="headerlink" title="五、为什么要换 DNS？"></a>五、为什么要换 DNS？</h2><h3 id="5-1-访问速度更快"><a href="#5-1-访问速度更快" class="headerlink" title="5.1 访问速度更快"></a>5.1 访问速度更快</h3><p>运营商 DNS 节点少、调度不优，可能导致解析慢、游戏延迟高。阿里 DNS、腾讯 DNS 等公共 DNS 有全国节点，解析通常更快。</p>
+<h3 id="5-2-减少运营商劫持"><a href="#5-2-减少运营商劫持" class="headerlink" title="5.2 减少运营商劫持"></a>5.2 减少运营商劫持</h3><p>更换可信公共 DNS 后，可规避运营商在 DNS 层面的强制跳转、弹窗广告、404 导流等问题。</p>
+<h3 id="5-3-提升安全性"><a href="#5-3-提升安全性" class="headerlink" title="5.3 提升安全性"></a>5.3 提升安全性</h3><p>优质公共 DNS 支持恶意域名拦截；进阶可配合 DoH&#x2F;DoT 加密 DNS 查询，防止链路上被窃听或篡改。</p>
+<hr>
+<h2 id="六、推荐的公共-DNS"><a href="#六、推荐的公共-DNS" class="headerlink" title="六、推荐的公共 DNS"></a>六、推荐的公共 DNS</h2><table>
+<thead>
+<tr>
+<th>服务商</th>
+<th>地址</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>阿里 DNS</strong></td>
+<td><code>223.5.5.5</code> &#x2F; <code>223.6.6.6</code></td>
+<td>国内节点多，速度快，家庭用户常用</td>
+</tr>
+<tr>
+<td><strong>腾讯 DNS（DNSPod）</strong></td>
+<td><code>119.29.29.29</code> &#x2F; <code>182.254.116.116</code></td>
+<td>防劫持能力较强，游戏场景体验好</td>
+</tr>
+<tr>
+<td><strong>Google DNS</strong></td>
+<td><code>8.8.8.8</code> &#x2F; <code>8.8.4.4</code></td>
+<td>全球知名，国内访问可能较慢</td>
+</tr>
+<tr>
+<td><strong>Cloudflare DNS</strong></td>
+<td><code>1.1.1.1</code> &#x2F; <code>1.0.0.1</code></td>
+<td>注重隐私，支持 DoH&#x2F;DoT</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="七、DNS-设置"><a href="#七、DNS-设置" class="headerlink" title="七、DNS 设置"></a>七、DNS 设置</h2><h3 id="7-1-Windows-系统"><a href="#7-1-Windows-系统" class="headerlink" title="7.1 Windows 系统"></a>7.1 Windows 系统</h3><p>控制面板 → 网络和共享中心 → 更改适配器设置 → 右键当前网络 → 属性 → 双击「Internet 协议版本 4 (TCP&#x2F;IPv4)」→ 选择「使用下面的 DNS 服务器地址」→ 填入首选&#x2F;备用 DNS → 确定。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">首选 DNS：223.5.5.5</span><br><span class="line">备用 DNS：8.8.8.8</span><br></pre></td></tr></table></figure>
+
+<p>PowerShell 快速设置（管理员）：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-DnsClientServerAddress</span> <span class="literal">-AddressFamily</span> IPv4</span><br><span class="line"><span class="built_in">Set-DnsClientServerAddress</span> <span class="literal">-InterfaceAlias</span> <span class="string">&quot;以太网&quot;</span> <span class="literal">-ServerAddresses</span> (<span class="string">&quot;223.5.5.5&quot;</span>,<span class="string">&quot;223.6.6.6&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-路由器设置（推荐，全家生效）"><a href="#7-2-路由器设置（推荐，全家生效）" class="headerlink" title="7.2 路由器设置（推荐，全家生效）"></a>7.2 路由器设置（推荐，全家生效）</h3><p>浏览器访问路由器后台（常见 <code>192.168.1.1</code> 或 <code>192.168.0.1</code>）→ WAN 口 &#x2F; DHCP &#x2F; DNS 设置 → 填入 DNS 地址 → 保存并重启。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">主 DNS：223.5.5.5</span><br><span class="line">备 DNS：223.6.6.6</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-手机-平板"><a href="#7-3-手机-平板" class="headerlink" title="7.3 手机 &#x2F; 平板"></a>7.3 手机 &#x2F; 平板</h3><p>WiFi 设置 → 当前 WiFi 详情 → DNS &#x2F; IP 设置 → 手动填入 DNS 地址。</p>
+<blockquote>
+<p>移动数据网络的 DNS 由运营商控制，换 WiFi DNS 无法解决蜂窝网络劫持，需使用 DoH 类应用或 VPN。</p>
+</blockquote>
+<hr>
+<h2 id="八、如何识别-DNS-劫持"><a href="#八、如何识别-DNS-劫持" class="headerlink" title="八、如何识别 DNS 劫持"></a>八、如何识别 DNS 劫持</h2><p>单一工具难以保障，需<strong>多管齐下</strong>：</p>
+<h3 id="8-1-行为异常（最直观）"><a href="#8-1-行为异常（最直观）" class="headerlink" title="8.1 行为异常（最直观）"></a>8.1 行为异常（最直观）</h3><ul>
+<li>输入正确网址却跳转到广告页、无关网站</li>
+<li>页面内容与预期不符，但 URL 看似正常</li>
+<li>频繁出现 HTTPS 证书警告</li>
+</ul>
+<h3 id="8-2-命令行比对解析结果"><a href="#8-2-命令行比对解析结果" class="headerlink" title="8.2 命令行比对解析结果"></a>8.2 命令行比对解析结果</h3><p>用不同 DNS 源解析同一域名，结果不一致则可能存在劫持：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">:: Windows <span class="built_in">CMD</span></span><br><span class="line">nslookup www.baidu.com</span><br><span class="line">nslookup www.baidu.com <span class="number">223</span>.<span class="number">5</span>.<span class="number">5</span>.<span class="number">5</span></span><br><span class="line">nslookup www.baidu.com <span class="number">8</span>.<span class="number">8</span>.<span class="number">8</span>.<span class="number">8</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux / Kali</span></span><br><span class="line">dig www.baidu.com</span><br><span class="line">dig @223.5.5.5 www.baidu.com</span><br><span class="line">dig @8.8.8.8 www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<p>将解析出的 IP 与官方公布或可信来源对比，确认是否一致。</p>
+<h3 id="8-3-检查本地配置"><a href="#8-3-检查本地配置" class="headerlink" title="8.3 检查本地配置"></a>8.3 检查本地配置</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hosts 文件：</span><br><span class="line">  Windows → C:\Windows\System32\drivers\etc\hosts</span><br><span class="line">  Linux   → /etc/hosts</span><br><span class="line"></span><br><span class="line">网卡 DNS 设置 → 是否被改为陌生地址</span><br><span class="line">路由器 DNS 设置 → DHCP 下发的 DNS 是否异常</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-4-第三方检测"><a href="#8-4-第三方检测" class="headerlink" title="8.4 第三方检测"></a>8.4 第三方检测</h3><p>使用 DNS 泄露检测、恶意 DNS 检测等第三方平台辅助确认，与命令行检测结果交叉验证。</p>
+<hr>
+<h2 id="九、被劫持后如何修复"><a href="#九、被劫持后如何修复" class="headerlink" title="九、被劫持后如何修复"></a>九、被劫持后如何修复</h2><p>发现疑似劫持后，按以下顺序处理：</p>
+<h3 id="9-1-断网"><a href="#9-1-断网" class="headerlink" title="9.1 断网"></a>9.1 断网</h3><p>立即断开网络连接，防止进一步信息泄露。</p>
+<h3 id="9-2-清除-DNS-缓存"><a href="#9-2-清除-DNS-缓存" class="headerlink" title="9.2 清除 DNS 缓存"></a>9.2 清除 DNS 缓存</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">:: Windows</span><br><span class="line"><span class="built_in">ipconfig</span> /flushdns</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux</span></span><br><span class="line"><span class="built_in">sudo</span> systemd-resolve --flush-caches</span><br><span class="line"><span class="comment"># 或</span></span><br><span class="line"><span class="built_in">sudo</span> resolvectl flush-caches</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># macOS</span></span><br><span class="line"><span class="built_in">sudo</span> dscacheutil -flushcache; <span class="built_in">sudo</span> killall -HUP mDNSResponder</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-3-恢复设备配置"><a href="#9-3-恢复设备配置" class="headerlink" title="9.3 恢复设备配置"></a>9.3 恢复设备配置</h3><ul>
+<li>检查并恢复本机 DNS 设置为自动或可信公共 DNS</li>
+<li>检查 <code>hosts</code> 文件，删除可疑条目</li>
+<li>检查浏览器代理、VPN 等网络扩展设置</li>
+</ul>
+<h3 id="9-4-恢复路由器"><a href="#9-4-恢复路由器" class="headerlink" title="9.4 恢复路由器"></a>9.4 恢复路由器</h3><ul>
+<li>登录路由器后台，检查 DNS 和 DHCP 设置</li>
+<li>修改路由器管理密码（若怀疑被入侵）</li>
+<li>必要时恢复出厂设置并重新配置</li>
+</ul>
+<h3 id="9-5-全盘杀毒"><a href="#9-5-全盘杀毒" class="headerlink" title="9.5 全盘杀毒"></a>9.5 全盘杀毒</h3><p>使用杀毒软件全盘扫描，清除可能篡改 DNS &#x2F; hosts 的恶意程序。</p>
+<h3 id="9-6-运营商问题"><a href="#9-6-运营商问题" class="headerlink" title="9.6 运营商问题"></a>9.6 运营商问题</h3><p>若确认是 ISP 劫持，<strong>保留证据</strong>（截图、nslookup 结果、时间记录）并向运营商投诉或向监管部门反映。</p>
+<hr>
+<h2 id="十、预防措施"><a href="#十、预防措施" class="headerlink" title="十、预防措施"></a>十、预防措施</h2><h3 id="10-1-个人-家庭"><a href="#10-1-个人-家庭" class="headerlink" title="10.1 个人 &#x2F; 家庭"></a>10.1 个人 &#x2F; 家庭</h3><table>
+<thead>
+<tr>
+<th>措施</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>使用可信公共 DNS</td>
+<td>定期确认 DNS 配置未被篡改</td>
+</tr>
+<tr>
+<td>路由器强密码</td>
+<td>避免默认密码，启用 WPA3（若支持）</td>
+</tr>
+<tr>
+<td>固件升级</td>
+<td>定期更新路由器固件，修复已知漏洞</td>
+</tr>
+<tr>
+<td>启用 DoH &#x2F; DoT</td>
+<td>加密 DNS 请求，降低中间人篡改风险</td>
+</tr>
+<tr>
+<td>不连不可信 WiFi</td>
+<td>公共网络不访问敏感账户，或使用 VPN</td>
+</tr>
+<tr>
+<td>忽略证书警告</td>
+<td>HTTPS 报证书错误时不点击「继续访问」</td>
+</tr>
+<tr>
+<td>开启 MFA</td>
+<td>即使密码泄露，多因素认证仍可提供保护</td>
+</tr>
+</tbody></table>
+<h3 id="10-2-加密-DNS（DoH-DoT）"><a href="#10-2-加密-DNS（DoH-DoT）" class="headerlink" title="10.2 加密 DNS（DoH &#x2F; DoT）"></a>10.2 加密 DNS（DoH &#x2F; DoT）</h3><p>传统 DNS 走 UDP 53，明文传输，易被中间人篡改。DoH&#x2F;DoT 将查询加密，是防护现代 DNS 攻击的核心手段之一。</p>
+<p><strong>Windows 11 配置 DoH 示例：</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Add-DnsClientDohServerAddress</span> <span class="literal">-ServerAddress</span> <span class="string">&quot;1.1.1.1&quot;</span> <span class="literal">-DohTemplate</span> <span class="string">&quot;https://cloudflare-dns.com/dns-query&quot;</span> <span class="literal">-AllowFallbackToUdp</span> <span class="variable">$false</span></span><br><span class="line"><span class="built_in">Add-DnsClientDohServerAddress</span> <span class="literal">-ServerAddress</span> <span class="string">&quot;8.8.8.8&quot;</span> <span class="literal">-DohTemplate</span> <span class="string">&quot;https://dns.google/dns-query&quot;</span> <span class="literal">-AllowFallbackToUdp</span> <span class="variable">$false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="10-3-防火墙限制-DNS-解析"><a href="#10-3-防火墙限制-DNS-解析" class="headerlink" title="10.3 防火墙限制 DNS 解析"></a>10.3 防火墙限制 DNS 解析</h3><p>仅允许信任的 DNS 服务器进行解析，阻断向未知 DNS 的出站请求：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux iptables 示例：仅允许 223.5.5.5 和 8.8.8.8</span></span><br><span class="line">iptables -A OUTPUT -p udp --dport 53 -d 223.5.5.5 -j ACCEPT</span><br><span class="line">iptables -A OUTPUT -p udp --dport 53 -d 8.8.8.8 -j ACCEPT</span><br><span class="line">iptables -A OUTPUT -p udp --dport 53 -j DROP</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-4-AdGuard-Home"><a href="#10-4-AdGuard-Home" class="headerlink" title="10.4 AdGuard Home"></a>10.4 AdGuard Home</h3><p>在软路由或 NAS 上部署 <a target="_blank" rel="noopener" href="https://github.com/AdmindTeam/AdGuardHome">AdGuard Home</a>：</p>
+<ul>
+<li>自定义 DNS 上游（指向阿里 &#x2F; Cloudflare 等）</li>
+<li>拦截广告、追踪器、恶意域名</li>
+<li>查看全网 DNS 查询日志，发现异常解析</li>
+</ul>
+<h3 id="10-5-企业级防护"><a href="#10-5-企业级防护" class="headerlink" title="10.5 企业级防护"></a>10.5 企业级防护</h3><table>
+<thead>
+<tr>
+<th>措施</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>自建内部 DNS</strong></td>
+<td>减少对外部不可控 DNS 的依赖</td>
+</tr>
+<tr>
+<td><strong>启用 DNSSEC</strong></td>
+<td>校验 DNS 应答完整性，防止缓存投毒和篡改</td>
+</tr>
+<tr>
+<td><strong>网络监控</strong></td>
+<td>部署 DNS 流量监控，检测异常解析和泄露</td>
+</tr>
+<tr>
+<td><strong>定期巡查</strong></td>
+<td>检查 DNS 记录、设备配置、日志</td>
+</tr>
+<tr>
+<td><strong>应急演练</strong></td>
+<td>模拟 DNS 劫持场景，验证响应流程</td>
+</tr>
+<tr>
+<td><strong>ARP 防护</strong></td>
+<td>防范局域网中间人 DNS 欺骗</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>网络安全意识和日常维护是第一道防线：定期检查设备设置、更新固件、使用复杂密码，能持续降低被劫持风险。</p>
+</blockquote>
+<hr>
+<h2 id="十一、攻击原理（实验环境）"><a href="#十一、攻击原理（实验环境）" class="headerlink" title="十一、攻击原理（实验环境）"></a>十一、攻击原理（实验环境）</h2><blockquote>
+<p>以下内容仅供<strong>授权实验环境</strong>学习。详见 <a href="../Windows%E5%9F%BA%E7%A1%80/ARP%E6%96%AD%E7%BD%91%E6%94%BB%E5%87%BB.md">ARP断网攻击</a>。</p>
+</blockquote>
+<p>局域网 DNS 欺骗的典型攻击链：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. ARP 欺骗：让目标流量经过攻击机（中间人）</span><br><span class="line">2. 伪造 DNS 应答：目标查域名时，攻击机抢先返回假 IP</span><br><span class="line">3. 钓鱼页面：假 IP 上运行 Web 服务，展示克隆网站</span><br></pre></td></tr></table></figure>
+
+<p><strong>实验环境：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">攻击机：Kali Linux</span><br><span class="line">靶机：  Windows（与 Kali 同一网段，如 NAT 模式）</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-1-开启-IP-转发"><a href="#11-1-开启-IP-转发" class="headerlink" title="11.1 开启 IP 转发"></a>11.1 开启 IP 转发</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> 1 &gt; /proc/sys/net/ipv4/ip_forward</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-2-编辑-DNS-欺骗规则"><a href="#11-2-编辑-DNS-欺骗规则" class="headerlink" title="11.2 编辑 DNS 欺骗规则"></a>11.2 编辑 DNS 欺骗规则</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/ettercap/etter.dns</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*.example.com   A  192.168.x.x</span><br><span class="line">www.example.com A  192.168.x.x</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-3-启动-Web-服务"><a href="#11-3-启动-Web-服务" class="headerlink" title="11.3 启动 Web 服务"></a>11.3 启动 Web 服务</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl start apache2</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-4-启动-Ettercap"><a href="#11-4-启动-Ettercap" class="headerlink" title="11.4 启动 Ettercap"></a>11.4 启动 Ettercap</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 图形界面：Sniff → Unified sniffing → Scan → 设 Target → 启用 dns_spoof → Start</span></span><br><span class="line"><span class="comment"># 命令行</span></span><br><span class="line"><span class="built_in">sudo</span> ettercap -T -q -i eth0 -P dns_spoof -M arp:remote /目标IP// /网关IP//</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-5-靶机验证"><a href="#11-5-靶机验证" class="headerlink" title="11.5 靶机验证"></a>11.5 靶机验证</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nslookup www.example.com</span><br></pre></td></tr></table></figure>
+
+<p>解析到攻击机 IP 则欺骗成功；HTTPS 站点通常会触发证书警告。</p>
+<hr>
+<h2 id="十二、防御对照表"><a href="#十二、防御对照表" class="headerlink" title="十二、防御对照表"></a>十二、防御对照表</h2><table>
+<thead>
+<tr>
+<th>攻击方式</th>
+<th>防御措施</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>本地 hosts &#x2F; DNS 篡改</td>
+<td>杀软扫描；定期检查 hosts 和 DNS 设置</td>
+</tr>
+<tr>
+<td>路由器 DNS 篡改</td>
+<td>强密码；固件升级；定期检查 DHCP 下发 DNS</td>
+</tr>
+<tr>
+<td>中间人 DNS 欺骗</td>
+<td>静态 ARP 绑定网关；不连不可信 WiFi；DoH&#x2F;DoT</td>
+</tr>
+<tr>
+<td>DNS 缓存投毒</td>
+<td>DNSSEC；使用支持 DNSSEC 验证的递归 DNS</td>
+</tr>
+<tr>
+<td>DNS 服务器攻击</td>
+<td>基础设施加固；监控；最小权限；DNSSEC</td>
+</tr>
+<tr>
+<td>ISP &#x2F; 注册商劫持</td>
+<td>换公共 DNS；DoH&#x2F;DoT；保留证据投诉</td>
+</tr>
+<tr>
+<td>钓鱼页面</td>
+<td>不忽略 HTTPS 证书警告；核对 URL；开启 MFA</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="十三、速查清单"><a href="#十三、速查清单" class="headerlink" title="十三、速查清单"></a>十三、速查清单</h2><h3 id="13-1-日常预防"><a href="#13-1-日常预防" class="headerlink" title="13.1 日常预防"></a>13.1 日常预防</h3><ul>
+<li><input disabled="" type="checkbox"> DNS 已设为可信公共 DNS（路由器或本机）</li>
+<li><input disabled="" type="checkbox"> 路由器使用强密码，固件为最新版本</li>
+<li><input disabled="" type="checkbox"> （可选）已启用 DoH &#x2F; DoT &#x2F; AdGuard Home</li>
+<li><input disabled="" type="checkbox"> 公共 WiFi 上不访问敏感账户</li>
+</ul>
+<h3 id="13-2-定期自查"><a href="#13-2-定期自查" class="headerlink" title="13.2 定期自查"></a>13.2 定期自查</h3><ul>
+<li><input disabled="" type="checkbox"> 多 DNS 源对比解析结果，确认无异常</li>
+<li><input disabled="" type="checkbox"> <code>hosts</code> 文件无异常条目</li>
+<li><input disabled="" type="checkbox"> 路由器 DNS &#x2F; DHCP 配置正常</li>
+</ul>
+<h3 id="13-3-发现异常后"><a href="#13-3-发现异常后" class="headerlink" title="13.3 发现异常后"></a>13.3 发现异常后</h3><ul>
+<li><input disabled="" type="checkbox"> 立即断网</li>
+<li><input disabled="" type="checkbox"> 清除 DNS 缓存</li>
+<li><input disabled="" type="checkbox"> 恢复本机与路由器 DNS 设置</li>
+<li><input disabled="" type="checkbox"> 全盘杀毒扫描</li>
+<li><input disabled="" type="checkbox"> ISP 问题保留证据并投诉</li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-1"><a class="top-box-link" href="#DNS-%E5%8A%AB%E6%8C%81%E5%8E%9F%E7%90%86%E4%B8%8E%E9%98%B2%E6%8A%A4"><span class="top-box-text">DNS 劫持原理与防护</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81DNS-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="top-box-text">一、DNS 是什么？</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF-DNS-%E5%8A%AB%E6%8C%81%EF%BC%9F"><span class="top-box-text">二、什么是 DNS 劫持？</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-%E6%AD%A3%E5%B8%B8%E6%B5%81%E7%A8%8B"><span class="top-box-text">2.1 正常流程</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-%E8%A2%AB%E5%8A%AB%E6%8C%81%E6%B5%81%E7%A8%8B"><span class="top-box-text">2.2 被劫持流程</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-DNS-%E5%8A%AB%E6%8C%81-%E2%89%A0-%E7%A0%B4%E8%A7%A3-HTTPS"><span class="top-box-text">2.3 DNS 劫持 ≠ 破解 HTTPS</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E8%A7%81%E5%8A%AB%E6%8C%81%E6%96%B9%E5%BC%8F"><span class="top-box-text">三、常见劫持方式</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E5%8D%B1%E5%AE%B3"><span class="top-box-text">四、危害</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%8D%A2-DNS%EF%BC%9F"><span class="top-box-text">五、为什么要换 DNS？</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-1-%E8%AE%BF%E9%97%AE%E9%80%9F%E5%BA%A6%E6%9B%B4%E5%BF%AB"><span class="top-box-text">5.1 访问速度更快</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-2-%E5%87%8F%E5%B0%91%E8%BF%90%E8%90%A5%E5%95%86%E5%8A%AB%E6%8C%81"><span class="top-box-text">5.2 减少运营商劫持</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-3-%E6%8F%90%E5%8D%87%E5%AE%89%E5%85%A8%E6%80%A7"><span class="top-box-text">5.3 提升安全性</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E6%8E%A8%E8%8D%90%E7%9A%84%E5%85%AC%E5%85%B1-DNS"><span class="top-box-text">六、推荐的公共 DNS</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81DNS-%E8%AE%BE%E7%BD%AE"><span class="top-box-text">七、DNS 设置</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-1-Windows-%E7%B3%BB%E7%BB%9F"><span class="top-box-text">7.1 Windows 系统</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-2-%E8%B7%AF%E7%94%B1%E5%99%A8%E8%AE%BE%E7%BD%AE%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%8C%E5%85%A8%E5%AE%B6%E7%94%9F%E6%95%88%EF%BC%89"><span class="top-box-text">7.2 路由器设置（推荐，全家生效）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-3-%E6%89%8B%E6%9C%BA-%E5%B9%B3%E6%9D%BF"><span class="top-box-text">7.3 手机 &#x2F; 平板</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AB%E3%80%81%E5%A6%82%E4%BD%95%E8%AF%86%E5%88%AB-DNS-%E5%8A%AB%E6%8C%81"><span class="top-box-text">八、如何识别 DNS 劫持</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-1-%E8%A1%8C%E4%B8%BA%E5%BC%82%E5%B8%B8%EF%BC%88%E6%9C%80%E7%9B%B4%E8%A7%82%EF%BC%89"><span class="top-box-text">8.1 行为异常（最直观）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-2-%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%AF%94%E5%AF%B9%E8%A7%A3%E6%9E%90%E7%BB%93%E6%9E%9C"><span class="top-box-text">8.2 命令行比对解析结果</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-3-%E6%A3%80%E6%9F%A5%E6%9C%AC%E5%9C%B0%E9%85%8D%E7%BD%AE"><span class="top-box-text">8.3 检查本地配置</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#8-4-%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A3%80%E6%B5%8B"><span class="top-box-text">8.4 第三方检测</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B9%9D%E3%80%81%E8%A2%AB%E5%8A%AB%E6%8C%81%E5%90%8E%E5%A6%82%E4%BD%95%E4%BF%AE%E5%A4%8D"><span class="top-box-text">九、被劫持后如何修复</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#9-1-%E6%96%AD%E7%BD%91"><span class="top-box-text">9.1 断网</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#9-2-%E6%B8%85%E9%99%A4-DNS-%E7%BC%93%E5%AD%98"><span class="top-box-text">9.2 清除 DNS 缓存</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#9-3-%E6%81%A2%E5%A4%8D%E8%AE%BE%E5%A4%87%E9%85%8D%E7%BD%AE"><span class="top-box-text">9.3 恢复设备配置</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#9-4-%E6%81%A2%E5%A4%8D%E8%B7%AF%E7%94%B1%E5%99%A8"><span class="top-box-text">9.4 恢复路由器</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#9-5-%E5%85%A8%E7%9B%98%E6%9D%80%E6%AF%92"><span class="top-box-text">9.5 全盘杀毒</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#9-6-%E8%BF%90%E8%90%A5%E5%95%86%E9%97%AE%E9%A2%98"><span class="top-box-text">9.6 运营商问题</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E3%80%81%E9%A2%84%E9%98%B2%E6%8E%AA%E6%96%BD"><span class="top-box-text">十、预防措施</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-1-%E4%B8%AA%E4%BA%BA-%E5%AE%B6%E5%BA%AD"><span class="top-box-text">10.1 个人 &#x2F; 家庭</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-2-%E5%8A%A0%E5%AF%86-DNS%EF%BC%88DoH-DoT%EF%BC%89"><span class="top-box-text">10.2 加密 DNS（DoH &#x2F; DoT）</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-3-%E9%98%B2%E7%81%AB%E5%A2%99%E9%99%90%E5%88%B6-DNS-%E8%A7%A3%E6%9E%90"><span class="top-box-text">10.3 防火墙限制 DNS 解析</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-4-AdGuard-Home"><span class="top-box-text">10.4 AdGuard Home</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#10-5-%E4%BC%81%E4%B8%9A%E7%BA%A7%E9%98%B2%E6%8A%A4"><span class="top-box-text">10.5 企业级防护</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E6%94%BB%E5%87%BB%E5%8E%9F%E7%90%86%EF%BC%88%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83%EF%BC%89"><span class="top-box-text">十一、攻击原理（实验环境）</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#11-1-%E5%BC%80%E5%90%AF-IP-%E8%BD%AC%E5%8F%91"><span class="top-box-text">11.1 开启 IP 转发</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#11-2-%E7%BC%96%E8%BE%91-DNS-%E6%AC%BA%E9%AA%97%E8%A7%84%E5%88%99"><span class="top-box-text">11.2 编辑 DNS 欺骗规则</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#11-3-%E5%90%AF%E5%8A%A8-Web-%E6%9C%8D%E5%8A%A1"><span class="top-box-text">11.3 启动 Web 服务</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#11-4-%E5%90%AF%E5%8A%A8-Ettercap"><span class="top-box-text">11.4 启动 Ettercap</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#11-5-%E9%9D%B6%E6%9C%BA%E9%AA%8C%E8%AF%81"><span class="top-box-text">11.5 靶机验证</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E9%98%B2%E5%BE%A1%E5%AF%B9%E7%85%A7%E8%A1%A8"><span class="top-box-text">十二、防御对照表</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8D%81%E4%B8%89%E3%80%81%E9%80%9F%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="top-box-text">十三、速查清单</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#13-1-%E6%97%A5%E5%B8%B8%E9%A2%84%E9%98%B2"><span class="top-box-text">13.1 日常预防</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#13-2-%E5%AE%9A%E6%9C%9F%E8%87%AA%E6%9F%A5"><span class="top-box-text">13.2 定期自查</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#13-3-%E5%8F%91%E7%8E%B0%E5%BC%82%E5%B8%B8%E5%90%8E"><span class="top-box-text">13.3 发现异常后</span></a></li></ol></li></ol></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/04/02/ren-ren-du-neng-cheng-wei-dai-ma-shen-ji-zhuan-jia/">
+          <h3 class="post-title">
+            
+            下一篇：人人都能成为代码审计专家
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

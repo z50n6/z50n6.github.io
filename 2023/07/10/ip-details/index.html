@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>IP详解</title>
+<meta name="keywords" content="IP详解, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="IP地址介绍bilibili
+一、简单局域网的构成              
+ 
+
+局域网：一般称为内网
+简单内网的构成：交换机，网线，PC
+交换机：用来组建内网的局域网的设备
+
+二、IP地址
+IP地址就是一个唯一标识，是一段网络编码（二">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="IP详解">
+<meta property="og:description" content="IP地址介绍bilibili
+一、简单局域网的构成              
+ 
+
+局域网：一般称为内网
+简单内网的构成：交换机，网线，PC
+交换机：用来组建内网的局域网的设备
+
+二、IP地址
+IP地址就是一个唯一标识，是一段网络编码（二">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">IP详解</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-10</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E7%BD%91%E7%BB%9C/">
+              网络
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv14257893">IP地址介绍bilibili</a></p>
+<p><strong>一、简单局域网的构成</strong>              </p>
+<p><a class="simple-lightbox" href="/imgs/ip-details/image-20230710192225381-1689047036561-59.png"><img   src="/images/loading.svg" data-src="/imgs/ip-details/image-20230710192225381-1689047036561-59.png"  alt="image-20230710192225381" lazyload></a> </p>
+<ul>
+<li><strong>局域网：一般称为内网</strong></li>
+<li><strong>简单内网的构成：交换机，网线，PC</strong></li>
+<li><strong>交换机：用来组建内网的局域网的设备</strong></li>
+</ul>
+<p><strong>二、IP地址</strong></p>
+<p>IP地址就是一个唯一标识，是一段网络编码（二进制），由32位组成</p>
+<p> <a class="simple-lightbox" href="/imgs/ip-details/image-20230710192236679-1689047036561-60.png"><img   src="/images/loading.svg" data-src="/imgs/ip-details/image-20230710192236679-1689047036561-60.png"  alt="image-20230710192236679" lazyload></a></p>
+<p>IP地址形式：X.X.X.X  X的范围：0-255</p>
+<blockquote>
+<p>如：</p>
+<p>正确：10.1.1.1 、192.168.1.1 </p>
+<p>错误：300.1.1.1 </p>
+</blockquote>
+<p><strong>三、子网掩码</strong></p>
+<p><strong>局域网通信规则</strong>：在同一个局域网中，所有的IP必须在同一网段中才可以互相通信！</p>
+<p><strong>IP地址构成</strong>：网络位+主机位 （网络位相同的IP地址，为同一网段）</p>
+<p><strong>子网掩码</strong>： 用来确定IP地址的网络位</p>
+<p><strong>子网掩码如何确认网络位</strong>：与255对应的数字为网络位，与0对应的数字为主机位</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">255.0.0.0</span><br><span class="line"></span><br><span class="line">255.255.0.0</span><br><span class="line"></span><br><span class="line">255.255.255.0</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如：</p>
+<p>10.1.1.1 255.0.0.0</p>
+<p>获知：10.1.1.1属于10.网段，名字叫.1.1.1 </p>
+<p>10.1.1.1 255.255.0.0 </p>
+<p>获知：10.1.1.1属于10.1.网段，名字叫.1.1 </p>
+<p>10.1.1.1 255.255.255.0 </p>
+<p>获知：10.1.1.1属于10.1.1网段，名字叫.1 </p>
+</blockquote>
+<p>注意：1个IP地址，必须配套一个子网掩码 </p>
+<p> <strong>四、IP地址详解</strong></p>
+<p>国际标准组织ISO定义地址分类：五大类 （是以IP地址的第一位进行区分的）</p>
+<ul>
+<li><p>A类：(1.0.0.0-126.0.0.0)（默认子网掩码：255.0.0.0或 0xFF000000）第一个字节为网络号，后三个字节为主机号。该类IP地址的最前面为“0”，所以地址的网络号取值于1~126之间。一般用于大型网络。</p>
+</li>
+<li><p>B类：(128.0.0.0-191.255.0.0)（默认子网掩码：255.255.0.0或0xFFFF0000）前两个字节为网络号，后两个字节为主机号。该类IP地址的最前面为“10”，所以地址的网络号取值于128~191之间。一般用于中等规模网络。</p>
+</li>
+<li><p>C类：(192.0.0.0-223.255.255.0)（子网掩码：255.255.255.0或 0xFFFFFF00）前三个字节为网络号，最后一个字节为主机号。该类IP地址的最前面为“110”，所以地址的网络号取值于192~223之间。一般用于小型网络。</p>
+</li>
+<li><p>D类：是多播地址。该类IP地址的最前面为“1110”，所以地址的网络号取值于224~239之间。一般用于多路广播用户[1] 。</p>
+</li>
+<li><p>E类：是保留地址。该类IP地址的最前面为“1111”，所以地址的网络号取值于240~255之间。</p>
+</li>
+</ul>
+<hr>
+<p>在IP地址3种主要类型里，各保留了3个区域作为&#x3D;&#x3D;私有地址&#x3D;&#x3D;，其地址范围如下：</p>
+<ul>
+<li><strong>A类地址：10.0.0.0～10.255.255.255</strong></li>
+<li><strong>B类地址：172.16.0.0～172.31.255.255</strong></li>
+<li><strong>C类地址：192.168.0.0～192.168.255.255</strong></li>
+</ul>
+<p>回送地址：127.0.0.1。 也是本机地址，等效于localhost或本机IP。一般用于测试使用。例如：ping </p>
+<p>127.0.0.1来测试本机TCP&#x2F;IP是否正常。</p>
+<p>A类： 1-126 默认子网掩码：255.0.0.0</p>
+<p>B类： 128-191 默认子网掩码：255.255.0.0  192.168.10.1</p>
+<p>C类： 192-223 默认子网掩码：255.255.255.0</p>
+<p>D类： 224-239 组播地址</p>
+<p>E类： 240-254 科研使用</p>
+<blockquote>
+<p>如：</p>
+<p>10.1.1.1 属于A类 </p>
+<p>192.168.1.1 属于C类</p>
+</blockquote>
+<p>注：</p>
+<ol>
+<li>目前我们可以使用的只有A、B、C3类 </li>
+<li>ABC3类的子网掩码可以修改！</li>
+</ol>
+<p><strong>IP地址详细解剖</strong>：</p>
+<p>案例1：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span></span><br><span class="line"></span><br><span class="line"><span class="number">255.255</span><span class="number">.255</span><span class="number">.0</span></span><br><span class="line"></span><br><span class="line">问：<span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于哪个网段？所在网段有多少个可用的IP地址？该网段的广播地址是什么？</span><br><span class="line"></span><br><span class="line">答：</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于<span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段。</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段可用的IP地址范围：<span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>-<span class="number">10.1</span><span class="number">.1</span><span class="number">.254</span>        <span class="number">254</span>个可用地址</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段的广播地址：<span class="number">10.1</span><span class="number">.1</span><span class="number">.255</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>案例2：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span></span><br><span class="line"></span><br><span class="line"><span class="number">255.255</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于哪个网段？所在网段有多少个IP地址？该网段的广播地址是什么？</span><br><span class="line"></span><br><span class="line">答：</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于<span class="number">10.1</span><span class="number">.0</span><span class="number">.0</span>网段。</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.0</span><span class="number">.0</span>网段可用的IP地址范围：<span class="number">10.1</span><span class="number">.0</span><span class="number">.1</span>-<span class="number">10.1</span><span class="number">.255</span><span class="number">.254</span>      （<span class="number">2</span>^<span class="number">16</span>)-<span class="number">2</span>  =<span class="number">65534</span>个</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段的广播地址：<span class="number">10.1</span><span class="number">.255</span><span class="number">.255</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>总结：<strong>当主机位全部置0代表网段，主机位全部置255代表该网段的广播地址</strong></p>
+<p><strong>五、网关</strong></p>
+<p>网关：一个网络的出口，Gateway&#x3D;GW，一般网关是在路由器上</p>
+<p>路由器：可用连接内外网的设备。</p>
+<p>PC向外发包： </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、首先判断目标IP地址与自己是否在同一网段。 </span><br><span class="line"></span><br><span class="line"><span class="number">2</span>、如在同一网段，则直接发出去，而不找网关 </span><br><span class="line"></span><br><span class="line"><span class="number">3</span>、如不在同一网段，则直接发包给网关</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/ip-details/image-20230710193627270-1689047036561-61.png"><img   src="/images/loading.svg" data-src="/imgs/ip-details/image-20230710193627270-1689047036561-61.png"  alt="image-20230710193627270" lazyload></a></p>
+<p><strong>六、DNS</strong></p>
+<p><strong>DNS：Domain Name Service</strong> <strong>域名服务</strong></p>
+<p> <a class="simple-lightbox" href="/imgs/ip-details/image-20230710193634578-1689047036561-62.png"><img   src="/images/loading.svg" data-src="/imgs/ip-details/image-20230710193634578-1689047036561-62.png"  alt="image-20230710193634578" lazyload></a></p>
+<p>备注：</p>
+<p>1、1台PC需要连接外网，需要<strong>IP地址、子网掩码、网关、DNS</strong>四大参数</p>
+<p><strong>七、网络测试命令</strong></p>
+<p>1、如何查看IP地址首先：开始–运行–输入cmd–进入命令行窗口 或者win+r打开运行窗口</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ipconfig <span class="comment"># 查看IP地址基本信息 </span></span><br><span class="line"></span><br><span class="line">ipconfig /<span class="built_in">all</span> <span class="comment"># 查看IP地址详细信息</span></span><br></pre></td></tr></table></figure>
+
+<p>2、测试网络连通性</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ping 目标IP地址 <span class="comment"># 测试网络连通性，有去有回即为可以成功通信！ </span></span><br><span class="line"></span><br><span class="line">ping -t 目标IP地址 <span class="comment"># 一直ping </span></span><br><span class="line"></span><br><span class="line">ping -n 数字 目标IP地址 <span class="comment"># 修改ping包的数量 </span></span><br></pre></td></tr></table></figure>
+
+<p>注：如ping不通，可能对方不在线，或者对方开着防火墙！ </p>
+<p>3、手工解析域名</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nslookup www.jd.com  <span class="comment">#手工解析域名的IP地址</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p> <strong>IP地址</strong></p>
+<p>通信协议:TCP&#x2F;IP</p>
+<p>主机与主机之间牵涉到通信。通信三要素：IP地址，子网掩码，网关</p>
+<p>IP地址：IPv4占用32位（bit），以4个十进制数来表示，每一个数字占用一个8位组（00000000），组与</p>
+<p>组之间用点隔开。192.168.1.1。 </p>
+<p>IPV6  占128位</p>
+<p>32位IP地址包括了网络标识符和主机标识符</p>
+<p>网络标识符：每一个网络都有一个唯一的网络标识符</p>
+<p>主机标识符：相同网络内的每一台主机都有一个唯一的主机标识符</p>
+<p><strong>IP分类</strong></p>
+<p>IP地址可以分为ABCDE五大类,W.X.Y.Z</p>
+<p>10.68.1.32&#x2F;8</p>
+<p>主机位全为0是网络ip地址，网络号代表网络段本身。</p>
+<p>主机位全为1是广播地址。</p>
+<table>
+<thead>
+<tr>
+<th><strong>IP</strong>  <strong>地</strong>  <strong>址</strong>  <strong>类</strong>  <strong>型</strong></th>
+<th><strong>网络</strong>  <strong>标识</strong>  <strong>符</strong></th>
+<th><strong>主机</strong>  <strong>标识</strong>  <strong>符</strong></th>
+<th><strong>子网掩码</strong></th>
+<th><strong>W值  可以  为</strong></th>
+<th><strong>可用的网络数量</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>W</td>
+<td>X.Y.Z</td>
+<td>255.0.0.0</td>
+<td>1— 126</td>
+<td>126</td>
+</tr>
+<tr>
+<td>B</td>
+<td>W.X</td>
+<td>Y.Z</td>
+<td>255.255.0.0</td>
+<td>128  —  191</td>
+<td>(191-  128+1)*256&#x3D;16384</td>
+</tr>
+<tr>
+<td>C</td>
+<td>W.X.Y</td>
+<td>Z</td>
+<td>255.255.255.0</td>
+<td>192  —  223</td>
+<td>(223-192+1)*  (256^2)&#x3D;2097152</td>
+</tr>
+<tr>
+<td>D  组  播  地  址</td>
+<td></td>
+<td></td>
+<td></td>
+<td>224-  239</td>
+<td></td>
+</tr>
+<tr>
+<td>E  科  研  使  用</td>
+<td></td>
+<td></td>
+<td></td>
+<td>240-  254</td>
+<td></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>可用的网络数量就是网络标识符当中可用的数量，计算方式是W,X,Y,数量相乘</p>
+<p>目前使用的只有A,B,C三类ip地址。</p>
+<p>A、B、C  3类子网掩码可以修改！</p>
+</blockquote>
+<p>网络标识符不能是127：网络标识符127是提供环回测试使用的，可用来检测网卡与驱动程序是否正常。</p>
+<p>不能将它分配给主机使用</p>
+<p>通常使用127.0.0.1这个地址来代表主机本身。</p>
+<p>每一个网络的第一个ip地址（主机位全为0）代表网络本身，最后一个ip地址代表广播地址（主机位全为</p>
+<p>0），实际分配给主机的ip地址将减少2个。</p>
+<blockquote>
+<p>例：</p>
+<p>204.4.6.0 代表这个网段</p>
+<p>204.4.6.255 代表广播地址 </p>
+</blockquote>
+<p>  <strong>私网ip</strong> </p>
+<table>
+<thead>
+<tr>
+<th><strong>网络标识符</strong></th>
+<th><strong>子网掩码</strong></th>
+<th><strong>ip地址范围</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10.0.0.0</td>
+<td>255.0.0.0</td>
+<td>10.0.0.1-10.255.255.254</td>
+</tr>
+<tr>
+<td>172.16.0.0</td>
+<td>255.255.0.0</td>
+<td>172.16.0.1-172.31.255.254</td>
+</tr>
+<tr>
+<td>192.168.0.0</td>
+<td>255.255.255.0</td>
+<td>192.168.0.1-192.168.255.254</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h2><p>子网掩码由32位二进制组成。</p>
+<blockquote>
+<p>例：</p>
+<p>192.168.2.6&#x2F;24 代表前24位是不变的 网络标识符是 192.168.2.0    子网掩码 255.255.255.0</p>
+<p>192.168.3.7&#x2F;24                    网络标识符是192.168.3.0     子网掩码 255.255.255.0</p>
+</blockquote>
+<blockquote>
+<p>&#x2F;24 255.255.255.0    11111111.11111111.11111111.00000000</p>
+<p>&#x2F;16 255.255.0.0      11111111.11111111.00000000.00000000</p>
+<p>&#x2F;8  255.0.0.0         11111111.00000000.00000000.00000000</p>
+<p>11000000.10101000.00000010.00000111</p>
+<p>11000000.10101000.00000011.00000111</p>
+</blockquote>
+<h2 id="与运算"><a href="#与运算" class="headerlink" title="与运算"></a>与运算</h2><p>IP地址和子网掩码做与运算获得该ip的网段地址</p>
+<blockquote>
+<p> 11000000.10101000.00000010.00000110  192.168.2.6</p>
+<p> 11111111.11111111.11111111.00000000  24</p>
+<p> &#x3D;11000000.10101000.00000010.00000000   网络地址</p>
+<p> &#x3D;192.168.2.0</p>
+</blockquote>
+<p> 练习</p>
+<blockquote>
+<p>192.168.26.196&#x2F;28</p>
+<p>求</p>
+<p>​     网络标识符</p>
+<p>​     第一个IP地址</p>
+<p>​     最后一个IP地址</p>
+<p>​     广播地址</p>
+<p>解：</p>
+<p>因为28大于24</p>
+<p>所以前三位一样  192.168.26，最后一位需要计算</p>
+<p>把196转出二进制                                    11000100      </p>
+<p>子网掩码28多出四位                              11110000</p>
+<p>做与运算  相同为1，不同为0         11000000&#x3D;192  网络标识符就是192.168.26.192      </p>
+<p>第一个IP地址就是     192.168.26.193</p>
+<p>最后一个IP地址还不清楚，先算广播地址</p>
+<p>将子网掩码的0全部置换成1，IP前四位 写在前面             11001111    &#x3D;207</p>
+<p>广播地址为192.168.26.207</p>
+<p>广播地址减一，就是最后一个IP地址 192.168.26.206</p>
+<p>可用地址范围192.168.26.193   —— 192.168.26.206</p>
+</blockquote>
+<p>练习</p>
+<blockquote>
+<p> 172.16.223.75&#x2F;27</p>
+<p> 求</p>
+<p> ​     网络标识符</p>
+<p> ​     第一个IP地址</p>
+<p> ​     最后一个IP地址</p>
+<p> ​     广播地址</p>
+<p> 27&gt;24</p>
+<p> 01001011   &#x3D;75 </p>
+<p> 11100000  子网掩码</p>
+<p> 与运算  01000000 &#x3D;64   网络标识符 172.16.223.64</p>
+<p> 第一个IP地址172.16.223.65</p>
+<p> 01011111  &#x3D;95 广播地址172.16.223.95</p>
+<p> 最后一个地址 172.16.223.94</p>
+</blockquote>
+<p>练习</p>
+<blockquote>
+<p>156.36.98.124&#x2F;29</p>
+<p>解：</p>
+<p>124 &#x3D; 01111100</p>
+<p>​           11111000       子网掩码</p>
+<p>与运算01111000 &#x3D;120    网络标识符 156.36.98.120</p>
+<p>​           01111111&#x3D;127 广播地址   156.36.98.127</p>
+<p>第一个IP地址  156.36.98.121</p>
+<p>最后一个IP地址156.36.98.126</p>
+</blockquote>
+<h3 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h3><p>应用一∶某主机IP地址为68.35.9.72，子网掩码为255.255.255.128 &#x2F;25，求其网络地址?</p>
+<blockquote>
+<p>01001000    IP地址</p>
+<p>10000000   子网掩码</p>
+<p>00000000  与运算  网络地址68.35.9.0&#x2F;24</p>
+</blockquote>
+<p>某公司申请到的网络地址为192.168.36.0，现要划分5个子公司，最大的一个子公司有5台计算机，每个子公司在一个子网中，则(1)子网掩码应为多少?   (2)5个子公司的网络地址分别是什么?</p>
+<blockquote>
+<p>因为要划分5个子网，所以2^4&gt;5</p>
+<p>198.168.36.0&#x2F;28 </p>
+<p>11110000</p>
+<p>00001111  &#x3D;15</p>
+<p>第一个网络地址 192.168.36.0</p>
+<p>第一个广播地址 192.168.36.15</p>
+<p>第二个网络地址192.168.36.16</p>
+<p>第三个网络地址192.168.36.32</p>
+<p>第四个网络地址192.168.36.48</p>
+<p>第五个网络地址192.168.36.64</p>
+</blockquote>
+<p>1.某公司申请到一个C类IP地址，但要连接9个的子公司，最大的一个子公司有12台计算机，每个子公司在一个网段中，则子网掩码应设为255.255.255.240(最合适的)</p>
+<blockquote>
+<p>C类IP地址的子网掩码默认为255.255.255.0</p>
+<p>2^4          取四位 255.255.255.11110000  &#x3D;255.255.255.240</p>
+<p>主机位2^4 -2 &#x3D;14能容纳12台计算机</p>
+</blockquote>
+<ol start="2">
+<li>与10.110.12.29 mask 255.255.255.224属于同一网段的主机IP地址是(D )</li>
+</ol>
+<p>A. 10.110.12.0  B. 10.110.12.32</p>
+<p>C. 10.110.12.31 D. 10.110.12.30</p>
+<blockquote>
+<p>11100000  子网掩码</p>
+<p>00011101  IP地址</p>
+<p>00000000   与运算       网络地址        10.110.12.0</p>
+<p>00011111 广播地址 31     10.110.12.31</p>
+<p>第一个IP地址为10.110.12.1</p>
+<p>最后一个IP地址为10.110.12.30</p>
+</blockquote>
+<p>3.给定IP地址167.77.88.99和掩码255.255.255.240，它的子网号是什么?它的广播地址是什么?(A)</p>
+<p>A. 167.77.88.96、167.77.88.111 </p>
+<p>B. 167.77.88.64、167.77.88.111</p>
+<p>C. 167.77.88.92、167.77.88.192 </p>
+<p>D. 167.77.88.96、167.77.88.255   </p>
+<blockquote>
+<p>01100011  IP地址</p>
+<p>11110000  子网掩码</p>
+<p>01100000  &#x3D;96  与运算    网络地址 167.77.88.96</p>
+<p>01101111 &#x3D;111 广播地址 167.77.88.111 </p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/ip-details/95d418a09431ebe02723b31f5b29cb2.png"><img   src="/images/loading.svg" data-src="/imgs/ip-details/95d418a09431ebe02723b31f5b29cb2.png"  alt="95d418a09431ebe02723b31f5b29cb2" lazyload></a></p>
+<blockquote>
+<p>第一步 先看有多少台主机，如果主机数超过255，就根本做不出来   100+18+25+25+25  &lt;255</p>
+<p>第二步  看子网   五个部门，5个子网</p>
+<p>看2的几次方大于5   2^3</p>
+<p>2^3&gt; 5    </p>
+<p>所以取3位做子网，则子网掩码为255.255.255.11100000    子网掩码最小27位</p>
+<p>11100000      0代表主机地址     1代表可划分的子网    子网可划分2^3种</p>
+<p>部门1 需要100台计算机   2^7&gt;100  所以    1000000   部门1需要25位子网掩码</p>
+<p>200.200.200.0&#x2F;25  网络地址200.200.200.0  </p>
+<p>00000000  IP地址</p>
+<p>10000000  子网掩码</p>
+<p>01111111  &#x3D;127   广播地址 200.200.200.127</p>
+<p>部门2 有18台主机   2^5&gt;18    11100000    部门2需要27位子网掩码</p>
+<p>0-127已经被部门1占用</p>
+<p>200.200.200.128&#x2F;27          网络地址200.200.200.128</p>
+<p>10000000  IP地址</p>
+<p>11100000  子网掩码</p>
+<p>10011111   &#x3D;159 广播地址     200.200.200.159</p>
+<p>其他三个部门需要25台计算机   2^5&gt;25  部门3需要27位子网掩码</p>
+<p>部门3</p>
+<p>200.200.200.160&#x2F;27    网络地址200.200.200.160</p>
+<p>10100000</p>
+<p>11100000</p>
+<p>10111111    &#x3D;191 广播地址  200.200.200.191</p>
+<p>部门4</p>
+<p>网络地址 200.200.200.192</p>
+<p>广播地址 200.200.200.223</p>
+<p>部门5</p>
+<p>网络地址 200.200.200.224</p>
+<p>广播地址 200.200.200.255</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>子网掩码</th>
+<th>网络地址</th>
+<th>第一个主机地址</th>
+<th>最后一个地址</th>
+<th>广播地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>第一个部门</td>
+<td>200.200.200. 128</td>
+<td>200.200.200.0</td>
+<td>200.200.200.1</td>
+<td>200.200.200.127</td>
+<td>200.200.200.127</td>
+</tr>
+<tr>
+<td>第二个部门</td>
+<td>200.200.200.0 224</td>
+<td>200.200.200.128</td>
+<td>200.200.200.129</td>
+<td>200.200.200.158</td>
+<td>200.200.200.159</td>
+</tr>
+<tr>
+<td>第三个部门</td>
+<td>200.200.200.0 224</td>
+<td>200.200.200.160</td>
+<td>200.200.200.161</td>
+<td>200.200.200.190</td>
+<td>200.200.200.191</td>
+</tr>
+<tr>
+<td>第四个部门</td>
+<td>200.200.200.0 224</td>
+<td>200.200.200.192</td>
+<td>200.200.200.193</td>
+<td>200.200.200.222</td>
+<td>200.200.200.223</td>
+</tr>
+<tr>
+<td>第五个部门</td>
+<td>200.200.200.0 224</td>
+<td>200.200.200.224</td>
+<td>200.200.200.225</td>
+<td>200.200.200.254</td>
+<td>200.200.200.255</td>
+</tr>
+</tbody></table>
+<h2 id="进制转换"><a href="#进制转换" class="headerlink" title="进制转换"></a>进制转换</h2><p><a href="imgs/https://tool.lu/hexconvert/">进制转换在线工具</a><br><a href="imgs/https://blog.sciencenet.cn/blog-3428464-1243124.html">进制转换及原理他人博客</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">二进制（B）————&gt;<span class="number">0</span> ~ <span class="number">1</span></span><br><span class="line">八进制（O）————&gt;<span class="number">0</span> ~ <span class="number">7</span></span><br><span class="line">十进制 (D) ————&gt;<span class="number">0</span> ~ <span class="number">9</span></span><br><span class="line">十六进制（H）————&gt;<span class="number">0</span> ~ <span class="number">9</span> 、A(<span class="number">10</span>) ~ F(<span class="number">15</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="R进制转十进制"><a href="#R进制转十进制" class="headerlink" title="R进制转十进制"></a>R进制转十进制</h4><blockquote>
+<p><strong>按权展开求和</strong></p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/ip-details/6350ba23a2a44d83f5eb3500300a2d04-1689047036561-63.jpeg"><img   src="/images/loading.svg" data-src="/imgs/ip-details/6350ba23a2a44d83f5eb3500300a2d04-1689047036561-63.jpeg"  alt="img" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ip-details/fcdc30e16522164c8d95dd31ec0d3e00-1689047036561-65.jpeg"><img   src="/images/loading.svg" data-src="/imgs/ip-details/fcdc30e16522164c8d95dd31ec0d3e00-1689047036561-65.jpeg"  alt="img" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ip-details/70baa8830dff2531955d4458bcec57b8-1689047036561-66.jpeg"><img   src="/images/loading.svg" data-src="/imgs/ip-details/70baa8830dff2531955d4458bcec57b8-1689047036561-66.jpeg"  alt="img" lazyload></a></p>
+<hr>
+<p><a class="simple-lightbox" href="/imgs/ip-details/image-20230708094600037-1689047036561-67.png"><img   src="/images/loading.svg" data-src="/imgs/ip-details/image-20230708094600037-1689047036561-67.png"  alt="image-20230708094600037" lazyload></a></p>
+<h4 id="十进制转R进制"><a href="#十进制转R进制" class="headerlink" title="十进制转R进制"></a>十进制转R进制</h4><p><a class="simple-lightbox" href="/imgs/ip-details/2c9b37fee66f4def7fb496c118110bc9-1689047036561-68.jpeg"><img   src="/images/loading.svg" data-src="/imgs/ip-details/2c9b37fee66f4def7fb496c118110bc9-1689047036561-68.jpeg"  alt="img" lazyload></a></p>
+<h4 id="二进制八进制互相转换"><a href="#二进制八进制互相转换" class="headerlink" title="二进制八进制互相转换"></a>二进制八进制互相转换</h4><blockquote>
+<p> <strong>三位一并法</strong></p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/ip-details/a423abd5d4918b24106b23bdcbb0ff97-1688733632616-11-1689047036561-69.jpeg"><img   src="/images/loading.svg" data-src="/imgs/ip-details/a423abd5d4918b24106b23bdcbb0ff97-1688733632616-11-1689047036561-69.jpeg"  alt="img" lazyload></a></p>
+<h4 id="二进制十六进制互相转换"><a href="#二进制十六进制互相转换" class="headerlink" title="二进制十六进制互相转换"></a>二进制十六进制互相转换</h4><blockquote>
+<p><strong>四位一并法</strong></p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/ip-details/2a0dac0a587abdb8c4c8f56329c57b5e-1689047036561-70.jpeg"><img   src="/images/loading.svg" data-src="/imgs/ip-details/2a0dac0a587abdb8c4c8f56329c57b5e-1689047036561-70.jpeg"  alt="img" lazyload></a></p>
+<h4 id="八进制和十六进制转换"><a href="#八进制和十六进制转换" class="headerlink" title="八进制和十六进制转换"></a>八进制和十六进制转换</h4><p><a class="simple-lightbox" href="/imgs/ip-details/6b1fab8baaf42da936152875fc18facd.jpeg"><img   src="/images/loading.svg" data-src="/imgs/ip-details/6b1fab8baaf42da936152875fc18facd.jpeg"  alt="6b1fab8baaf42da936152875fc18facd" lazyload></a></p>
+<p>…</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81"><span class="top-box-text">子网掩码</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%8E%E8%BF%90%E7%AE%97"><span class="top-box-text">与运算</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0"><span class="top-box-text">练习</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2"><span class="top-box-text">进制转换</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/10/ntfs-permissions/">
+          <h3 class="post-title">
+            
+            下一篇：NTFS权限
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

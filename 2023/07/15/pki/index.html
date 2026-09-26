@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>PKI</title>
+<meta name="keywords" content="PKI, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="PKI概述12345名称：Public Key Infrastructure  公钥基础设施，是目前网络安全建设的基础与核心作用：通过加密技术和数字签名保证信息的安全组成：公钥加密技术、数字证书、CA、RA
+
+加密算法1.对称加密算法   ">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="PKI">
+<meta property="og:description" content="PKI概述12345名称：Public Key Infrastructure  公钥基础设施，是目前网络安全建设的基础与核心作用：通过加密技术和数字签名保证信息的安全组成：公钥加密技术、数字证书、CA、RA
+
+加密算法1.对称加密算法   ">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">PKI</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-15</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/PKI/">
+              PKI
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h2 id="PKI概述"><a href="#PKI概述" class="headerlink" title="PKI概述"></a>PKI概述</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">名称：Public Key Infrastructure  公钥基础设施，是目前网络安全建设的基础与核心</span><br><span class="line"></span><br><span class="line">作用：通过加密技术和数字签名保证信息的安全</span><br><span class="line"></span><br><span class="line">组成：公钥加密技术、数字证书、CA、RA</span><br></pre></td></tr></table></figure>
+
+<h2 id="加密算法"><a href="#加密算法" class="headerlink" title="加密算法"></a>加密算法</h2><p><strong>1.对称加密算法</strong>   </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">所谓对称即加解密的密钥一致！</span><br><span class="line">对称密钥是由双方的对称加密算法协商生成的！不是人为配置的！</span><br><span class="line">对称算法优点：加密速度快</span><br><span class="line">对称算法缺点：密钥key容易丢失，因为双方协商生成key的时候是明文传输</span><br><span class="line">常见算法：DES   3DES AES</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.非对称加密算法</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">所谓非对称即加密与解密的密钥不一致！</span><br><span class="line">通信双方各自产生一对公私钥。</span><br><span class="line">双方各自交换公钥</span><br><span class="line">公钥和私钥为互相加解密关系！</span><br><span class="line">公私钥不可互相逆推！ </span><br><span class="line">常见算法：RSA DH</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安全程度是由秘钥长度决定</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="数据传输加密流程"><a href="#数据传输加密流程" class="headerlink" title="数据传输加密流程"></a>数据传输加密流程</h2><p><strong>完整性加密算法</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">完整性算法=<span class="built_in">hash</span>算法=哈希算法</span><br><span class="line">HASH算法：MD5  SHA(验证完整性)</span><br><span class="line">HASH值可逆么？不可逆！</span><br><span class="line">HASH值=摘要</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715112904200.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715112904200.png"  alt="image-20230715112904200" lazyload></a></p>
+<p><strong>数字签名</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">用自己的私钥对摘要加密得出的密文就是数字签名</span><br></pre></td></tr></table></figure>
+
+<p><strong>加密总结</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">机密性：使用对方的公钥加密！</span><br><span class="line">身份验验证：用自己的私钥加密！</span><br><span class="line">数字签名：用自己的私钥对<span class="built_in">hash</span>摘要加密！</span><br></pre></td></tr></table></figure>
+
+<p><strong>证书</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">证书用于保证公密的合法性证书格式遵循X<span class="number">.509</span>标准</span><br><span class="line">数字证书包含信息：使用者的公钥值使用者标识信息（如名称和电子邮件地址）有效期（证书的有效时间）颁发者标识信息颁发者的数字签名</span><br><span class="line">数字证书由权威公正的第三方机构即CA签发</span><br></pre></td></tr></table></figure>
+
+<p><strong>CA</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CA:是权威证书颁发机构，为了公正<span class="string">&quot;公钥”的合法性！</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715113929750.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715113929750.png"  alt="image-20230715113929750" lazyload></a></p>
+<h2 id="部署https网站"><a href="#部署https网站" class="headerlink" title="部署https网站"></a>部署https网站</h2><p>win7  IP设置</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715114106040.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715114106040.png"  alt="image-20230715114106040" lazyload></a></p>
+<p>server2008 IP设置</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715114138138.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715114138138.png"  alt="image-20230715114138138" lazyload></a></p>
+<p>搭建IIS服务器</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715114411462.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715114411462.png"  alt="image-20230715114411462" lazyload></a></p>
+<p>搭建DNS服务器</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715135903574.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715135903574.png"  alt="image-20230715135903574" lazyload></a></p>
+<p>win7 上访问 IIS服务器</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715135829105.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715135829105.png"  alt="image-20230715135829105" lazyload></a></p>
+<p>新建网站</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715141221973.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715141221973.png"  alt="image-20230715141221973" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715141344150.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715141344150.png"  alt="image-20230715141344150" lazyload></a></p>
+<p>在网站存放路径下<code>C:\inetpub\wwwroot\zs</code>下创建index.html以记事本打开，写入<code>hello world</code>，保存</p>
+<p>win7中访问 查看</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715141647248.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715141647248.png"  alt="image-20230715141647248" lazyload></a></p>
+<p>添加证书服务</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715141901745.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715141901745.png"  alt="image-20230715141901745" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715142151372.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715142151372.png"  alt="image-20230715142151372" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715142200785.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715142200785.png"  alt="image-20230715142200785" lazyload></a></p>
+<p>进入证书颁发机构</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715142239818.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715142239818.png"  alt="image-20230715142239818" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715142300530.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715142300530.png"  alt="image-20230715142300530" lazyload></a></p>
+<p>创建证书申请</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715142534577.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715142534577.png"  alt="image-20230715142534577" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715142610214.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715142610214.png"  alt="image-20230715142610214" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715142627222.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715142627222.png"  alt="image-20230715142627222" lazyload></a></p>
+<p>server2008打开浏览器访问<code>10.1.1.1/certsrv</code></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715142715694.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715142715694.png"  alt="image-20230715142715694" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143016758.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143016758.png"  alt="image-20230715143016758" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143053526.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143053526.png"  alt="image-20230715143053526" lazyload></a></p>
+<p>在证书机构里可以看到挂起的证书</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143113389.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143113389.png"  alt="image-20230715143113389" lazyload></a></p>
+<p>颁发</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143200129.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143200129.png"  alt="image-20230715143200129" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143214535.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143214535.png"  alt="image-20230715143214535" lazyload></a></p>
+<p>回到浏览器</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143255150.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143255150.png"  alt="image-20230715143255150" lazyload></a></p>
+<p>下载证书，并保存到桌面，命名为zs.cer</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143332348.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143332348.png"  alt="image-20230715143332348" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143402208.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143402208.png"  alt="image-20230715143402208" lazyload></a></p>
+<p>证书有了后，回到IIS服务器，查看完成 证书申请</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143512627.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143512627.png"  alt="image-20230715143512627" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143549364.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143549364.png"  alt="image-20230715143549364" lazyload></a></p>
+<p>绑定</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143622714.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143622714.png"  alt="image-20230715143622714" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143723226.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143723226.png"  alt="image-20230715143723226" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143744534.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143744534.png"  alt="image-20230715143744534" lazyload></a></p>
+<p>win7浏览器访问<code>https://www.zs.com</code> ,点击继续浏览此网站</p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715143847704.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715143847704.png"  alt="image-20230715143847704" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/pki/image-20230715145417150-1689405500759-192.png"><img   src="/images/loading.svg" data-src="/imgs/pki/image-20230715145417150-1689405500759-192.png"  alt="image-20230715145417150" lazyload></a></p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#PKI%E6%A6%82%E8%BF%B0"><span class="top-box-text">PKI概述</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95"><span class="top-box-text">加密算法</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E5%8A%A0%E5%AF%86%E6%B5%81%E7%A8%8B"><span class="top-box-text">数据传输加密流程</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E9%83%A8%E7%BD%B2https%E7%BD%91%E7%AB%99"><span class="top-box-text">部署https网站</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/15/windows-domain/">
+          <h3 class="post-title">
+            
+            下一篇：Domain域
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

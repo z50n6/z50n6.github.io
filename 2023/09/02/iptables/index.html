@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>包过滤防火墙——iptables静态防火墙的简单使用</title>
+<meta name="keywords" content="包过滤防火墙——iptables静态防火墙的简单使用, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+ 防火墙就是堵和通的作用
+
+iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
+核心：四表五链
+规则链的分类–五链在进行路由选择前处理的数据包：PREROUTING
+处理流入的数据包：INPUT
+处理流出的数据包：">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="包过滤防火墙——iptables静态防火墙的简单使用">
+<meta property="og:description" content="
+ 防火墙就是堵和通的作用
+
+iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
+核心：四表五链
+规则链的分类–五链在进行路由选择前处理的数据包：PREROUTING
+处理流入的数据包：INPUT
+处理流出的数据包：">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">包过滤防火墙——iptables静态防火墙的简单使用</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-09-02</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Linux/">
+              Linux
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E9%98%B2%E7%81%AB%E5%A2%99/">
+              防火墙
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <blockquote>
+<p> 防火墙就是堵和通的作用</p>
+</blockquote>
+<p>iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具</p>
+<p>核心：四表五链</p>
+<h2 id="规则链的分类–五链"><a href="#规则链的分类–五链" class="headerlink" title="规则链的分类–五链"></a>规则链的分类–五链</h2><p>在进行路由选择前处理的数据包：<strong>PREROUTING</strong></p>
+<p>处理流入的数据包：<strong>INPUT</strong></p>
+<p>处理流出的数据包：<strong>OUTPUT</strong></p>
+<p>处理转发的数据包：<strong>FORWARD</strong></p>
+<p>在进行路由选择后处理的数据包：<strong>POSTROUTING</strong></p>
+<h2 id="处理的动作"><a href="#处理的动作" class="headerlink" title="处理的动作"></a>处理的动作</h2><p>ACCEPT：允许流量通过</p>
+<p>REJECT：拒绝流量通过  （流量拒绝会通知，会返回流量拒绝信息）</p>
+<p>LOG：记录日志信息</p>
+<p>DROP：拒绝流量通过，丢弃  （直接把流量丢弃，不会返回任何值）</p>
+<h2 id="iptables常用参数和作用"><a href="#iptables常用参数和作用" class="headerlink" title="iptables常用参数和作用"></a>iptables常用参数和作用</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-P</td>
+<td>设置默认策略</td>
+</tr>
+<tr>
+<td>-F</td>
+<td>清空规则链</td>
+</tr>
+<tr>
+<td>-L</td>
+<td>查看规则链</td>
+</tr>
+<tr>
+<td>-A</td>
+<td>在规则链的<strong>末尾加</strong>入新的规则</td>
+</tr>
+<tr>
+<td>-l  num</td>
+<td>在规则链的<strong>头部加</strong>入新的规则</td>
+</tr>
+<tr>
+<td>-D num</td>
+<td>在规则链中<strong>删除</strong>某一条规则链</td>
+</tr>
+<tr>
+<td>-s</td>
+<td>匹配来源的ip&#x2F;MASK</td>
+</tr>
+<tr>
+<td>-d</td>
+<td>匹配目标地址</td>
+</tr>
+<tr>
+<td>-i  网卡名称</td>
+<td>匹配这块网卡<strong>流入</strong>的数据</td>
+</tr>
+<tr>
+<td>-o 网卡名称</td>
+<td>匹配这块网卡<strong>流出</strong>的数据</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>匹配<strong>协议</strong>，例如：TCP、UDP、ICMP</td>
+</tr>
+<tr>
+<td>–dport  num</td>
+<td>匹配目标端口号</td>
+</tr>
+<tr>
+<td>–sport  num</td>
+<td>匹配来源端口号</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>以Centos7和Kali为例</p>
+<p>Centos——IP地址：192.168.80.131</p>
+<p>Kali————IP地址：192.168.80.141</p>
+</blockquote>
+<p>先停止、禁用<code>firewalld</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>&#x3D;&#x3D;<strong>查看规则链</strong>&#x3D;&#x3D;</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -L</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/iptables/758ad07788534dc983348b14d3a0d44e.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/758ad07788534dc983348b14d3a0d44e.png"  alt="在这里插入图片描述" lazyload></a></p>
+<ul>
+<li>&#x3D;&#x3D;<strong>清空规则链</strong>&#x3D;&#x3D;</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F</span><br></pre></td></tr></table></figure>
+
+<p>其实刚开始在没有配置规则的使用，查看规则链的时候就是空的</p>
+<ul>
+<li>&#x3D;&#x3D;<strong>设置默认规则   ，将流入的流量丢掉</strong>&#x3D;&#x3D;</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -P INPUT DROP</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/iptables/accf405f0aa1d4b9cfaa3d53a0fc6899.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/accf405f0aa1d4b9cfaa3d53a0fc6899.png"  alt="image-20230902173734183" lazyload></a></p>
+<p>命令回车 之后会发现，输入任何命令已经没有反应了</p>
+<p>因为我是通过<code>SSH</code>连接到<code>Centos7</code>系统的，流量属于流入的流量，通过<code>iptables -P INPUT DROP</code>命令将流入的流量全部都禁掉了，所以就不能SSH连接了</p>
+<p>主机使用<code>ping</code>命令也会ping不通centos</p>
+<p><a class="simple-lightbox" href="/imgs/iptables/e061287e2bb7d9275dd2af52bf1a1e6f.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/e061287e2bb7d9275dd2af52bf1a1e6f.png"  alt="image-20230902174220184" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;允许icmp协议流量通过&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p icmp -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/iptables/d5e794232892c5e2535d2efead729f9c.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/d5e794232892c5e2535d2efead729f9c.png"  alt="image-20230902180051540" lazyload></a></p>
+<p>再次测试网络连通性就 可以通了</p>
+<p><a class="simple-lightbox" href="/imgs/iptables/f68326f45de81fb139ad5ece6b093324.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/f68326f45de81fb139ad5ece6b093324.png"  alt="image-20230902175255098" lazyload></a></p>
+<p>虽然能ping通,但是ssh还是连接不上 ，因为没有设置允许tcp协议（ssh协议用的是tcp协议） 流量通过</p>
+<ul>
+<li>&#x3D;&#x3D;<strong>可以显示规则的行数</strong>&#x3D;&#x3D;</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -nL --line-numbers</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>&#x3D;&#x3D;<strong>删除刚才的默认策略</strong>&#x3D;&#x3D;</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -D INPUT 1</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/iptables/821779127fced8f82f60a6425b12c918.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/821779127fced8f82f60a6425b12c918.png"  alt="image-20230902180227773" lazyload></a></p>
+<ul>
+<li>&#x3D;&#x3D;<strong>允许所有流量通过</strong>&#x3D;&#x3D;</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -P INPUT ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/iptables/7ca03cbf60701a72a69b2a3828ff884e.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/7ca03cbf60701a72a69b2a3828ff884e.png"  alt="image-20230902180424300" lazyload></a></p>
+<p>现在<code>SSH</code>就能 连接成功了</p>
+<p><a class="simple-lightbox" href="/imgs/iptables/3443707d741661e8af7513b86f1d6bb9.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/3443707d741661e8af7513b86f1d6bb9.png"  alt="image-20230902180605329" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;所有进来的22端口的TCP流量都给拒绝&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -p tcp --dport 22 -j REJECT</span><br></pre></td></tr></table></figure>
+
+<p>命令回车后，<code>ssh</code>就不能连接了，已经被拒绝了</p>
+<p><a class="simple-lightbox" href="/imgs/iptables/5eb4533fd7ea4ccf5ad2cf2888a951e0.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/5eb4533fd7ea4ccf5ad2cf2888a951e0.png"  alt="image-20230902181045147" lazyload></a></p>
+<p>查看一个规则</p>
+<p><a class="simple-lightbox" href="/imgs/iptables/66bf171d5a1516cde991afa4245d603f.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/66bf171d5a1516cde991afa4245d603f.png"  alt="image-20230902181347523" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;允许192.168.80.0网段的22端口通过&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.80.0/24 -p tcp --dport 22 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/iptables/e93b25b5e512cfb2acef33b0203c60e3.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/e93b25b5e512cfb2acef33b0203c60e3.png"  alt="image-20230902182919230" lazyload></a></p>
+<p>&#x3D;&#x3D;<strong>匹配规则：从上往下</strong>&#x3D;&#x3D;</p>
+<hr>
+<ul>
+<li>&#x3D;&#x3D;<strong>设置某个端口流量全部拒绝</strong>&#x3D;&#x3D;  （UDP、TCP）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 80 -j REJECT</span><br><span class="line">iptables -I INPUT -p udp --dport 80 -j REJECT</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>&#x3D;&#x3D;在input链中添加某个IP拒绝访问某个端口&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp -s 192.168.80.1 --dport 8080 -j REJECT</span><br></pre></td></tr></table></figure>
+
+<p>这里不能直接写真实机的地址，应该写<code>VMnet8</code>的地址，这样才能限制住真实机的访问</p>
+<p><a class="simple-lightbox" href="/imgs/iptables/d60b075208b8d96dbf58269ca031fdbb.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/d60b075208b8d96dbf58269ca031fdbb.png"  alt="image-20230902190144279" lazyload></a></p>
+<p>Centos开启<code>8080</code>端口服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 8080</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/iptables/32ed844161547993c2d48f4ace44c98a.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/32ed844161547993c2d48f4ace44c98a.png"  alt="image-20230902190340997" lazyload></a></p>
+<p>kali可以访问到</p>
+<p><a class="simple-lightbox" href="/imgs/iptables/4fbdaab740bf08452648ddeb242d8653.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/4fbdaab740bf08452648ddeb242d8653.png"  alt="image-20230902184716297" lazyload></a></p>
+<p>真实机就访问不到了</p>
+<p><a class="simple-lightbox" href="/imgs/iptables/99675b64e96fe7b2c14eece47445e2f9.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/99675b64e96fe7b2c14eece47445e2f9.png"  alt="image-20230902190031690" lazyload></a></p>
+<ul>
+<li><strong>&#x3D;&#x3D;清空所有策略&#x3D;&#x3D;</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/iptables/db31e295aab622a7a27809b9a202e1ee.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/db31e295aab622a7a27809b9a202e1ee.png"  alt="image-20230902190449942" lazyload></a></p>
+<ul>
+<li>&#x3D;&#x3D;<strong>禁用某一段端口</strong>&#x3D;&#x3D;</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -p tcp --dport 8000:9000 -j REJECT</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>&#x3D;&#x3D;<strong>保存规则</strong>&#x3D;&#x3D;</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables-save</span><br><span class="line">iptables-save &gt; 1.txt</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ip99/p/15313691.html">https://www.cnblogs.com/ip99/p/15313691.html</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/machangwei-8/p/15978257.html">https://www.cnblogs.com/machangwei-8/p/15978257.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/u014644574/article/details/130071097">https://blog.csdn.net/u014644574/article/details/130071097</a></p>
+</blockquote>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E8%A7%84%E5%88%99%E9%93%BE%E7%9A%84%E5%88%86%E7%B1%BB%E2%80%93%E4%BA%94%E9%93%BE"><span class="top-box-text">规则链的分类–五链</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%A4%84%E7%90%86%E7%9A%84%E5%8A%A8%E4%BD%9C"><span class="top-box-text">处理的动作</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#iptables%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E5%92%8C%E4%BD%9C%E7%94%A8"><span class="top-box-text">iptables常用参数和作用</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/15/pki/">
+          <h3 class="post-title">
+            
+            下一篇：PKI
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

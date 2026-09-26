@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>NTFS权限</title>
+<meta name="keywords" content="NTFS权限, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+通过设置NTFS权限，实现不同的用户访问不同的权限
+分配了正确的访问权限后，用户才能访问其资源
+设置权限防止资源被篡改，删除
+
+文件系统即在外部存储设备上组织文件的方法
+常见的文件系统：
+123FAT 		windowsNTFS		win">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="NTFS权限">
+<meta property="og:description" content="
+通过设置NTFS权限，实现不同的用户访问不同的权限
+分配了正确的访问权限后，用户才能访问其资源
+设置权限防止资源被篡改，删除
+
+文件系统即在外部存储设备上组织文件的方法
+常见的文件系统：
+123FAT 		windowsNTFS		win">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">NTFS权限</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-10</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/NTFS/">
+              NTFS
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <ol>
+<li>通过设置NTFS权限，实现不同的用户访问不同的权限</li>
+<li>分配了正确的访问权限后，用户才能访问其资源</li>
+<li>设置权限<strong>防止资源被篡改，删除</strong></li>
+</ol>
+<p><strong>文件系统</strong>即在外部存储设备上组织文件的方法</p>
+<p><strong>常见的文件系统：</strong></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FAT 		windows</span><br><span class="line">NTFS		windows</span><br><span class="line">EXT			linux常见</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/20669753b7b573014484aa3125133260-1665381371503-15-1688981748565-1-1689046945408-29.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/20669753b7b573014484aa3125133260-1665381371503-15-1688981748565-1-1689046945408-29.png"  alt="20669753b7b573014484aa3125133260-1665381371503-15" lazyload></a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FAT转换为NTFS，convert  盘符: /fs:ntfs         #数据不丢失，但不可逆</span><br></pre></td></tr></table></figure>
+
+<p><strong>特点</strong></p>
+<ol>
+<li>磁盘读写性能提高</li>
+<li>可靠性：加密文件系统，访问控制列表</li>
+<li>磁盘利用率提高，支持压缩或者磁盘配额，支持单个文件大于4个G</li>
+</ol>
+<h2 id="权限修改"><a href="#权限修改" class="headerlink" title="权限修改"></a>权限修改</h2><p><strong>取消继承</strong></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710174129910-1689046945408-30.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710174129910-1689046945408-30.png"  alt="image-20230710174129910" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710174146558-1689046945409-31.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710174146558-1689046945409-31.png"  alt="image-20230710174146558" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710174232127-1689046945409-32.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710174232127-1689046945409-32.png"  alt="image-20230710174232127" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710174258824-1689046945409-33.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710174258824-1689046945409-33.png"  alt="image-20230710174258824" lazyload></a></p>
+<h2 id="文件及文件夹权限"><a href="#文件及文件夹权限" class="headerlink" title="文件及文件夹权限"></a>文件及文件夹权限</h2><ul>
+<li><strong>文件</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>文件权限</strong></th>
+<th><strong>权限内容</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>完全控制</td>
+<td>拥有读取、写入、修改、删除文件、及特殊的权限</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>拥有读取、写入、修改、删除文件的权限</td>
+</tr>
+<tr>
+<td>读取和执行</td>
+<td>拥有读取、及执行文件的权限</td>
+</tr>
+<tr>
+<td>读取</td>
+<td>拥有读取文件的权限</td>
+</tr>
+<tr>
+<td>写入</td>
+<td>拥有修改文件内容的权限</td>
+</tr>
+<tr>
+<td>特殊权限</td>
+<td>控制文件权限列表的权限</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>文件夹</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>文件夹权限</strong></th>
+<th><strong>权限内容</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>完全控制</td>
+<td>拥有对文件及文件夹读取、写入、修改、删除文件、及特殊的权限</td>
+</tr>
+<tr>
+<td>修改</td>
+<td>拥有对文件及文件夹读取、写入、修改、删除文件的权限</td>
+</tr>
+<tr>
+<td>读取和执行</td>
+<td>拥有对文件夹中的文件下载、读取、及执行的权限</td>
+</tr>
+<tr>
+<td>列出文件夹内容</td>
+<td>可以列出文件夹的内容</td>
+</tr>
+<tr>
+<td>读取</td>
+<td>拥有对文件夹中的文件下载、读取的权限</td>
+</tr>
+<tr>
+<td>写入</td>
+<td>拥有在文件夹中创建新的文件的权限</td>
+</tr>
+<tr>
+<td>特殊权限</td>
+<td>控制文件夹权限列表的权限</td>
+</tr>
+</tbody></table>
+<ul>
+<li>案例</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">建立jimi文件夹，并设置NTFS权限，要求a用户只能读取文件夹中的文件，不能在jimi文件夹中创建新的文件，b用户只能在jimi文件夹中创建新的文件，不能读取文件。</span><br></pre></td></tr></table></figure>
+
+<h2 id="权限累加"><a href="#权限累加" class="headerlink" title="权限累加"></a>权限累加</h2><p>当用户同时属于多个组时，权限是累加的!</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">用户a同时属于IT组与HR组，IT组对文件夹jimi可以读取，HR组可以对jimi文件夹写入，则a用户最终的权限为读取和写入。</span><br></pre></td></tr></table></figure>
+
+<p> 以管理员账户登录，创建用户和组</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">net user a !a123 /add</span><br><span class="line">net localgroup IT /add</span><br><span class="line">net localgroup HR /add</span><br><span class="line">net localgroup IT a /add</span><br><span class="line">net localgroup HR a /add</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710184845230-1689046945409-34.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710184845230-1689046945409-34.png"  alt="image-20230710184845230" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710184914157-1689046945409-35.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710184914157-1689046945409-35.png"  alt="image-20230710184914157" lazyload></a></p>
+<h2 id="拒绝最大"><a href="#拒绝最大" class="headerlink" title="拒绝最大"></a>拒绝最大</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">添加c用户,同时添加到IT组和HR组,让c用户不能访问jimi文件夹</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">net user c !a123 /add</span><br><span class="line">net localgroup HR c /add</span><br><span class="line">net localgroup IT c /add</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710185354881-1689046945409-36.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710185354881-1689046945409-36.png"  alt="image-20230710185354881" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710185519909-1689046945409-38.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710185519909-1689046945409-38.png"  alt="image-20230710185519909" lazyload></a></p>
+<h2 id="强制继承"><a href="#强制继承" class="headerlink" title="强制继承"></a>强制继承</h2><p>默认只有administrator有这个权限！</p>
+<p>作用：可以将任何文件夹的所有者改为administrator</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">新建test文件夹</span><br><span class="line">用户c已离职，但test文件夹的属主是c，由于c用户对test文件夹做过权限修改，导致其他用户对test文件夹没有任何权限，现需要管理员administrator用户将test文件夹重新修改权限。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>先取消权限继承，给c用户设置完全控制权限，删除其他组，只给c用户设置访问test文件夹的权限</p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710185910395-1689046945409-37.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710185910395-1689046945409-37.png"  alt="image-20230710185910395" lazyload></a></p>
+<p>然后以管理员身份访问，显示无权限访问</p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710190036205-1689046945409-39.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710190036205-1689046945409-39.png"  alt="image-20230710190036205" lazyload></a></p>
+<p>点击test文件夹，点击右键属性</p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710190223756-1689046945409-40.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710190223756-1689046945409-40.png"  alt="image-20230710190223756" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710190402683-1689046945409-41.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710190402683-1689046945409-41.png"  alt="image-20230710190402683" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710190518626-1689046945409-42.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710190518626-1689046945409-42.png"  alt="image-20230710190518626" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710190543129-1689046945409-43.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710190543129-1689046945409-43.png"  alt="image-20230710190543129" lazyload></a></p>
+<h2 id="文件复制对权限的影响"><a href="#文件复制对权限的影响" class="headerlink" title="文件复制对权限的影响"></a>文件复制对权限的影响</h2><ul>
+<li><p>同分区复制文件：权限覆盖</p>
+</li>
+<li><p>同分区移动文件：权限不变</p>
+</li>
+<li><p>不同分区复制或者移动：权限覆盖</p>
+</li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%9D%83%E9%99%90%E4%BF%AE%E6%94%B9"><span class="top-box-text">权限修改</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%96%87%E4%BB%B6%E5%8F%8A%E6%96%87%E4%BB%B6%E5%A4%B9%E6%9D%83%E9%99%90"><span class="top-box-text">文件及文件夹权限</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%9D%83%E9%99%90%E7%B4%AF%E5%8A%A0"><span class="top-box-text">权限累加</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%8B%92%E7%BB%9D%E6%9C%80%E5%A4%A7"><span class="top-box-text">拒绝最大</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%BC%BA%E5%88%B6%E7%BB%A7%E6%89%BF"><span class="top-box-text">强制继承</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%96%87%E4%BB%B6%E5%A4%8D%E5%88%B6%E5%AF%B9%E6%9D%83%E9%99%90%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="top-box-text">文件复制对权限的影响</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/08/arp-attack/">
+          <h3 class="post-title">
+            
+            下一篇：ARP断网攻击
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

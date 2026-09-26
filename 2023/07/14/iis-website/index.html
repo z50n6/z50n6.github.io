@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>IIS网站搭建</title>
+<meta name="keywords" content="IIS网站搭建, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="IIS搭建
+
+
+打开IIS管理器
+
+地址栏输入127.0.0.1 出现下面的界面，说明IIS服务已经搭建好了
+
+网站部署
+先找到默认文档
+
+添加index.asp
+
+启动父路径
+
+
+
+
+
+
+把解压的ok3文件夹 复制粘贴到 wwwroot路">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="IIS网站搭建">
+<meta property="og:description" content="IIS搭建
+
+
+打开IIS管理器
+
+地址栏输入127.0.0.1 出现下面的界面，说明IIS服务已经搭建好了
+
+网站部署
+先找到默认文档
+
+添加index.asp
+
+启动父路径
+
+
+
+
+
+
+把解压的ok3文件夹 复制粘贴到 wwwroot路">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">IIS网站搭建</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-14</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/IIS/">
+              IIS
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h2 id="IIS搭建"><a href="#IIS搭建" class="headerlink" title="IIS搭建"></a>IIS搭建</h2><p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714153057971.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714153057971.png"  alt="image-20230714153057971" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714153153275.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714153153275.png"  alt="image-20230714153153275" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714153322293.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714153322293.png"  alt="image-20230714153322293" lazyload></a></p>
+<p>打开IIS管理器</p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714153407279.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714153407279.png"  alt="image-20230714153407279" lazyload></a></p>
+<p>地址栏输入<code>127.0.0.1</code> 出现下面的界面，说明IIS服务已经搭建好了</p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714153520636.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714153520636.png"  alt="image-20230714153520636" lazyload></a></p>
+<h2 id="网站部署"><a href="#网站部署" class="headerlink" title="网站部署"></a>网站部署</h2><p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714153744199.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714153744199.png"  alt="image-20230714153744199" lazyload></a></p>
+<p>先找到默认文档</p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155044641.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155044641.png"  alt="image-20230714155044641" lazyload></a></p>
+<p>添加index.asp</p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155118349.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155118349.png"  alt="image-20230714155118349" lazyload></a></p>
+<p>启动父路径</p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155227105.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155227105.png"  alt="image-20230714155227105" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155341384.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155341384.png"  alt="image-20230714155341384" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155450967.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155450967.png"  alt="image-20230714155450967" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155519970.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155519970.png"  alt="image-20230714155519970" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155605409.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155605409.png"  alt="image-20230714155605409" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155615391.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155615391.png"  alt="image-20230714155615391" lazyload></a></p>
+<p>把解压的ok3文件夹 复制粘贴到 wwwroot路径下</p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714155714329.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714155714329.png"  alt="image-20230714155714329" lazyload></a></p>
+<p>浏览器访问</p>
+<p><a class="simple-lightbox" href="/imgs/iis-website/image-20230714160153971-1689405377354-97.png"><img   src="/images/loading.svg" data-src="/imgs/iis-website/image-20230714160153971-1689405377354-97.png"  alt="image-20230714160153971" lazyload></a></p>
+<p>..</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#IIS%E6%90%AD%E5%BB%BA"><span class="top-box-text">IIS搭建</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%BD%91%E7%AB%99%E9%83%A8%E7%BD%B2"><span class="top-box-text">网站部署</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/12/dhcp/">
+          <h3 class="post-title">
+            
+            下一篇：DHCP部署与安全
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

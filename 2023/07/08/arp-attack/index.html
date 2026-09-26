@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>ARP断网攻击</title>
+<meta name="keywords" content="ARP断网攻击, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;攻击
+12PC1的IP地址 10.9.136.222PC2的IP地址 10.9.136.55
+
+12在局域网里通信 需要有IP地址和MAC地址两台电脑PC1和PC2要想相互通信，">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="ARP断网攻击">
+<meta property="og:description" content="&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;攻击
+12PC1的IP地址 10.9.136.222PC2的IP地址 10.9.136.55
+
+12在局域网里通信 需要有IP地址和MAC地址两台电脑PC1和PC2要想相互通信，">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">ARP断网攻击</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-08</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/ARP/">
+              ARP
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h1 id="ARP断网攻击"><a href="#ARP断网攻击" class="headerlink" title="&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;"></a>&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;</h1><h2 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h2><p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191004748-1689047579186-117.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191004748-1689047579186-117.png"  alt="image-20230707191004748" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PC1的IP地址 <span class="number">10.9</span><span class="number">.136</span><span class="number">.222</span></span><br><span class="line">PC2的IP地址 <span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在局域网里通信 需要有IP地址和MAC地址</span><br><span class="line">两台电脑PC1和PC2要想相互通信，PC1在连接PC2的时候，PC1会先查看自己的ARP缓存表（命令：arp -a ） ，看一下有没有 <span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span>对应的MAC地址，如果没有<span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span>对应的MAC地址，向交换机发送广播包，交换机会给每个接口都发送，当PC2收到消息后，会产生应答包，PC2把它的MAC地址发给交换机，目的地址会发送到PC1，（因为广播包是PC1发送的），PC1会把PC2的IP地址和MAC地址写入自己的ARP缓存表里</span><br></pre></td></tr></table></figure>
+
+<p>&#x3D;&#x3D;ARP欺骗原理&#x3D;&#x3D;：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在局域网中，主机通信前必须通过ARP协议把IP地址转换为MAC地址，ARP欺骗就是通过伪造IP地址与MAC地址的映射关系实现的一种欺骗攻击。因为局域网内的主机根据MAC地址进行通信，发送方检查其ARP缓存中是否已存储目标IP的MAC地址，否则它会广播发送ARP请求报文，只有目标IP的主机才会响应一个包含其MAC地址的ARP应答报文，发送方收到该应答后，立即更新自身的ARP缓存。攻击者可以发送虚假的ARP请求或应答报文，使得目标主机接收错误的IP和MAC绑定关系</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>实验准备</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">win7    网卡nat模式</span><br><span class="line">kali    网卡nat模式   攻击方</span><br></pre></td></tr></table></figure>
+
+<p>1、win7：先ping一下，能否上网</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191612674-1689047579186-119.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191612674-1689047579186-119.png"  alt="image-20230707191612674" lazyload></a></p>
+<p>2、win7：查看网关</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig </span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191641136-1689047579187-122.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191641136-1689047579187-122.png"  alt="image-20230707191641136" lazyload></a></p>
+<p>3、win7：查看ARP缓存表，查看网关的MAC地址</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191813019-1689047579186-120.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191813019-1689047579186-120.png"  alt="image-20230707191813019" lazyload></a></p>
+<p>4、win7： 让它 一直ping下去</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping www.baidu.com -t</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191935953-1689047579187-121.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191935953-1689047579187-121.png"  alt="image-20230707191935953" lazyload></a></p>
+<p>5、kali：开始攻击</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">arpspoof -i eth0 -t 192.168.241.130 -r 192.168.241.2</span><br><span class="line">-i  选择网卡</span><br><span class="line">-t  被攻击方的IP地址</span><br><span class="line">-r  网关IP地址</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707192141735-1689047579187-123.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707192141735-1689047579187-123.png"  alt="image-20230707192141735" lazyload></a></p>
+<hr>
+<p><a class="simple-lightbox" href="/imgs/arp-attack/%E5%8A%A8%E7%94%BB-1688729738122-2-1689047579187-124.gif"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/%E5%8A%A8%E7%94%BB-1688729738122-2-1689047579187-124.gif"  alt="动画" lazyload></a></p>
+<p>在发动攻击的时候，网关的MAC地址被改成了攻击方kali的MAC地址，导致上不了网</p>
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707193709889-1689047579187-125.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707193709889-1689047579187-125.png"  alt="image-20230707193709889" lazyload></a></p>
+<h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>1、查看网关</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708105946724-1689047579187-126.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708105946724-1689047579187-126.png"  alt="image-20230708105946724" lazyload></a></p>
+<p>2、查看网关对应的MAC地址为动态类型,</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708110904874-1689047579187-127.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708110904874-1689047579187-127.png"  alt="image-20230708110904874" lazyload></a></p>
+<p>3、查看本地网卡所对应的<code>Idx</code>值,以太网所对应的<code>Idx</code>值为<code>2</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netsh interface ipv4 show interfaces</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">简写</span></span><br><span class="line">netsh i i show in</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708105721164-1689047579187-129.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708105721164-1689047579187-129.png"  alt="image-20230708105721164" lazyload></a></p>
+<p>4、静态绑定IP地址和MAC地址</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2 代表网卡的Idx值</span> </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">以管理员身份运行该命令</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">绑定网关的IP地址和MAC地址</span></span><br><span class="line">netsh -c &quot;i i&quot; add ne 2 10.9.136.1 50-6f-77-89-ad-92</span><br></pre></td></tr></table></figure>
+
+<p>5、再次查看arp缓存表</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708111025154-1689047579187-128.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708111025154-1689047579187-128.png"  alt="image-20230708111025154" lazyload></a></p>
+<p>6、取消arp静态绑定</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">取消静态绑定</span></span><br><span class="line">netsh -c &quot;i i&quot; delete ne 2</span><br></pre></td></tr></table></figure>
+
+<p>以上操作不能完全防御</p>
+<p>在路由器出故障的情况下，换了一个新的路由器，那么物理地址就变了</p>
+<p>再做了静态绑定就会导致无法上网，就需要解除与旧路由器的MAC地址绑定，绑定新的路由器MAC地址</p>
+<p>可以使用软件&#x3D;&#x3D;360安全卫士&#x3D;&#x3D;</p>
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708111241690-1689047579187-130.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708111241690-1689047579187-130.png"  alt="image-20230708111241690" lazyload></a></p>
+<p>开启前三个功能</p>
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708111305720-1689047579187-131.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708111305720-1689047579187-131.png"  alt="image-20230708111305720" lazyload></a></p>
+<p>如果受到arp断网攻击，360安全卫士会提示，可以查看详细日志</p>
+<p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708111418173-1689047579187-132.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708111418173-1689047579187-132.png"  alt="image-20230708111418173" lazyload></a></p>
+<p>360安全卫士有弹窗，可以安装火绒拦截弹窗</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-1"><a class="top-box-link" href="#ARP%E6%96%AD%E7%BD%91%E6%94%BB%E5%87%BB"><span class="top-box-text">&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%94%BB%E5%87%BB"><span class="top-box-text">攻击</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E9%98%B2%E5%BE%A1"><span class="top-box-text">防御</span></a></li></ol></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/08/sam-crack/">
+          <h3 class="post-title">
+            
+            下一篇：SAM文件破解
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

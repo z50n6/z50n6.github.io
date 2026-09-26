@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>DNS部署搭建</title>
+<meta name="keywords" content="DNS部署搭建, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="Domain Name Service
+域名服务
+作用：为客户机提供域名解析服务器
+域名组成如”www.sina.com.cn“是一个域名，从严格意义上讲，”sina.com.cn”才被称为域名(全球唯一)，而”www”是主机 名。
+“主机">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="DNS部署搭建">
+<meta property="og:description" content="Domain Name Service
+域名服务
+作用：为客户机提供域名解析服务器
+域名组成如”www.sina.com.cn“是一个域名，从严格意义上讲，”sina.com.cn”才被称为域名(全球唯一)，而”www”是主机 名。
+“主机">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">DNS部署搭建</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-14</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/DNS/">
+              DNS
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>Domain Name Service</p>
+<p>域名服务</p>
+<p>作用：为客户机提供域名解析服务器</p>
+<h3 id="域名组成"><a href="#域名组成" class="headerlink" title="域名组成"></a>域名组成</h3><p>如”<a href="imgs/http://www.sina.com.cn/">www.sina.com.cn</a>“是一个域名，从严格意义上讲，”sina.com.cn”才被称为域名(全球唯一)，而”www”是主机 名。</p>
+<p>“主机名.域名”称为完全限定域名(FQDN)。一个域名下可以有多个主机，域名全球唯一，那么”主机名.域名”肯定也是全球唯一的。</p>
+<p>以”sina.com.cn”域名为例，一般管理员在命名其主机的时候会根据其主机的功能而命名，比如网站的是www，博客的是blog，论坛的是bbs，那么对应的FQDN为<a href="imgs/http://www.sina.com.cn/">www.sina.com.cn</a>，blog.sina.com.cn，bbs.sina.com.cn。这么多个FQDN，然而我们只需要申请一个域名即”sina.com.cn”即可。</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/d42f63188291a1e8ed21aa1c902967cf-1665381371503-21.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/d42f63188291a1e8ed21aa1c902967cf-1665381371503-21.png"  alt="d42f63188291a1e8ed21aa1c902967cf-1665381371503-21" lazyload></a></p>
+<ul>
+<li>根域  .</li>
+<li>顶级域</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">国家顶级域 cn jp </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">com 商业机构</span><br><span class="line">gov 政府机构</span><br><span class="line">mil 军事机构</span><br><span class="line">edu 教育机构</span><br><span class="line">net 互联网</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 如：www.baidu.com.</span></span><br><span class="line"></span><br><span class="line">.为根域</span><br><span class="line"></span><br><span class="line">.com为顶级域</span><br><span class="line"></span><br><span class="line">baidu为一级域名</span><br><span class="line"></span><br><span class="line">www为主机名</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>&#x3D;&#x3D;全球共有13个根服务器，其中10个在美国，2个在欧洲的英国和瑞典，最后1个根服务器位于亚洲日本&#x3D;&#x3D;</p>
+<h3 id="监听端口"><a href="#监听端口" class="headerlink" title="监听端口"></a>监听端口</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tcp <span class="number">53</span></span><br><span class="line">udp <span class="number">53</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="DNS解析种类"><a href="#DNS解析种类" class="headerlink" title="DNS解析种类"></a>DNS解析种类</h3><p><strong>按照查询方式类型</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1）	递归查询：客户机与本地DNS服务器之间   </span><br><span class="line"> 本机dns缓存路径：：：   C:\Windows\System32\drivers\etc\hosts</span><br><span class="line"> 可以在hosts里添加   192.168.241.150  www.baidu.com </span><br><span class="line"> 在浏览器里访问百度就进不去了，上不了网</span><br><span class="line"></span><br><span class="line">2）	迭代查询：本地DNS服务器与根等其他DNS服务器的解析过程</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/c3fbc8c9024c891bc7fba4194c225bd4-1665381371503-23-1689232997920-2.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/c3fbc8c9024c891bc7fba4194c225bd4-1665381371503-23-1689232997920-2.png"  alt="c3fbc8c9024c891bc7fba4194c225bd4-1665381371503-23" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/Pasted%20image%2020260524104715.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/Pasted%20image%2020260524104715.png"  lazyload></a></p>
+<p><strong>按照查询内容分类</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）正向解析：已知域名，解析IP地址</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>） 反向解析：已知IP地址，解析域名</span><br></pre></td></tr></table></figure>
+
+<h3 id="DNS服务器搭建"><a href="#DNS服务器搭建" class="headerlink" title="DNS服务器搭建"></a>DNS服务器搭建</h3><ol>
+<li>要求网卡IP是静态IP地址</li>
+</ol>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713153921718.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713153921718.png"  alt="image-20230713153921718" lazyload></a></p>
+<ol start="2">
+<li>安装DNS服务器插件（也就是安装并开启TCP及UDP53端口</li>
+</ol>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713154830076.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713154830076.png"  alt="image-20230713154830076" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713154847564.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713154847564.png"  alt="image-20230713154847564" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713154912860.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713154912860.png"  alt="image-20230713154912860" lazyload></a></p>
+<ol start="3">
+<li>创建区域文件（负责一个域名后缀的解析，如baidu.com为域名后缀，一台DNS服务器内可存放多个区域文件）</li>
+</ol>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155045335.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155045335.png"  alt="image-20230713155045335" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155107512.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155107512.png"  alt="image-20230713155107512" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155123765.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155123765.png"  alt="image-20230713155123765" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155229577.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155229577.png"  alt="image-20230713155229577" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155239602.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155239602.png"  alt="image-20230713155239602" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155251130.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155251130.png"  alt="image-20230713155251130" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155349018.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155349018.png"  alt="image-20230713155349018" lazyload></a></p>
+<ol start="4">
+<li>新建A记录</li>
+</ol>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155410378.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155410378.png"  alt="image-20230713155410378" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155643814.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155643814.png"  alt="image-20230713155643814" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713155808625.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713155808625.png"  alt="image-20230713155808625" lazyload></a></p>
+<ol start="5">
+<li>反向查找区域新建区域</li>
+</ol>
+<p>右键点击新建区域——》主要区域——》IPV4反向查找区域——》输入网络ID</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713165703716.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713165703716.png"  alt="image-20230713165703716" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713165715235.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713165715235.png"  alt="image-20230713165715235" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713165729017.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713165729017.png"  alt="image-20230713165729017" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713165737004.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713165737004.png"  alt="image-20230713165737004" lazyload></a></p>
+<ol start="6">
+<li>新建指针</li>
+</ol>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713165811220.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713165811220.png"  alt="image-20230713165811220" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713165833428.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713165833428.png"  alt="image-20230713165833428" lazyload></a></p>
+<p>在开启了反向查找区域后，在正向查找里新建主机A的时候，可以勾选下面的创建指针PTR，会自动加到反向查找里</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713170632869.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713170632869.png"  alt="image-20230713170632869" lazyload></a></p>
+<h3 id="DNS客户机解析"><a href="#DNS客户机解析" class="headerlink" title="DNS客户机解析"></a>DNS客户机解析</h3><ol>
+<li>指向DNS</li>
+<li>手工解析域名</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nslookup 域名</span><br><span class="line">nslookup IP地址</span><br></pre></td></tr></table></figure>
+
+<p>配置一台win7,地址先手动配置固定IP地址，dns指向上面配置的10.1.1.1</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713170257017.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713170257017.png"  alt="image-20230713170257017" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713164522546.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713164522546.png"  alt="image-20230713164522546" lazyload></a></p>
+<h3 id="DHCP-DNS搭建"><a href="#DHCP-DNS搭建" class="headerlink" title="DHCP+DNS搭建"></a>DHCP+DNS搭建</h3><p>DHCP 添加向导</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713171051590.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713171051590.png"  alt="image-20230713171051590" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713171111393.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713171111393.png"  alt="image-20230713171111393" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713171115851.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713171115851.png"  alt="image-20230713171115851" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713171216466.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713171216466.png"  alt="image-20230713171216466" lazyload></a></p>
+<p>在win7那边自动获取IP地址和DNS</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713171823417.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713171823417.png"  alt="image-20230713171823417" lazyload></a></p>
+<h3 id="新建别名"><a href="#新建别名" class="headerlink" title="新建别名"></a>新建别名</h3><p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713172442724.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713172442724.png"  alt="image-20230713172442724" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713172548753.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713172548753.png"  alt="image-20230713172548753" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713172602019.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713172602019.png"  alt="image-20230713172602019" lazyload></a></p>
+<p>手动解析。。。</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713172626658.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713172626658.png"  alt="image-20230713172626658" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713172954520.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713172954520.png"  alt="image-20230713172954520" lazyload></a></p>
+<h3 id="辅助DNS服务器"><a href="#辅助DNS服务器" class="headerlink" title="辅助DNS服务器"></a>辅助DNS服务器</h3><p>在辅助服务器上安装DNS服务器</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713175250673.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713175250673.png"  alt="image-20230713175250673" lazyload></a></p>
+<p>点击正向查找区域右键新建区域向导，点击辅助区域</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713175439245.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713175439245.png"  alt="image-20230713175439245" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713183207208.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713183207208.png"  alt="image-20230713183207208" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713183238556.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713183238556.png"  alt="image-20230713183238556" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713183318260.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713183318260.png"  alt="image-20230713183318260" lazyload></a></p>
+<p>搭建好后，辅服务器什么都没有</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713183356653.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713183356653.png"  alt="image-20230713183356653" lazyload></a></p>
+<p>需要去主服务器里设置**&#x3D;&#x3D;区域传送&#x3D;&#x3D;**</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713183533230.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713183533230.png"  alt="image-20230713183533230" lazyload></a></p>
+<p>在辅助服务器里刷新一下，就会传送过来，辅助dns里的所有记录跟主dns的记录是一样的</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713183705774.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713183705774.png"  alt="image-20230713183705774" lazyload></a></p>
+<p>去DHCP里重新设置DNS,设置成辅助服务器的dns地址</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713184320334.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713184320334.png"  alt="image-20230713184320334" lazyload></a></p>
+<p>设置好后，dhcp在下次分发的时候，会把10.1.1.5分发下去</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713184328775.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713184328775.png"  alt="image-20230713184328775" lazyload></a></p>
+<p>在win7上重新释放，获取地址，查看dns</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713185302533.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713185302533.png"  alt="image-20230713185302533" lazyload></a></p>
+<p>现在win7就是从10.1.1.5去解析域名</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713185657409.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713185657409.png"  alt="image-20230713185657409" lazyload></a></p>
+<p>但是dns服务器显示Unknown</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713185746497.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713185746497.png"  alt="image-20230713185746497" lazyload></a></p>
+<p>需要在主dns上对辅dns做域名解析</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713185901506.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713185901506.png"  alt="image-20230713185901506" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713185935831.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713185935831.png"  alt="image-20230713185935831" lazyload></a></p>
+<p>需要在辅dns上右键点击从主服务器传送</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713190204817.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713190204817.png"  alt="image-20230713190204817" lazyload></a></p>
+<p>需要等辅助服务器更新完成，在域名解析的时候才会显示</p>
+<p>辅助服务器不显示的话，就关机重启</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713190712690.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713190712690.png"  alt="image-20230713190712690" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713190817432.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713190817432.png"  alt="image-20230713190817432" lazyload></a></p>
+<p>还是没有显示，但是用<code>aaa.zs.com</code>可以解析出来</p>
+<h3 id="完全限定域名"><a href="#完全限定域名" class="headerlink" title="完全限定域名"></a>完全限定域名</h3><p>完全限定域名(Fully Qualified Domain Name, FQDN) ⼜称完全资格域名, 绝对域名, 完整域名 等, 它是包含从主机域到顶级域到根域的完整域名结。通常情况下我们习惯使⽤⾮完全限定域名，非完全限定域名形如 google.com , <a target="_blank" rel="noopener" href="http://www.google.com/">www.google.com</a> 等, 域名均是以顶级域(如com)作为结尾。但完全限定域名是以根域结尾的。根域以 . 表⽰, 因此 <a target="_blank" rel="noopener" href="http://www.google.com/">www.google.com</a>. 才是完全限定域名。完全限定域名的意义在于它没有模糊空间, 只能⽤⼀种⽅式解析。</p>
+<h3 id="练习一"><a href="#练习一" class="headerlink" title="练习一"></a>练习一</h3><p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713192311181.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713192311181.png"  alt="image-20230713192311181" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如上拓扑图搭建，dns服务器，要求pc在ping new.free.com的域名的时候能与pc2通信</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">主dns  <span class="number">10.2</span><span class="number">.2</span><span class="number">.1</span></span><br><span class="line">辅dns1 <span class="number">10.2</span><span class="number">.2</span><span class="number">.2</span></span><br><span class="line">辅dns2 <span class="number">10.2</span><span class="number">.2</span><span class="number">.3</span></span><br><span class="line">pc     <span class="number">10.2</span><span class="number">.2</span><span class="number">.4</span></span><br><span class="line">pc2    <span class="number">10.2</span><span class="number">.2</span><span class="number">.5</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>先 配置三台dns服务器的IP地址</strong></p>
+<p>主dns服务器 IP地址</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713192650179.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713192650179.png"  alt="image-20230713192650179" lazyload></a></p>
+<p>辅助服务器1   IP地址</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713192859523.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713192859523.png"  alt="image-20230713192859523" lazyload></a></p>
+<p>辅助dns2 IP地址</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193006543.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193006543.png"  alt="image-20230713193006543" lazyload></a></p>
+<p><strong>主dns配置</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193123251.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193123251.png"  alt="image-20230713193123251" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193246587.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193246587.png"  alt="image-20230713193246587" lazyload></a></p>
+<p>主服务器区域传送</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193836853.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193836853.png"  alt="image-20230713193836853" lazyload></a></p>
+<p><strong>辅dns1配置</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193506636.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193506636.png"  alt="image-20230713193506636" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193517918.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193517918.png"  alt="image-20230713193517918" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193539442.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193539442.png"  alt="image-20230713193539442" lazyload></a></p>
+<p><strong>辅dns2配置</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193619844.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193619844.png"  alt="image-20230713193619844" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193730706.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193730706.png"  alt="image-20230713193730706" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713193934381.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713193934381.png"  alt="image-20230713193934381" lazyload></a></p>
+<p><strong>主dns</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713194153435.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713194153435.png"  alt="image-20230713194153435" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713194223984.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713194223984.png"  alt="image-20230713194223984" lazyload></a></p>
+<p><strong>打开两台win7 PC 端手动 设置IP</strong></p>
+<p>PC</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713194456684.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713194456684.png"  alt="image-20230713194456684" lazyload></a></p>
+<p>PC2</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713194604242.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713194604242.png"  alt="image-20230713194604242" lazyload></a></p>
+<p><strong>主dns</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713195305524.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713195305524.png"  alt="image-20230713195305524" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713195323104.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713195323104.png"  alt="image-20230713195323104" lazyload></a></p>
+<p><strong>pc向pc2 ping</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713195824110.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713195824110.png"  alt="image-20230713195824110" lazyload></a></p>
+<h3 id="练习二"><a href="#练习二" class="headerlink" title="练习二"></a>练习二</h3><p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713192341384.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713192341384.png"  alt="image-20230713192341384" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">根据上述拓扑图，虚拟机都调成lan局域网，完成实验，pc1和pc2由dhcp服务器分配ip和dns，其中dns指向图中dns服务器ip地址，pc1和pc2 的dns都由dns服务器解析，pc1的域名为hydra.zc.com ,  pc2的域名为love.zc.com,要求pc1 和pc2互相ping彼此域名能正常通信</span><br></pre></td></tr></table></figure>
+
+<p><strong>IP 配置</strong></p>
+<p>dns</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713200729402.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713200729402.png"  alt="image-20230713200729402" lazyload></a></p>
+<p>dhcp</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713201129716.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713201129716.png"  alt="image-20230713201129716" lazyload></a></p>
+<p><strong>dhcp配置</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713201355487.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713201355487.png"  alt="image-20230713201355487" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713201618148.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713201618148.png"  alt="image-20230713201618148" lazyload></a></p>
+<p><strong>让两台win7自动获取ip地址</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PC1 <span class="number">10.2</span><span class="number">.2</span><span class="number">.65</span></span><br><span class="line"></span><br><span class="line">PC2 <span class="number">10.2</span><span class="number">.2</span><span class="number">.66</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>在dns上设置解析</strong></p>
+<p>pc1</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713202353114.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713202353114.png"  alt="image-20230713202353114" lazyload></a></p>
+<p>pc2</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713202408869.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713202408869.png"  alt="image-20230713202408869" lazyload></a></p>
+<p>两台win7的  dns都指向了10.2.2.1</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713202545836.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713202545836.png"  alt="image-20230713202545836" lazyload></a></p>
+<p>两台pc都能ping通彼此的域名</p>
+<p>pc1 ping  pc2</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713202734348.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713202734348.png"  alt="image-20230713202734348" lazyload></a></p>
+<p>pc2  ping    pc1</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713202744535.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713202744535.png"  alt="image-20230713202744535" lazyload></a></p>
+<h3 id="练习三"><a href="#练习三" class="headerlink" title="练习三"></a>练习三</h3><p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713192354644.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713192354644.png"  alt="image-20230713192354644" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span>使用vmware按照如上图，搭建<span class="number">4</span>台机器，所有机器都为静态ip地址，手工配置。</span><br><span class="line"><span class="number">2.</span>并建立了lan区段hdl， 所有虚拟机接入hdl区段网络，并按照如图配置ip地址，</span><br><span class="line"><span class="number">3.</span>ftp服务器设置组<span class="keyword">class</span>，设置用户test加入组，<span class="keyword">class</span>组可以对c:\home文件夹所有权限</span><br><span class="line"><span class="number">4.</span>客户端的dns指向dns服务器，并让在客户端使用域名ftp.hdl.com能连上ftp服务器，上传一个自己设计的bat病毒，客户端使用域名www.hdl.com能访问web服务器</span><br><span class="line"><span class="number">5.</span>web服务器默认主页使用zc.html,  zc.html内容为hello world</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>IP地址配置</strong></p>
+<p>客户端</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713204617934.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713204617934.png"  alt="image-20230713204617934" lazyload></a></p>
+<p>ftp端</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713204803491.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713204803491.png"  alt="image-20230713204803491" lazyload></a></p>
+<p>web服务器</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713204927818.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713204927818.png"  alt="image-20230713204927818" lazyload></a></p>
+<p><strong>ftp</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713204445071.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713204445071.png"  alt="image-20230713204445071" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713205046761.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713205046761.png"  alt="image-20230713205046761" lazyload></a></p>
+<p><strong>dns服务器设置</strong></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713204020206.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713204020206.png"  alt="image-20230713204020206" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713204116783.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713204116783.png"  alt="image-20230713204116783" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713204225535.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713204225535.png"  alt="image-20230713204225535" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713205137945.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713205137945.png"  alt="image-20230713205137945" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713205241820.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713205241820.png"  alt="image-20230713205241820" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713205835896.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713205835896.png"  alt="image-20230713205835896" lazyload></a></p>
+<p>ftp上传文件</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713210903422.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713210903422.png"  alt="image-20230713210903422" lazyload></a></p>
+<p>修改phpstudy的默认路径</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713211455308.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713211455308.png"  alt="image-20230713211455308" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713211505278.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713211505278.png"  alt="image-20230713211505278" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713211539951.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713211539951.png"  alt="image-20230713211539951" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713211600493.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713211600493.png"  alt="image-20230713211600493" lazyload></a></p>
+<p>在客户机地址栏访问<code>www.hdl.com</code></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713211648592.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713211648592.png"  alt="image-20230713211648592" lazyload></a></p>
+<h3 id="练习四"><a href="#练习四" class="headerlink" title="练习四"></a>练习四</h3><p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713192421401.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713192421401.png"  alt="image-20230713192421401" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pc由，dhcp分配到的网关、dns、ip地址，网关指向的是<span class="number">10.2</span><span class="number">.2</span><span class="number">.1</span>，dns指向的<span class="number">10.2</span><span class="number">.2</span><span class="number">.2</span>，要求pc1在ping  www.baidu.com的时候能ping通</span><br><span class="line"></span><br><span class="line">阿里云dns服务器地址：<span class="number">223.5</span><span class="number">.5</span><span class="number">.5</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>IP 地址设置</strong></p>
+<p>dns</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714102251073.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714102251073.png"  alt="image-20230714102251073" lazyload></a></p>
+<p>dhcp</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713212400902.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713212400902.png"  alt="image-20230713212400902" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713212451241.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713212451241.png"  alt="image-20230713212451241" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713212502779.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713212502779.png"  alt="image-20230713212502779" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230713212724987.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230713212724987.png"  alt="image-20230713212724987" lazyload></a></p>
+<p>辅助dns</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714101934966.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714101934966.png"  alt="image-20230714101934966" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714102038546.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714102038546.png"  alt="image-20230714102038546" lazyload></a></p>
+<p>给dhcp服务器添加网卡</p>
+<p>检查dhcp服务器能否ping 通百度</p>
+<p>dhcp服务器安装路由</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714103212880.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714103212880.png"  alt="image-20230714103212880" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714103228975.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714103228975.png"  alt="image-20230714103228975" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714103324082.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714103324082.png"  alt="image-20230714103324082" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714103354209.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714103354209.png"  alt="image-20230714103354209" lazyload></a></p>
+<p>做网络地址转换</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714103409171.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714103409171.png"  alt="image-20230714103409171" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714103418947.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714103418947.png"  alt="image-20230714103418947" lazyload></a></p>
+<p>给dns服务器配置dns</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714184304058.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714184304058.png"  alt="image-20230714184304058" lazyload></a></p>
+<p>然后dns服务器尝试能否ping通百度</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714184345086.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714184345086.png"  alt="image-20230714184345086" lazyload></a></p>
+<p>然后给pc机设置自动分配地址</p>
+<p>pc机尝试ping百度</p>
+<p><a class="simple-lightbox" href="/imgs/dns-deploy/image-20230714184803216-1689405296571-65.png"><img   src="/images/loading.svg" data-src="/imgs/dns-deploy/image-20230714184803216-1689405296571-65.png"  alt="image-20230714184803216" lazyload></a></p>
+<p>..</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E5%9F%9F%E5%90%8D%E7%BB%84%E6%88%90"><span class="top-box-text">域名组成</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%9B%91%E5%90%AC%E7%AB%AF%E5%8F%A3"><span class="top-box-text">监听端口</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#DNS%E8%A7%A3%E6%9E%90%E7%A7%8D%E7%B1%BB"><span class="top-box-text">DNS解析种类</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA"><span class="top-box-text">DNS服务器搭建</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#DNS%E5%AE%A2%E6%88%B7%E6%9C%BA%E8%A7%A3%E6%9E%90"><span class="top-box-text">DNS客户机解析</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#DHCP-DNS%E6%90%AD%E5%BB%BA"><span class="top-box-text">DHCP+DNS搭建</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E6%96%B0%E5%BB%BA%E5%88%AB%E5%90%8D"><span class="top-box-text">新建别名</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E8%BE%85%E5%8A%A9DNS%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="top-box-text">辅助DNS服务器</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E5%AE%8C%E5%85%A8%E9%99%90%E5%AE%9A%E5%9F%9F%E5%90%8D"><span class="top-box-text">完全限定域名</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0%E4%B8%80"><span class="top-box-text">练习一</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0%E4%BA%8C"><span class="top-box-text">练习二</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0%E4%B8%89"><span class="top-box-text">练习三</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0%E5%9B%9B"><span class="top-box-text">练习四</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/14/file-share-server/">
+          <h3 class="post-title">
+            
+            下一篇：文件共享服务器
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

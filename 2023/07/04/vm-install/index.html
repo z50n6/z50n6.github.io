@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>虚拟机安装及破解</title>
+<meta name="keywords" content="虚拟机安装及破解, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+12速度：CPU&gt;内存&gt;硬盘
+
+1内存可保存数据，但是断电数据消失
+
+server20081、安装
+
+
+
+
+
+
+选择镜像
+
+2、启动
+点击下一步，点击现在安装
+
+选择&#x3D;&#x3D;安全安装&#x3D;&#x3D;，点">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="虚拟机安装及破解">
+<meta property="og:description" content="
+12速度：CPU&gt;内存&gt;硬盘
+
+1内存可保存数据，但是断电数据消失
+
+server20081、安装
+
+
+
+
+
+
+选择镜像
+
+2、启动
+点击下一步，点击现在安装
+
+选择&#x3D;&#x3D;安全安装&#x3D;&#x3D;，点">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">虚拟机安装及破解</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-04</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E8%99%9A%E6%8B%9F%E6%9C%BA/">
+              虚拟机
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704092503438-1689051565283-37.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704092503438-1689051565283-37.png"  alt="image-20230704092503438" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">速度：</span><br><span class="line">CPU&gt;内存&gt;硬盘</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">内存可保存数据，但是断电数据消失</span><br></pre></td></tr></table></figure>
+
+<h2 id="server2008"><a href="#server2008" class="headerlink" title="server2008"></a>server2008</h2><h3 id="1、安装"><a href="#1、安装" class="headerlink" title="1、安装"></a>1、安装</h3><p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704095239172-1689051565283-40.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704095239172-1689051565283-40.png"  alt="image-20230704095239172" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704095248179-1689051565283-39.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704095248179-1689051565283-39.png"  alt="image-20230704095248179" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704095305288-1689051565283-38.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704095305288-1689051565283-38.png"  alt="image-20230704095305288" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704095328747-1689051565284-41.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704095328747-1689051565284-41.png"  alt="image-20230704095328747" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704100610250-1689051565284-42.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704100610250-1689051565284-42.png"  alt="image-20230704100610250" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704100632539-1689051565284-43.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704100632539-1689051565284-43.png"  alt="image-20230704100632539" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704100739182-1689051565284-44.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704100739182-1689051565284-44.png"  alt="image-20230704100739182" lazyload></a></p>
+<p>选择镜像</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704100932038-1689051565284-45.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704100932038-1689051565284-45.png"  alt="image-20230704100932038" lazyload></a></p>
+<h3 id="2、启动"><a href="#2、启动" class="headerlink" title="2、启动"></a>2、启动</h3><p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101035602-1689051565284-46.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101035602-1689051565284-46.png"  alt="image-20230704101035602" lazyload></a></p>
+<p>点击下一步，点击现在安装</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101116072-1689051565284-47.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101116072-1689051565284-47.png"  alt="image-20230704101116072" lazyload></a></p>
+<p>选择&#x3D;&#x3D;安全安装&#x3D;&#x3D;，点击下一步</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101159140-1689051565284-48.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101159140-1689051565284-48.png"  alt="image-20230704101159140" lazyload></a></p>
+<p>接受许可条款</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101241678-1689051565284-49.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101241678-1689051565284-49.png"  alt="image-20230704101241678" lazyload></a></p>
+<p>选择自定义安装</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101307982-1689051565284-51.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101307982-1689051565284-51.png"  alt="image-20230704101307982" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101327338-1689051565284-50.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101327338-1689051565284-50.png"  alt="image-20230704101327338" lazyload></a></p>
+<p>等待安装完成</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101336442-1689051565284-52.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101336442-1689051565284-52.png"  alt="image-20230704101336442" lazyload></a></p>
+<h3 id="3、配置"><a href="#3、配置" class="headerlink" title="3、配置"></a>3、配置</h3><h4 id="修改密码"><a href="#修改密码" class="headerlink" title="修改密码"></a>修改密码</h4><p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101829453-1689051565284-53.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101829453-1689051565284-53.png"  alt="image-20230704101829453" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101911691-1689051565284-54.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101911691-1689051565284-54.png"  alt="image-20230704101911691" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704101918012-1689051565284-55.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704101918012-1689051565284-55.png"  alt="image-20230704101918012" lazyload></a></p>
+<h4 id="分辨率调整"><a href="#分辨率调整" class="headerlink" title="分辨率调整"></a>分辨率调整</h4><p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704102004366-1689051565284-56.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704102004366-1689051565284-56.png"  alt="image-20230704102004366" lazyload></a></p>
+<p>选择适合自己电脑的分辨率</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704102110859-1689051565284-57.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704102110859-1689051565284-57.png"  alt="image-20230704102110859" lazyload></a></p>
+<p>添加桌面图标</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704102323760-1689051565284-58.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704102323760-1689051565284-58.png"  alt="image-20230704102323760" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704102350053-1689051565284-59.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704102350053-1689051565284-59.png"  alt="image-20230704102350053" lazyload></a></p>
+<p>字体调整</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704102423602-1689051565284-60.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704102423602-1689051565284-60.png"  alt="image-20230704102423602" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704102432953-1689051565284-61.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704102432953-1689051565284-61.png"  alt="image-20230704102432953" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704102448148-1689051565284-62.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704102448148-1689051565284-62.png"  alt="image-20230704102448148" lazyload></a></p>
+<h4 id="开启远程桌面"><a href="#开启远程桌面" class="headerlink" title="开启远程桌面"></a>开启远程桌面</h4><blockquote>
+<p> rdp协议，端口3389</p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704102832700-1689051565284-63.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704102832700-1689051565284-63.png"  alt="image-20230704102832700" lazyload></a></p>
+<p>查看IP地址</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103155968-1689051565284-64.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103155968-1689051565284-64.png"  alt="image-20230704103155968" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103212714-1689051565284-65.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103212714-1689051565284-65.png"  alt="image-20230704103212714" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103221612-1689051565284-66.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103221612-1689051565284-66.png"  alt="image-20230704103221612" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103233192-1689051565284-67.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103233192-1689051565284-67.png"  alt="image-20230704103233192" lazyload></a></p>
+<p>远程连接</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">远程连接： win+r  mstsc </span><br><span class="line">输入IP地址，点击链接</span><br><span class="line">输入用户名administrator</span><br><span class="line">输入密码 !A123</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103403192-1689051565284-68.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103403192-1689051565284-68.png"  alt="image-20230704103403192" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103441713-1689051565284-69.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103441713-1689051565284-69.png"  alt="image-20230704103441713" lazyload></a></p>
+<p>远程连接成功</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103538845-1689051565284-70.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103538845-1689051565284-70.png"  alt="image-20230704103538845" lazyload></a></p>
+<h4 id="激活"><a href="#激活" class="headerlink" title="激活"></a>激活</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#桌面点击计算机右键属性查看激活状态</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#通过远程连接，拷贝激活软件,在本机里选中复制，在远程桌面里右键粘贴</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#虚拟里运行神龙，不可真实机操作，防止真实机出现问题</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103751944-1689051565284-71.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103751944-1689051565284-71.png"  alt="image-20230704103751944" lazyload></a></p>
+<p>先安装net framework 软件</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704103913632-1689051565284-72.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704103913632-1689051565284-72.png"  alt="image-20230704103913632" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104051594-1689051565284-73.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104051594-1689051565284-73.png"  alt="image-20230704104051594" lazyload></a></p>
+<p>断开网络</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104128042-1689051565284-74.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104128042-1689051565284-74.png"  alt="image-20230704104128042" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104146617-1689051565284-76.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104146617-1689051565284-76.png"  alt="image-20230704104146617" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104202967-1689051565284-75.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104202967-1689051565284-75.png"  alt="image-20230704104202967" lazyload></a></p>
+<p>网络禁用后，双击神龙软件</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104322578-1689051565284-77.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104322578-1689051565284-77.png"  alt="image-20230704104322578" lazyload></a></p>
+<p>再启用本地连接，打开网络</p>
+<p>然后点击神龙激活Win Server 2008</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104436148-1689051565284-78.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104436148-1689051565284-78.png"  alt="image-20230704104436148" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104446583-1689051565284-79.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104446583-1689051565284-79.png"  alt="image-20230704104446583" lazyload></a></p>
+<p>点击确定后，退出程序，退出神龙软件时，会弹出网页，关闭即可</p>
+<p>然后删除软件，</p>
+<p>查看系统是否激活</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104623140-1689051565284-80.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104623140-1689051565284-80.png"  alt="image-20230704104623140" lazyload></a></p>
+<p>关机</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104655058-1689051565284-81.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104655058-1689051565284-81.png"  alt="image-20230704104655058" lazyload></a></p>
+<h4 id="快照"><a href="#快照" class="headerlink" title="快照"></a>快照</h4><blockquote>
+<p>关机后再拍摄快照</p>
+</blockquote>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104740953-1689051565284-82.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104740953-1689051565284-82.png"  alt="image-20230704104740953" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704104803308-1689051565284-83.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704104803308-1689051565284-83.png"  alt="image-20230704104803308" lazyload></a></p>
+<h4 id="克隆"><a href="#克隆" class="headerlink" title="克隆"></a>克隆</h4><p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704113711352-1689051565284-84.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704113711352-1689051565284-84.png"  alt="image-20230704113711352" lazyload></a></p>
+<p>克隆类型选择&#x3D;&#x3D;完全克隆&#x3D;&#x3D;，如果选择链接克隆的话，再原始虚拟机删除情况下，克隆后的虚拟机就不能使用了</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704113740274-1689051565284-85.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704113740274-1689051565284-85.png"  alt="image-20230704113740274" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704113800314-1689051565284-86.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704113800314-1689051565284-86.png"  alt="image-20230704113800314" lazyload></a></p>
+<h4 id="删除虚拟机"><a href="#删除虚拟机" class="headerlink" title="删除虚拟机"></a>删除虚拟机</h4><p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704192959353-1689051565284-87.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704192959353-1689051565284-87.png"  alt="image-20230704192959353" lazyload></a></p>
+<h4 id="更改网卡"><a href="#更改网卡" class="headerlink" title="更改网卡"></a>更改网卡</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># NAT模式:如果虚拟机设置为NAT模式，该虚拟机通过主机上网，能与互联网通信</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 桥接模式:该虚拟机可以和主机分配到同一局域网的IP地址，其他主机能与该虚拟机互相通信</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 仅主机模式:该虚拟机不能和互联网通信，仅能和主机通信</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、遇到虚拟机设置NAT模式，虚拟机无法获取IP地址的情况</span><br><span class="line">	关闭所有虚拟机，，，点击左上角编辑按钮--》虚拟网络编辑器   还原虚拟网络</span><br><span class="line"><span class="number">2</span>、无法与虚拟机通信，但是虚拟机分配到了IP地址</span><br><span class="line">	（<span class="number">1</span>）主机的两个虚拟网络卡没了，可以打开控制面板--》程序卸载里找到VMware，点击下一步点击修复</span><br><span class="line">    （<span class="number">2</span>）检查虚拟机防火墙是否关闭</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、破解密码"><a href="#4、破解密码" class="headerlink" title="4、破解密码"></a>4、破解密码</h3><p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704160546787-1689051565284-88.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704160546787-1689051565284-88.png"  alt="image-20230704160546787" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704160723819-1689051565284-89.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704160723819-1689051565284-89.png"  alt="image-20230704160723819" lazyload></a></p>
+<p>F10保存重启</p>
+<p>按下任意键</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704162412405-1689051565284-90.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704162412405-1689051565284-90.png"  alt="image-20230704162412405" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704160919399-1689051565284-91.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704160919399-1689051565284-91.png"  alt="image-20230704160919399" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704160951422-1689051565284-92.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704160951422-1689051565284-92.png"  alt="image-20230704160951422" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704161011309-1689051565284-93.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704161011309-1689051565284-93.png"  alt="image-20230704161011309" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704161023440-1689051565284-94.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704161023440-1689051565284-94.png"  alt="image-20230704161023440" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704161134111-1689051565284-95.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704161134111-1689051565284-95.png"  alt="image-20230704161134111" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704161231555-1689051565284-96.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704161231555-1689051565284-96.png"  alt="image-20230704161231555" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">diskpart</span><br><span class="line"><span class="built_in">list</span> volume </span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704161419029-1689051565284-97.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704161419029-1689051565284-97.png"  alt="image-20230704161419029" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">d:</span><br><span class="line">cd Windows</span><br><span class="line">cd System32</span><br><span class="line">copy osk.exe oskbak.exe</span><br><span class="line">copy cmd.exe osk.exe</span><br></pre></td></tr></table></figure>
+
+<p>重启系统，以下界面这个时候就不要要按任意键了</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704162333864-1689051565284-98.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704162333864-1689051565284-98.png"  alt="image-20230704162333864" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704161635916-1689051565284-99.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704161635916-1689051565284-99.png"  alt="image-20230704161635916" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704161658613-1689051565284-100.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704161658613-1689051565284-100.png"  alt="image-20230704161658613" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704161744379-1689051565284-101.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704161744379-1689051565284-101.png"  alt="image-20230704161744379" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">替换的osk程序是屏幕键盘，</span><br><span class="line">用cmd.exe替换了osk.exe</span><br><span class="line">所以使用屏幕键盘就会跳出cmd窗口</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704162008929-1689051565284-102.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704162008929-1689051565284-102.png"  alt="image-20230704162008929" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># net user 用户名 新密码</span></span><br><span class="line">net user administrator !a123</span><br></pre></td></tr></table></figure>
+
+<p>更改完后，可以关闭cmd窗口</p>
+<h2 id="win7密码破解"><a href="#win7密码破解" class="headerlink" title="win7密码破解"></a>win7密码破解</h2><p>安装步骤和server 2008一样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在未登录系统时，连续按<span class="number">5</span>次shift键，弹出程序c:\windows\system32\sethc.exe   程序</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">破解win7系统密码步骤：</span><br><span class="line"><span class="number">1</span>、开启win7虚拟机，开机，并设置一个复杂密码；</span><br><span class="line"><span class="number">2</span>、关机，并开机，在出现windows启动界面时强制关机；</span><br><span class="line"><span class="number">3</span>、再开机，出现“启动修复（推荐）”及选择该项； </span><br><span class="line"><span class="number">4</span>、出现系统还原提示，点击取消，等待几分钟后，会出现问题原因，点击查看详细信息；</span><br><span class="line"><span class="number">5</span>、打开最后一个链接即一个记事本；</span><br><span class="line"><span class="number">6</span>、记事本中点打开，并选择显示所有文件；</span><br><span class="line"><span class="number">7</span>、找到sethc并改名sethc-bak，再找到cmd，复制一份cmd改名为sethc</span><br><span class="line"><span class="number">8</span>、全部关闭，重启。</span><br><span class="line"><span class="number">9</span>、系统启动完毕后，连续按<span class="number">5</span>次shift键，将弹出cmd工具，使用命令net user 用户名 新密码，将当前用户密码修改掉即可</span><br></pre></td></tr></table></figure>
+
+<p>多次关机开机Win7直到出现&#x3D;&#x3D;启动启动修复（推荐）&#x3D;&#x3D;，按回车</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704163238377-1689051774284-170.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704163238377-1689051774284-170.png"  alt="image-20230704163238377" lazyload></a></p>
+<p>等待一会儿弹出系统还原，点击取消，等待修复</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704163410426-1689051774284-169.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704163410426-1689051774284-169.png"  alt="image-20230704163410426" lazyload></a></p>
+<p>等待。。。。。。。。。。。。</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704163515545-1689051774284-171.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704163515545-1689051774284-171.png"  alt="image-20230704163515545" lazyload></a></p>
+<p>点击&#x3D;&#x3D;查看问题详细信息&#x3D;&#x3D;，往下滑动，滑动到最后，会出现一个<code>.txt</code>链接，双击打开，弹出记事本界面，</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704163645860-1689051774284-174.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704163645860-1689051774284-174.png"  alt="image-20230704163645860" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704163721449-1689051774284-172.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704163721449-1689051774284-172.png"  alt="image-20230704163721449" lazyload></a></p>
+<p>点击左上角文件，点击打开</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704163801711-1689051774284-173.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704163801711-1689051774284-173.png"  alt="image-20230704163801711" lazyload></a></p>
+<p><code>c:\windows\system32\</code>找到<code>sethc.exe</code>，进行重命名<code>sethc-back</code></p>
+<p>同样的在<code>system32</code>下找到<code>cmd.exe</code>,右键复制一份，将复制出来的重命名为<code>sethc</code></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704164021812-1689051774284-175.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704164021812-1689051774284-175.png"  alt="image-20230704164021812" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704164105554-1689051774284-176.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704164105554-1689051774284-176.png"  alt="image-20230704164105554" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704164216095-1689051774284-177.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704164216095-1689051774284-177.png"  alt="image-20230704164216095" lazyload></a></p>
+<p>点击取消按钮</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704194627949-1689051774284-178.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704194627949-1689051774284-178.png"  alt="image-20230704194627949" lazyload></a></p>
+<p>关闭记事本，关闭启动修复，重启计算机</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704194706216-1689051774284-179.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704194706216-1689051774284-179.png"  alt="image-20230704194706216" lazyload></a></p>
+<p>重启到登录界面后，按5次shift键，弹出cmd窗口</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704194805689-1689051774284-180.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704194805689-1689051774284-180.png"  alt="image-20230704194805689" lazyload></a></p>
+<p>命令行中输入<code>net user zs 123.com</code> ，回车</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704194925903-1689051774284-181.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704194925903-1689051774284-181.png"  alt="image-20230704194925903" lazyload></a></p>
+<p>关闭命令行，输入修改后的密码，即可进入系统</p>
+<h2 id="win10密码破解"><a href="#win10密码破解" class="headerlink" title="win10密码破解"></a>win10密码破解</h2><p>点击开机，出现Windows图标重启（连续三次以上）</p>
+<p>看到&#x3D;&#x3D;正在准备自动修复&#x3D;&#x3D;停止操作，等待电脑跳转到自动修复界面</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704172759098-1689051788724-195.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704172759098-1689051788724-195.png"  alt="image-20230704172759098" lazyload></a></p>
+<p>在自动修复界面，点击&#x3D;&#x3D;高级选项&#x3D;&#x3D;  –》&#x3D;&#x3D;疑难答疑&#x3D;&#x3D; –》&#x3D;&#x3D;高级选项&#x3D;&#x3D;  –》&#x3D;&#x3D;命令提示符&#x3D;&#x3D;   调出cmd命令行</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704165653997-1689051788724-196.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704165653997-1689051788724-196.png"  alt="image-20230704165653997" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704165751195-1689051788724-197.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704165751195-1689051788724-197.png"  alt="image-20230704165751195" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704165806828-1689051788725-200.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704165806828-1689051788725-200.png"  alt="image-20230704165806828" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704165833615-1689051788725-198.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704165833615-1689051788725-198.png"  alt="image-20230704165833615" lazyload></a></p>
+<p>命令行输入<code>notepad</code> 命令调出记事本</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704165916077-1689051788725-199.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704165916077-1689051788725-199.png"  alt="image-20230704165916077" lazyload></a></p>
+<p>点击左上角文件—》打开—》找到系统盘—》 Windows—》System32 </p>
+<hr>
+<p>文件类型选择&#x3D;&#x3D;所有&#x3D;&#x3D;文件</p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704165950140-1689051788725-201.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704165950140-1689051788725-201.png"  alt="image-20230704165950140" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704170038523-1689051788725-202.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704170038523-1689051788725-202.png"  alt="image-20230704170038523" lazyload></a></p>
+<p>找到<code>sethc </code>文件重命名为<code>sethc-back</code></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704170221459-1689051788725-203.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704170221459-1689051788725-203.png"  alt="image-20230704170221459" lazyload></a></p>
+<p>找到<code>cmd</code>文件 复制一份，将复制出来的重命名为<code>sethc</code></p>
+<p><a class="simple-lightbox" href="/imgs/vm-install/image-20230704185847623-1689051788725-204.png"><img   src="/images/loading.svg" data-src="/imgs/vm-install/image-20230704185847623-1689051788725-204.png"  alt="image-20230704185847623" lazyload></a></p>
+<p>关闭 笔记本和<code>cmd</code>命令行窗口，点击关闭电脑，并重新开机</p>
+<p>开机到登录界面，按<code>5</code>次<code>shift</code>键位调出<code>cmd</code>命令行</p>
+<p>输入<code>net user zc  123.com</code></p>
+<p>改完后即可用新密码登录win10系统</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#server2008"><span class="top-box-text">server2008</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1%E3%80%81%E5%AE%89%E8%A3%85"><span class="top-box-text">1、安装</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2%E3%80%81%E5%90%AF%E5%8A%A8"><span class="top-box-text">2、启动</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3%E3%80%81%E9%85%8D%E7%BD%AE"><span class="top-box-text">3、配置</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4%E3%80%81%E7%A0%B4%E8%A7%A3%E5%AF%86%E7%A0%81"><span class="top-box-text">4、破解密码</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#win7%E5%AF%86%E7%A0%81%E7%A0%B4%E8%A7%A3"><span class="top-box-text">win7密码破解</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#win10%E5%AF%86%E7%A0%81%E7%A0%B4%E8%A7%A3"><span class="top-box-text">win10密码破解</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

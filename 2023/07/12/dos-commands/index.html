@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>DOS命令</title>
+<meta name="keywords" content="DOS命令, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="123color --help     #查看帮助信息color  0a        #修改背景和字体颜色cls              #清屏命令
+
+文件相关12345678910111213141516171819202122232">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="DOS命令">
+<meta property="og:description" content="123color --help     #查看帮助信息color  0a        #修改背景和字体颜色cls              #清屏命令
+
+文件相关12345678910111213141516171819202122232">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">DOS命令</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/DOS/">
+              DOS
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">color --help     #查看帮助信息</span><br><span class="line">color  0a        #修改背景和字体颜色</span><br><span class="line">cls              #清屏命令</span><br></pre></td></tr></table></figure>
+
+<h2 id="文件相关"><a href="#文件相关" class="headerlink" title="文件相关"></a>文件相关</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dir</span>              </span><br><span class="line">    /a 			 <span class="comment">#查看隐藏文件</span></span><br><span class="line">    /a:d         <span class="comment">#只查看目录</span></span><br><span class="line">    /r			 <span class="comment">#只查看只读文件</span></span><br><span class="line">    /A           <span class="comment">#准备存档的文件</span></span><br><span class="line">    /S           <span class="comment">#系统文件</span></span><br><span class="line">    /c           <span class="comment">#显示文件内容大小中显示千位数分割符</span></span><br><span class="line">    /b           <span class="comment">#只显示文件名和扩展名</span></span><br><span class="line">    </span><br><span class="line"><span class="built_in">dir</span> /o:n         <span class="comment">#以名称字母排序</span></span><br><span class="line"><span class="built_in">dir</span> /o:s         <span class="comment">#以大小排序（默认从小到大）</span></span><br><span class="line"><span class="built_in">dir</span> /o:e         <span class="comment">#扩展名排序</span></span><br><span class="line"><span class="built_in">dir</span> /o:d         <span class="comment">#根据时间排序（从先到后）</span></span><br><span class="line"><span class="built_in">dir</span> /o:g         <span class="comment">#组目录排序</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#  dir -            #反转顺序排序</span></span><br><span class="line"><span class="built_in">dir</span> /o:-s</span><br><span class="line"><span class="built_in">dir</span> /o:-g</span><br><span class="line"></span><br><span class="line"><span class="built_in">dir</span> /s  文件名    <span class="comment">#显示指定目录中的所有子目录文件</span></span><br><span class="line"><span class="built_in">dir</span> /q           <span class="comment">#显示文件的所有者</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">dir</span> /t           <span class="comment">#用来显示或分类时间域</span></span><br><span class="line"><span class="built_in">dir</span> /t:a        <span class="comment">#上次访问的时间</span></span><br><span class="line"><span class="built_in">dir</span> /t:w		<span class="comment">#上次写入的时间</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ..   <span class="comment">#返回上一级目录</span></span><br><span class="line">cd \    <span class="comment">#回到根目录</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">mkdir      <span class="comment">#创建目录</span></span><br><span class="line">md         <span class="comment">#创建目录</span></span><br><span class="line">rd         <span class="comment">#删除目录</span></span><br><span class="line">rd /s /q   <span class="comment">#强制无提示删除非空目录</span></span><br><span class="line"></span><br><span class="line">echo  内容</span><br><span class="line">echo  内容  &gt; a.txt      <span class="comment">#覆盖</span></span><br><span class="line">echo  内容  &gt;&gt; b.txt	   <span class="comment">#追加</span></span><br><span class="line">echo %userprofile%  <span class="comment">#查看当前用户的家目录</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">type</span> a.txt         <span class="comment">#查看内容</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">del</span> a.txt          <span class="comment">#删除文件</span></span><br><span class="line"><span class="keyword">del</span> *.txt          <span class="comment">#删除所有后缀为txt的文件</span></span><br><span class="line"><span class="keyword">del</span> *              <span class="comment">#删除所有文件</span></span><br><span class="line"><span class="keyword">del</span> *.*            <span class="comment">#删除所有文件</span></span><br><span class="line"><span class="keyword">del</span> *.* /s /q      <span class="comment">#无提示删除所有文件</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">attrib +h a.txt    <span class="comment">#隐藏文件</span></span><br><span class="line">attrib -h a.txt    <span class="comment">#文件取消隐藏</span></span><br><span class="line"><span class="built_in">dir</span> /a             <span class="comment">#显示隐藏文件</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 复制</span></span><br><span class="line">copy a.txt c:\</span><br><span class="line"></span><br><span class="line"><span class="comment"># 剪切/移动</span></span><br><span class="line">move a.txt c:\</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重命名</span></span><br><span class="line">move a.txt  b.txt   </span><br></pre></td></tr></table></figure>
+
+<h2 id="关机"><a href="#关机" class="headerlink" title="关机"></a>关机</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定时关机</span></span><br><span class="line">shutdown  -s -t <span class="number">10</span>   <span class="comment"># 10秒后关机 </span></span><br><span class="line"></span><br><span class="line">                     <span class="comment"># -s 是关机   -t是定时，以秒为单位</span></span><br><span class="line"><span class="comment"># 重启    </span></span><br><span class="line">shutdown -r -t <span class="number">10</span>    <span class="comment"># 10秒后重启</span></span><br><span class="line">					</span><br><span class="line">                     <span class="comment"># -r 是重启</span></span><br><span class="line"><span class="comment"># 取消计划任务   </span></span><br><span class="line">shutdown -a     </span><br><span class="line">shutdown -l          <span class="comment"># 注销</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="IP信息"><a href="#IP信息" class="headerlink" title="IP信息"></a>IP信息</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ipconfig             <span class="comment">#查看网卡信息</span></span><br><span class="line">ipconfig /<span class="built_in">all</span>        <span class="comment">#查看详细网卡信息</span></span><br><span class="line">ipconfig /release    <span class="comment">#释放IP地址</span></span><br><span class="line">ipconfig /renew      <span class="comment">#重新获取IP地址</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ping <span class="number">114.114</span><span class="number">.114</span><span class="number">.114</span> -t    <span class="comment">#一直ping下去</span></span><br><span class="line">ping <span class="number">114.114</span><span class="number">.114</span><span class="number">.114</span> -n <span class="number">4</span>  <span class="comment">#ping4次</span></span><br><span class="line">ping -a <span class="number">114.114</span><span class="number">.114</span><span class="number">.114</span> </span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230705152902467-1689047787733-167.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230705152902467-1689047787733-167.png"  alt="image-20230705152902467" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ttl=<span class="number">128</span> 是windows</span><br><span class="line">ttl=<span class="number">32</span>  是windows <span class="number">98</span>/<span class="number">95</span></span><br><span class="line">ttl=<span class="number">64</span>  是linux</span><br><span class="line">ttl=<span class="number">255</span> 是unix</span><br><span class="line"><span class="comment">#但ttl值也不是绝对的，也是可以改的</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="用户相关"><a href="#用户相关" class="headerlink" title="用户相关"></a>用户相关</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># net user 新用户名 密码 /add</span></span><br><span class="line">net user zs <span class="number">123.</span>com /add   <span class="comment">#添加用户</span></span><br><span class="line"><span class="comment">#新添加的用户刚开始是没有家目录的，只有登录后才会有家目录</span></span><br><span class="line"><span class="comment">#新添加的用户有修改自己密码的权限</span></span><br><span class="line"></span><br><span class="line">net user   <span class="comment">#查看用户</span></span><br><span class="line">net user zs  <span class="comment">#查看具体用户信息</span></span><br><span class="line">echo %userprofile%  <span class="comment">#查看当前用户的家目录</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#net user 用户 /delete  </span></span><br><span class="line">net user  zs /delete    <span class="comment">#删除用户,删除该用户后家目录还在，可以手动删除家目录</span></span><br><span class="line"></span><br><span class="line">net user zs <span class="number">123.</span>com /add /homedir:<span class="string">&quot;C:\Users\my home&quot;</span>     <span class="comment">#刚创建的新用户可以手动指定家目录,</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#用户刚创建后，指定用户的家目录</span></span><br><span class="line">net user zc /homedir:C:\Users\test</span><br><span class="line">net user zc /homedir:<span class="string">&quot;C:\Users\my home&quot;</span>  <span class="comment">#有空格需要用引号引起来</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">net user zs /passwordchg:no   <span class="comment">#不允许zs用户修改自己的密码</span></span><br><span class="line">net user zs /passwordreq:yes  <span class="comment">#zs用户必须有密码</span></span><br><span class="line"></span><br><span class="line">net user zs  /active:no  <span class="comment">#禁用zs用户</span></span><br><span class="line">net user zs /active:yes  <span class="comment">#激活zs用户</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#/times:星期,时间</span></span><br><span class="line">net user zs /times:m-f,<span class="number">9</span>:<span class="number">00</span>-<span class="number">12</span>:<span class="number">00</span> <span class="comment">#周一到周五9点到12点可用</span></span><br><span class="line">net user zs /times:m-sa,<span class="number">9</span>:<span class="number">00</span>-<span class="number">17</span>:<span class="number">00</span>   <span class="comment">#周一到周六9点到下午5点可用</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#设置账号过期时间</span></span><br><span class="line">net user zs /expires:aug,<span class="number">15</span>,<span class="number">2023</span>    <span class="comment">#2023年八月十五日过期</span></span><br><span class="line">net user zs /expires:never          <span class="comment">#永不过期</span></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230705165413283-1689047787733-168.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230705165413283-1689047787733-168.png"  alt="image-20230705165413283" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230705165921222-1689047787733-170.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230705165921222-1689047787733-170.png"  alt="image-20230705165921222" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230705160619292-1689047787733-171.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230705160619292-1689047787733-171.png"  alt="image-20230705160619292" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230705160626878-1689047787733-169.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230705160626878-1689047787733-169.png"  alt="image-20230705160626878" lazyload></a></p>
+<h2 id="组相关"><a href="#组相关" class="headerlink" title="组相关"></a>组相关</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">net localgroup 					 #查看所有组</span><br><span class="line">net localgroup users             #查看users组成员</span><br><span class="line">net localgroup 新组名称 /add	   #添加组</span><br><span class="line">net localgroup 组名  /del         #删除组</span><br><span class="line">net localgroup 组名 用户名 /add    #将用户添加到组</span><br><span class="line">net localgroup 组名 用户名 /del    #将用户移除组</span><br><span class="line"></span><br><span class="line">net localgroup administrators  zs /add #将zs用户添加到管理员权限组</span><br><span class="line">net localgroup administrators  zs /delete  #从管理员组移除</span><br></pre></td></tr></table></figure>
+
+<h2 id="文件共享"><a href="#文件共享" class="headerlink" title="文件共享"></a>文件共享</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">net share /?   # 查看 net share 命令参数</span><br><span class="line">net share      # 查看本机共享文件夹</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">管理员进cmd</span></span><br><span class="line">net share doc=D:\              #创建共享文件夹，指定共享资源目录</span><br><span class="line">net share doc /users:20        #指定共享资源访问数量</span><br><span class="line">net share doc /remark:&quot;存放文档&quot; #指定共享资源注释</span><br><span class="line">net share 共享文件名             #查看指定共享资源</span><br><span class="line">net share 共享文件名 /delete     #删除共享资源</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230712104404986.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230712104404986.png"  alt="image-20230712104404986" lazyload></a></p>
+<h2 id="端口和进程"><a href="#端口和进程" class="headerlink" title="端口和进程"></a>端口和进程</h2><blockquote>
+<p>范围：1-65535</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http <span class="number">80</span></span><br><span class="line">https <span class="number">443</span></span><br><span class="line">rdp协议 （ 远程桌面）  <span class="number">3389</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">netstat -ano</span><br><span class="line">	-a 显示所有连接和监听端口</span><br><span class="line">    -b 显示每个端口关联的可执行程序</span><br><span class="line">    -e 显示以太网统计，数据流量</span><br><span class="line">    -n 以数字的形式显示地址和端口号</span><br><span class="line">    -o 显示拥有与每个进程关联的<span class="built_in">id</span></span><br><span class="line">    -r 显示路由表</span><br><span class="line">    </span><br><span class="line">netstat -r <span class="comment">#查看路由表   </span></span><br><span class="line">route <span class="built_in">print</span> 显示路由表</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tasklist   <span class="comment">#显示所有进程</span></span><br><span class="line"></span><br><span class="line">taskkill    /pid  PID号   <span class="comment">#杀死进程</span></span><br><span class="line">taskkill /f /pid  PID号  <span class="comment">#强制杀死进程</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">systeminfo   <span class="comment">#查看该机器的详细信息</span></span><br><span class="line"></span><br><span class="line">tracert www.baidu.com  <span class="comment"># 路由追踪</span></span><br><span class="line"></span><br><span class="line">telnet   <span class="comment">#连接服务，用来连接登录他人的服务</span></span><br><span class="line"><span class="comment">#明文登陆，登陆的用户名和密码可以被他人抓取到，现在常用ssh连接，ssh是加密的协议</span></span><br><span class="line"><span class="comment">#还可以测试端口</span></span><br><span class="line">telnet IP地址 端口   </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">arp -a       <span class="comment">#显示arp缓存表，也叫IP与MAC映射表</span></span><br><span class="line"></span><br><span class="line">1byte=8bit</span><br><span class="line">1kb=1024byte</span><br><span class="line">1mb=1024kb</span><br><span class="line">1gb=1024mb</span><br><span class="line">1tb=1024gb</span><br></pre></td></tr></table></figure>
+
+
+
+<p>真实机安装telnet功能</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230705173715628-1689047787733-172.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230705173715628-1689047787733-172.png"  alt="image-20230705173715628" lazyload></a></p>
+<p>测试server 2008的3389是否打开</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230705173945357-1689047846053-179.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230705173945357-1689047846053-179.png"  alt="image-20230705173945357" lazyload></a></p>
+<h2 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">增加两块硬盘，一块硬盘命名为f盘，一块硬盘为g盘，f盘下面创建users文件夹，</span><br><span class="line">users下面创建hydra文件夹。切换到g盘，创建目录test，在目录test下面创建name文件夹。</span><br><span class="line">再切换到f盘，删除刚才创建的hydra文件夹，记录写出所有步骤。</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706091713009-1689047949141-182.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706091713009-1689047949141-182.png"  alt="image-20230706091713009" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706091721376-1689047949141-181.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706091721376-1689047949141-181.png"  alt="image-20230706091721376" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706091726359-1689047949141-183.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706091726359-1689047949141-183.png"  alt="image-20230706091726359" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706091736607-1689047949141-184.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706091736607-1689047949141-184.png"  alt="image-20230706091736607" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706091748211-1689047949141-185.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706091748211-1689047949141-185.png"  alt="image-20230706091748211" lazyload></a></p>
+<p>以上操作再操作一遍，添加两块硬盘</p>
+<p>计算机右键属性，点击存储，点击磁盘管理</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706091927989-1689047949141-187.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706091927989-1689047949141-187.png"  alt="image-20230706091927989" lazyload></a></p>
+<p>将两块硬盘都联机，然后再初始化</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706091950701-1689047949141-186.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706091950701-1689047949141-186.png"  alt="image-20230706091950701" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092002070-1689047949141-188.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092002070-1689047949141-188.png"  alt="image-20230706092002070" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092008034-1689047949141-189.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092008034-1689047949141-189.png"  alt="image-20230706092008034" lazyload></a></p>
+<p>显示未分配</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092024263-1689047949141-190.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092024263-1689047949141-190.png"  alt="image-20230706092024263" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092106482-1689047949141-191.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092106482-1689047949141-191.png"  alt="image-20230706092106482" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092115468-1689047949141-192.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092115468-1689047949141-192.png"  alt="image-20230706092115468" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092125634-1689047949141-193.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092125634-1689047949141-193.png"  alt="image-20230706092125634" lazyload></a></p>
+<p>然后再创建G盘，NTFS格式</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092200190-1689047949141-194.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092200190-1689047949141-194.png"  alt="image-20230706092200190" lazyload></a></p>
+<p>一路点击下一步</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092210588-1689047949141-195.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092210588-1689047949141-195.png"  alt="image-20230706092210588" lazyload></a></p>
+<p>win+r 打开cmd</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706092440400-1689047949141-196.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706092440400-1689047949141-196.png"  alt="image-20230706092440400" lazyload></a></p>
+<h3 id="练习二"><a href="#练习二" class="headerlink" title="练习二"></a>练习二</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">在f盘的users\hydra目录下面新建<span class="keyword">class</span>.txt</span><br><span class="line">在<span class="keyword">class</span>.txt中追加姓名，bob和tomato</span><br><span class="line"></span><br><span class="line">将<span class="keyword">class</span>.txt复制到g盘下面test目录下面</span><br><span class="line">将<span class="keyword">class</span>.txt重命名为<span class="number">2303</span>网络安全班级.txt</span><br><span class="line">并输入姓名xiaoming 覆盖txt里面内容</span><br><span class="line"></span><br><span class="line">切换回f盘</span><br><span class="line">删除users\hydra下面所有以txt结尾的文件</span><br><span class="line"></span><br><span class="line">切换回g盘</span><br><span class="line">将<span class="number">2303</span>网络安全班级.txt设置为隐藏属性</span><br><span class="line"></span><br><span class="line">以上操作完成，设置<span class="number">10</span>分钟以后关机</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706093105113-1689047949141-197.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706093105113-1689047949141-197.png"  alt="image-20230706093105113" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706093124079-1689047949141-198.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706093124079-1689047949141-198.png"  alt="image-20230706093124079" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706093008294-1689047949141-199.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706093008294-1689047949141-199.png"  alt="image-20230706093008294" lazyload></a></p>
+<h3 id="练习三"><a href="#练习三" class="headerlink" title="练习三"></a>练习三</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span>打开server <span class="number">2008</span> </span><br><span class="line">新建用户  bob，hydra，zc</span><br><span class="line">bob密码为<span class="number">34567</span>@a</span><br><span class="line">hydra密码!a1234@a</span><br><span class="line">zc密码7890aa@a</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span>将bob用户设置为停用账户</span><br><span class="line">将zc用户设置成周<span class="number">1</span>到周三，上午<span class="number">9</span>点到<span class="number">11</span>点可用</span><br><span class="line">将hydra用户设置周一到周日，下午<span class="number">2</span>点到晚上<span class="number">10</span>点可用</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706093438765-1689047949141-200.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706093438765-1689047949141-200.png"  alt="image-20230706093438765" lazyload></a></p>
+<h3 id="练习四"><a href="#练习四" class="headerlink" title="练习四"></a>练习四</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span>设置zc用户账户过期时间为<span class="number">2023</span>年<span class="number">9</span>月<span class="number">15</span>日</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="number">2.</span>找到进程winlogon.exe的进程，将它强制杀死进程，观察效果(能否杀死)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="number">3.</span>将bob用户在server2008里面删除</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="number">4.</span>使用某命令找到<span class="number">3389</span>端口进程，将其强制杀死进程</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="number">5.</span>我想在server2008上，想知道本机到<span class="number">114.114</span><span class="number">.114</span><span class="number">.114</span>的ip地址之间</span><br><span class="line">经过多上个路由设备</span><br><span class="line"></span><br><span class="line"><span class="number">6.</span>检查win7虚拟机与server2008虚拟机能否通信使用命令？返回何值表示它与win7能正常通信</span><br><span class="line">并且它们两台机器的延迟大小是多少</span><br><span class="line"></span><br><span class="line"><span class="number">7.</span>如果我想一直检查win7与server2008通信情况，使用什么命令？</span><br><span class="line"></span><br><span class="line"><span class="number">8.</span>我想统计server2008网卡通信数据流量使用什么命令？</span><br></pre></td></tr></table></figure>
+
+
+
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706093933531-1689047949141-201.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706093933531-1689047949141-201.png"  alt="image-20230706093933531" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706095124894-1689047949141-202.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706095124894-1689047949141-202.png"  alt="image-20230706095124894" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706094010949-1689047949141-203.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706094010949-1689047949141-203.png"  alt="image-20230706094010949" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706094021012-1689047949141-204.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706094021012-1689047949141-204.png"  alt="image-20230706094021012" lazyload></a></p>
+<p>6、</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706094227381-1689047949141-205.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706094227381-1689047949141-205.png"  alt="image-20230706094227381" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706094156649-1689047949141-206.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706094156649-1689047949141-206.png"  alt="image-20230706094156649" lazyload></a></p>
+<p>延迟小于1ms</p>
+<hr>
+<p>7、</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706094259196-1689047949141-207.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706094259196-1689047949141-207.png"  alt="image-20230706094259196" lazyload></a></p>
+<p>8、</p>
+<p><a class="simple-lightbox" href="/imgs/dos-commands/image-20230706220144022-1689048001036-235.png"><img   src="/images/loading.svg" data-src="/imgs/dos-commands/image-20230706220144022-1689048001036-235.png"  alt="image-20230706220144022" lazyload></a></p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%96%87%E4%BB%B6%E7%9B%B8%E5%85%B3"><span class="top-box-text">文件相关</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%B3%E6%9C%BA"><span class="top-box-text">关机</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#IP%E4%BF%A1%E6%81%AF"><span class="top-box-text">IP信息</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%94%A8%E6%88%B7%E7%9B%B8%E5%85%B3"><span class="top-box-text">用户相关</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%BB%84%E7%9B%B8%E5%85%B3"><span class="top-box-text">组相关</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB"><span class="top-box-text">文件共享</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%AB%AF%E5%8F%A3%E5%92%8C%E8%BF%9B%E7%A8%8B"><span class="top-box-text">端口和进程</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0"><span class="top-box-text">练习</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0%E4%BA%8C"><span class="top-box-text">练习二</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0%E4%B8%89"><span class="top-box-text">练习三</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#%E7%BB%83%E4%B9%A0%E5%9B%9B"><span class="top-box-text">练习四</span></a></li></ol></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/12/ftp-server/">
+          <h3 class="post-title">
+            
+            下一篇：FTP服务器
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

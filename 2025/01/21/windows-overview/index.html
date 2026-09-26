@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>Windows基础总览</title>
+<meta name="keywords" content="Windows基础总览, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="目录
+
+虚拟机安装及破解
+2008做磁盘阵列
+DOS命令
+批处理
+&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;
+SAM文件破解
+用户与组
+IP详解
+NTFS权限
+DHCP部署与安全
+FTP服务器
+rdp、ftp协议的密码爆">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="Windows基础总览">
+<meta property="og:description" content="目录
+
+虚拟机安装及破解
+2008做磁盘阵列
+DOS命令
+批处理
+&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;
+SAM文件破解
+用户与组
+IP详解
+NTFS权限
+DHCP部署与安全
+FTP服务器
+rdp、ftp协议的密码爆">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">Windows基础总览</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-01-21</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p><strong>目录</strong></p>
+<ul>
+<li><a href="%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E5%8F%8A%E7%A0%B4%E8%A7%A3.md">虚拟机安装及破解</a></li>
+<li><a href="2008%E5%81%9A%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97.md">2008做磁盘阵列</a></li>
+<li><a href="DOS%E5%91%BD%E4%BB%A4.md">DOS命令</a></li>
+<li><a href="%E6%89%B9%E5%A4%84%E7%90%86.md">批处理</a></li>
+<li><a href="ARP%E6%96%AD%E7%BD%91%E6%94%BB%E5%87%BB.md">&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;</a></li>
+<li><a href="SAM%E6%96%87%E4%BB%B6%E7%A0%B4%E8%A7%A3.md">SAM文件破解</a></li>
+<li><a href="%E7%94%A8%E6%88%B7%E4%B8%8E%E7%BB%84.md">用户与组</a></li>
+<li><a href="IP%E8%AF%A6%E8%A7%A3.md">IP详解</a></li>
+<li><a href="NTFS%E6%9D%83%E9%99%90.md">NTFS权限</a></li>
+<li><a href="DHCP%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%AE%89%E5%85%A8.md">DHCP部署与安全</a></li>
+<li><a href="FTP%E6%9C%8D%E5%8A%A1%E5%99%A8.md">FTP服务器</a></li>
+<li><a href="rdp_ftp%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4.md">rdp、ftp协议的密码爆破</a></li>
+<li><a href="DNS%E9%83%A8%E7%BD%B2%E6%90%AD%E5%BB%BA.md">DNS部署搭建</a></li>
+<li><a href="%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E6%9C%8D%E5%8A%A1%E5%99%A8.md">文件共享服务器</a></li>
+<li><a href="IIS%E7%BD%91%E7%AB%99%E6%90%AD%E5%BB%BA.md">IIS网站搭建</a></li>
+<li><a href="Domain%E5%9F%9F.md">Domain域 </a></li>
+<li><a href="PKI.md">PKI</a></li>
+</ul>
+<p><strong>问题解决</strong></p>
+<ul>
+<li><a href="%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/%E4%B8%8D%E5%85%81%E8%AE%B8%E4%B8%80%E4%B8%AA%E7%94%A8%E6%88%B7%E4%BD%BF%E7%94%A8%E4%B8%80%E4%B8%AA%E4%BB%A5%E4%B8%8A%E7%94%A8%E6%88%B7%E5%90%8D%E4%B8%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%88%96%E5%85%B1%E4%BA%AB%E8%B5%84%E6%BA%90%E7%9A%84%E5%A4%9A%E9%87%8D%E8%BF%9E%E6%8E%A5%EF%BC%8C%E4%B8%AD%E6%96%AD%E4%B8%8E%E6%AD%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%88%96%E5%85%B1%E4%BA%AB%E8%B5%84%E6%BA%90%E7%9A%84%E6%89%80%E6%9C%89%E8%BF%9E%E6%8E%A5%EF%BC%8C%E7%84%B6%E5%90%8E%E5%86%8D%E8%AF%95%E4%B8%80%E6%AC%A1.md">不允许一个用户使用一个以上用户名与服务器或共享资源的多重连接，中断与此服务器或共享资源的所有连接，然后再试一次</a></li>
+<li><a href="%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/windows%E5%B0%81%E7%A6%81%E9%AB%98%E5%8D%B1%E7%AB%AF%E5%8F%A3.md">windows封禁高危端口</a></li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2024/06/09/windows-multiple-connection/">
+          <h3 class="post-title">
+            
+            下一篇：不允许一个用户使用一个以上用户名与服务器或共享资源的多重连接，中断与此服务器或共享资源的所有连接，然后再试一次
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

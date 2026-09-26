@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>用户与组</title>
+<meta name="keywords" content="用户与组, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="用户每个用户有自己唯一的SID（安全标识符）
+12#查看用户ID值whoami /user
+
+
+1234567用户ID值是不断往上累加，不会占用之前用户的ID值# 例如创建一个 zs用户，ID值为1001再创建一个zs1用户，他的ID值就是">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="用户与组">
+<meta property="og:description" content="用户每个用户有自己唯一的SID（安全标识符）
+12#查看用户ID值whoami /user
+
+
+1234567用户ID值是不断往上累加，不会占用之前用户的ID值# 例如创建一个 zs用户，ID值为1001再创建一个zs1用户，他的ID值就是">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/tags/" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/categories/" class="menu purple-link">
+        分类
+      </a>
+    
+  
+    
+      <a href="/archives/" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/about/" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">用户与组</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-08</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Windows/">
+              Windows
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h2 id="用户"><a href="#用户" class="headerlink" title="用户"></a>用户</h2><p>每个用户有自己唯一的SID（安全标识符）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">查看用户ID值</span></span><br><span class="line">whoami /user</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-users-groups/image-20230707095545809-1689047413756-84.png"><img   src="/images/loading.svg" data-src="/imgs/windows-users-groups/image-20230707095545809-1689047413756-84.png"  alt="image-20230707095545809" lazyload></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">用户ID值是不断往上累加，不会占用之前用户的ID值</span><br><span class="line"></span><br><span class="line"><span class="comment"># 例如</span></span><br><span class="line">创建一个 zs用户，ID值为<span class="number">1001</span></span><br><span class="line">再创建一个zs1用户，他的ID值就是<span class="number">1002</span></span><br><span class="line">再创建zs2用户，ID值就是<span class="number">1003</span></span><br><span class="line">然后删除zs1用户，然后再创建一个zs1用户，他的ID值这时候就是<span class="number">1004</span></span><br></pre></td></tr></table></figure>
+
+<p>用户密码存放在<code>C:\Windows\System32\config\SAM</code>下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#给人使用的账户</span></span><br><span class="line">	administartor  管理员账户</span><br><span class="line">	guest          来宾账户</span><br><span class="line">    </span><br><span class="line"><span class="comment">#计算机服务组件相关的系统账户</span></span><br><span class="line">	system           系统账户==至高无上的权限</span><br><span class="line">	local services   本地服务账户==权限等同于普通用户</span><br><span class="line">	network services 网络服务账户==权限等同于普通账户</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-users-groups/image-20230708085957060-1689047413756-83.png"><img   src="/images/loading.svg" data-src="/imgs/windows-users-groups/image-20230708085957060-1689047413756-83.png"  alt="image-20230708085957060" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-users-groups/image-20230708090100498-1689047413756-85.png"><img   src="/images/loading.svg" data-src="/imgs/windows-users-groups/image-20230708090100498-1689047413756-85.png"  alt="image-20230708090100498" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-users-groups/image-20230708090122070-1689047413756-87.png"><img   src="/images/loading.svg" data-src="/imgs/windows-users-groups/image-20230708090122070-1689047413756-87.png"  alt="image-20230708090122070" lazyload></a></p>
+<p><strong>命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">net user 新用户名 密码 /add</span></span><br><span class="line">net user zs 123.com /add   #添加用户</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">新添加的用户刚开始是没有家目录的，只有登录后才会有家目录</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">新添加的用户有修改自己密码的权限</span></span><br><span class="line"></span><br><span class="line">net user   #查看用户</span><br><span class="line">net user zs  #查看具体用户信息</span><br><span class="line">echo %useprofile%  #查看当前用户的家目录</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">net user 用户 /delete</span>  </span><br><span class="line">net user  zs /delete    #删除用户,删除该用户后家目录还在，可以手动删除家目录</span><br><span class="line"></span><br><span class="line">net user zs 123.com /add /homedir:&quot;C:\Users\my home&quot;     #刚创建的新用户可以手动指定家目录,</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">用户刚创建后，指定用户的家目录</span></span><br><span class="line">net user zc /homedir:C:\Users\test</span><br><span class="line">net user zc /homedir:&quot;C:\Users\my home&quot;  #有空格需要用引号引起来</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">net user zs /passwordchg:no   #不允许zs用户修改自己的密码</span><br><span class="line">net user zs /passwordreq:yes  #zs用户必须有密码</span><br><span class="line"></span><br><span class="line">net user zs  /active:no  #禁用zs用户</span><br><span class="line">net user zs /active:yes  #激活zs用户</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">/times:星期,时间</span></span><br><span class="line">net user zs /times:m-f,9:00-12:00 #周一到周五9点到12点可用</span><br><span class="line">net user zs /times:m-sa,9:00-17:00   #周一到周六9点到下午5点可用</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">设置账号过期时间</span></span><br><span class="line">net user zs /expires:aug,15,2023    #2023年八月十五日过期</span><br><span class="line">net user zs /expires:never      #永不过期</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="组"><a href="#组" class="headerlink" title="组"></a>组</h2><p>组的作用：简化权限的赋予</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">假如说</span><br><span class="line">现在有十个用户，都要访问一个文件夹，就要给这十个用户，设置权限</span><br><span class="line">但是把这十个用户添加到组里，就只需要设置一次权限</span><br></pre></td></tr></table></figure>
+
+<p><strong>内置组</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">administrators 管理员组</span><br><span class="line">guests 来宾组</span><br><span class="line">users 普通用户组</span><br><span class="line">network 网络配置组</span><br><span class="line"><span class="built_in">print</span> 打印机组</span><br><span class="line">remote desktop users 远程桌面组</span><br></pre></td></tr></table></figure>
+
+<p><a class="simple-lightbox" href="/imgs/windows-users-groups/image-20230708090018401-1689047413756-86.png"><img   src="/images/loading.svg" data-src="/imgs/windows-users-groups/image-20230708090018401-1689047413756-86.png"  alt="image-20230708090018401" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-users-groups/image-20230708090151898-1689047413756-88.png"><img   src="/images/loading.svg" data-src="/imgs/windows-users-groups/image-20230708090151898-1689047413756-88.png"  alt="image-20230708090151898" lazyload></a></p>
+<p><a class="simple-lightbox" href="/imgs/windows-users-groups/image-20230708090254454-1689047413756-89.png"><img   src="/images/loading.svg" data-src="/imgs/windows-users-groups/image-20230708090254454-1689047413756-89.png"  alt="image-20230708090254454" lazyload></a></p>
+<p><strong>命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">net localgroup 					 #查看所有组</span><br><span class="line">net localgroup users             #查看users组成员</span><br><span class="line">net localgroup 新组名称 /add	   #添加组</span><br><span class="line">net localgroup 组名  /del         #删除组</span><br><span class="line">net localgroup 组名 用户名 /add    #将用户添加到组</span><br><span class="line">net localgroup 组名 用户名 /del    #将用户移除组</span><br><span class="line"></span><br><span class="line">net localgroup administrators  zs /add #将zs用户添加到管理员权限组</span><br><span class="line">net localgroup administrators  zs /delete  #从管理员组移除</span><br></pre></td></tr></table></figure>
+
+<p>如果使用非管理员账户登录远程，需要在服务器上将用户加入到远程桌面内置组<code>Remote Desktop Users</code>中</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%94%A8%E6%88%B7"><span class="top-box-text">用户</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E7%BB%84"><span class="top-box-text">组</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2023/07/06/batch-script/">
+          <h3 class="post-title">
+            
+            下一篇：批处理
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+
