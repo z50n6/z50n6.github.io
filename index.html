@@ -361,13 +361,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
-        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      <a href="/2026/06/28/sql-injection/">
+        <h2 class="post-title">SQL 注入</h2>
       </a>
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+      <a href="/2026/06/28/sql-injection/">
           <div class="post-abstract">
             
-            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
+            环境： SQLi-Labs | CMS靶场 提取码：xcuw | phpStudy 低版本 一、SQL 注入原理 1.1 是什么 SQL 注入（SQL Injection）——攻击者通过 用户可控参数 中注入 SQL 语法，破坏原有 SQL 结构，达到程序意料之外的结果。
           </div>
       </a>
       <div class="post-info">
@@ -403,6 +403,41 @@
           <div class="post-abstract">
             
             一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      </a>
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+          <div class="post-abstract">
+            
+            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
           </div>
       </a>
       <div class="post-info">
@@ -501,13 +536,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/sql-injection/">
-        <h2 class="post-title">SQL 注入</h2>
+      <a href="/2026/06/28/xss/">
+        <h2 class="post-title">XSS 跨站脚本攻击</h2>
       </a>
-      <a href="/2026/06/28/sql-injection/">
+      <a href="/2026/06/28/xss/">
           <div class="post-abstract">
             
-            环境： SQLi-Labs | CMS靶场 提取码：xcuw | phpStudy 低版本 一、SQL 注入原理 1.1 是什么 SQL 注入（SQL Injection）——攻击者通过 用户可控参数 中注入 SQL 语法，破坏原有 SQL 结构，达到程序意料之外的结果。
+            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
           </div>
       </a>
       <div class="post-info">
@@ -543,41 +578,6 @@
           <div class="post-abstract">
             
             一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                WEB渗透
-                
-                  ，
-                
-            
-
-                基础漏洞
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-
-
-<section class="post-item">
-    <div class="content">
-      <a href="/2026/06/28/xss/">
-        <h2 class="post-title">XSS 跨站脚本攻击</h2>
-      </a>
-      <a href="/2026/06/28/xss/">
-          <div class="post-abstract">
-            
-            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
           </div>
       </a>
       <div class="post-info">
@@ -676,41 +676,6 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/05/24/dns-hijacking/">
-        <h2 class="post-title">DNS劫持原理与防护</h2>
-      </a>
-      <a href="/2026/05/24/dns-hijacking/">
-          <div class="post-abstract">
-            
-            一、DNS 是什么？ DNS（Domain Name System，域名系统）是互联网的「电话本」。 当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名翻…
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2026-05-24</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                网络
-                
-                  ，
-                
-            
-
-                DNS
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-
-
-<section class="post-item">
-    <div class="content">
       <a href="/2026/05/24/doh-dot/">
         <h2 class="post-title">DoH与DoT加密DNS</h2>
       </a>
@@ -727,13 +692,48 @@
             <i class="icon icon-pricetags-outline"></i>
             
 
-                网络
+                DNS
                 
                   ，
                 
             
 
+                网络
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/05/24/dns-hijacking/">
+        <h2 class="post-title">DNS劫持原理与防护</h2>
+      </a>
+      <a href="/2026/05/24/dns-hijacking/">
+          <div class="post-abstract">
+            
+            一、DNS 是什么？ DNS（Domain Name System，域名系统）是互联网的「电话本」。 当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名翻…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-05-24</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
                 DNS
+                
+                  ，
+                
+            
+
+                网络
                 
             
           </span>
@@ -797,13 +797,13 @@
             <i class="icon icon-pricetags-outline"></i>
             
 
-                BurpSuite
+                安全工具
                 
                   ，
                 
             
 
-                安全工具
+                BurpSuite
                 
             
           </span>
@@ -1504,41 +1504,6 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2023/07/12/ftp-server/">
-        <h2 class="post-title">FTP服务器</h2>
-      </a>
-      <a href="/2023/07/12/ftp-server/">
-          <div class="post-abstract">
-            
-            文件传输协议 端口： ​ tcp 20 21 数据端口 20 控制端口 21 客户端安装FileZilla Client 服务器安装FileZilla Server 创建组 添加用户 练习 答案： 组设置 用户设置 …
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                Windows
-                
-                  ，
-                
-            
-
-                FTP
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-
-
-<section class="post-item">
-    <div class="content">
       <a href="/2023/07/12/dos-commands/">
         <h2 class="post-title">DOS命令</h2>
       </a>
@@ -1562,6 +1527,41 @@
             
 
                 DOS
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/12/ftp-server/">
+        <h2 class="post-title">FTP服务器</h2>
+      </a>
+      <a href="/2023/07/12/ftp-server/">
+          <div class="post-abstract">
+            
+            文件传输协议 端口： ​ tcp 20 21 数据端口 20 控制端口 21 客户端安装FileZilla Client 服务器安装FileZilla Server 创建组 添加用户 练习 答案： 组设置 用户设置 …
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                FTP
                 
             
           </span>

@@ -1473,6 +1473,159 @@ html.dark .site-marquee-dot {
     opacity: 0;
   }
 }
+#gitalk-container {
+  margin-top: 8px;
+}
+#gitalk-container .gt-container {
+  font-size: 15px;
+  line-height: 1.7;
+}
+#gitalk-container .gt-container a {
+  color: var(--c-base-purple);
+}
+#gitalk-container .gt-container a:hover {
+  color: var(--c-link-hover);
+  border-color: var(--c-link-hover);
+}
+#gitalk-container .gt-container .gt-svg svg {
+  fill: var(--c-base-purple);
+}
+#gitalk-container .gt-container .gt-comment-username {
+  color: var(--c-base-purple);
+}
+#gitalk-container .gt-container .gt-header-controls-tip {
+  color: var(--c-base-purple);
+}
+#gitalk-container .gt-container .gt-btn {
+  border-color: var(--c-base-purple);
+  background-color: var(--c-base-purple);
+  border-radius: 4px;
+}
+#gitalk-container .gt-container .gt-btn-preview {
+  background-color: transparent;
+  color: var(--c-base-purple);
+}
+#gitalk-container .gt-container .gt-btn-preview:hover {
+  background-color: rgba(58,110,165,0.06);
+}
+#gitalk-container .gt-container .gt-header-textarea,
+#gitalk-container .gt-container .gt-header-preview {
+  border: 1px solid rgba(12,30,41,0.12);
+  border-radius: 6px;
+  background-color: #fafbfc;
+  font-family: inherit;
+}
+#gitalk-container .gt-container .gt-header-textarea:hover {
+  background-color: #fff;
+}
+#gitalk-container .gt-container .gt-comment-content {
+  border-radius: 6px;
+}
+#gitalk-container .gt-container .gt-meta {
+  border-bottom: 1px solid rgba(12,30,41,0.08);
+  font-size: 14px;
+}
+#gitalk-container .gt-container .gt-counts,
+#gitalk-container .gt-container .gt-comment-text,
+#gitalk-container .gt-container .gt-comment-date,
+#gitalk-container .gt-container .gt-version {
+  color: var(--c-base-gray);
+}
+#gitalk-container .gt-container .gt-no-init,
+#gitalk-container .gt-container .gt-comments-null,
+#gitalk-container .gt-container .gt-initing-text {
+  color: var(--c-base-blacklight);
+}
+#gitalk-container .gt-container .gt-comment-body {
+  color: var(--c-base-black) !important;
+}
+html.dark #gitalk-container .gt-container a,
+html.dark #gitalk-container .gt-container .gt-comment-username,
+html.dark #gitalk-container .gt-container .gt-header-controls-tip {
+  color: var(--c-accent-dark);
+}
+html.dark #gitalk-container .gt-container a:hover {
+  color: var(--c-accent-dark-hover);
+  border-color: var(--c-accent-dark-hover);
+}
+html.dark #gitalk-container .gt-container .gt-svg svg {
+  fill: var(--c-accent-dark);
+}
+html.dark #gitalk-container .gt-container .gt-btn {
+  border-color: var(--c-accent-dark);
+  background-color: var(--c-accent-dark);
+  color: #0c1e29;
+}
+html.dark #gitalk-container .gt-container .gt-btn-preview {
+  background-color: transparent;
+  color: var(--c-accent-dark);
+}
+html.dark #gitalk-container .gt-container .gt-btn-preview:hover {
+  background-color: rgba(122,162,227,0.12);
+}
+html.dark #gitalk-container .gt-container .gt-header-textarea,
+html.dark #gitalk-container .gt-container .gt-header-preview {
+  background-color: #1c2027;
+  color: #c9d1d9;
+  border-color: rgba(255,255,255,0.1);
+}
+html.dark #gitalk-container .gt-container .gt-header-textarea:hover {
+  background-color: #232830;
+}
+html.dark #gitalk-container .gt-container .gt-meta {
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+html.dark #gitalk-container .gt-container .gt-counts,
+html.dark #gitalk-container .gt-container .gt-comment-text,
+html.dark #gitalk-container .gt-container .gt-comment-date,
+html.dark #gitalk-container .gt-container .gt-version {
+  color: #8b949e;
+}
+html.dark #gitalk-container .gt-container .gt-no-init,
+html.dark #gitalk-container .gt-container .gt-comments-null,
+html.dark #gitalk-container .gt-container .gt-initing-text {
+  color: #c9d1d9;
+}
+html.dark #gitalk-container .gt-container .gt-comment-body {
+  color: #c9d1d9 !important;
+}
+html.dark #gitalk-container .gt-container .gt-comment-content {
+  background-color: #1c2027;
+}
+html.dark #gitalk-container .gt-container .gt-popup {
+  background: #1c2027;
+  border-color: rgba(255,255,255,0.1);
+}
+html.dark #gitalk-container .gt-container .gt-action {
+  color: #c9d1d9;
+}
+html.dark #gitalk-container .gt-container .gt-link {
+  border-bottom-color: var(--c-accent-dark);
+}
+html.dark #gitalk-container .gt-container .markdown-body {
+  color: #c9d1d9;
+}
+html.dark #gitalk-container .gt-container .markdown-body a {
+  color: var(--c-accent-dark);
+}
+html.dark #gitalk-container .gt-container .markdown-body code {
+  background-color: rgba(255,255,255,0.08);
+}
+html.dark #gitalk-container .gt-container .markdown-body pre,
+html.dark #gitalk-container .gt-container .markdown-body .highlight pre {
+  background-color: #0f1115;
+}
+html.dark #gitalk-container .gt-container .markdown-body table tr {
+  background-color: transparent;
+}
+html.dark #gitalk-container .gt-container .markdown-body table td,
+html.dark #gitalk-container .gt-container .markdown-body table th {
+  border-color: rgba(255,255,255,0.12);
+}
+html.dark #gitalk-container .gt-container .markdown-body blockquote {
+  color: #8b949e;
+  border-left-color: #2d333b;
+}
 /* ============================================================
  * 搜索弹窗（自定义改写）
  *
