@@ -1503,6 +1503,67 @@ html.dark #utterances-container::before {
 html.dark #utterances-container .utterances-frame {
   color-scheme: dark;
 }
+.post-content .table-scroll {
+  width: 100%;
+  margin: 20px 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.post-content table {
+  display: table;
+  width: 100%;
+  min-width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.post-content figure table {
+  display: table;
+  margin: 0;
+}
+.post-content thead th {
+  background: rgba(12,30,41,0.035);
+  font-weight: 600;
+  color: var(--c-base-black);
+  white-space: nowrap;
+}
+.post-content th,
+.post-content td {
+  padding: 8px 12px;
+  border: 1px solid #dfe2e5;
+  text-align: left;
+  vertical-align: top;
+}
+.post-content th:first-child,
+.post-content td:first-child {
+  white-space: nowrap;
+}
+.post-content tbody tr:nth-child(even) {
+  background: rgba(12,30,41,0.015);
+}
+.post-content tbody tr:hover {
+  background: rgba(0,61,240,0.04);
+}
+.post-content td code,
+.post-content th code {
+  font-size: 0.85em;
+}
+html.dark .post-content thead th {
+  background: rgba(255,255,255,0.05);
+  color: #e6edf3;
+}
+html.dark .post-content th,
+html.dark .post-content td {
+  border-color: #2d333b;
+}
+html.dark .post-content tbody tr:nth-child(even) {
+  background: rgba(255,255,255,0.02);
+}
+html.dark .post-content tbody tr:hover {
+  background: rgba(122,162,227,0.08);
+}
 /* ============================================================
  * 搜索弹窗（自定义改写）
  *

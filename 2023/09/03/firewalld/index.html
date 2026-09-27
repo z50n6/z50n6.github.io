@@ -167,9 +167,9 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <li>block(限制区域)：拒绝所有传入流量。</li>
 <li>drop(丢弃区域)：丢弃所有传入流量，并且不产生包含ICMP的错误响应。</li>
 </ul>
-<h2 id="firewalld配置方法"><a href="#firewalld配置方法" class="headerlink" title="firewalld配置方法"></a>firewalld配置方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">使用 firewall-cmd 命令行工具</span><br><span class="line">使用 firewall-config 图形工具</span><br><span class="line">编写 /etc/firewalld/ 中的配置文件</span><br></pre></td></tr></table></figure>
+<h2 id="firewalld配置方法"><a href="#firewalld配置方法" class="headerlink" title="firewalld配置方法"></a>firewalld配置方法</h2><figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">使用 firewall-cmd 命令行工具</span><br><span class="line">使用 firewall-config 图形工具</span><br><span class="line">编写 /etc/firewalld/ 中的配置文件</span><br></pre></td></tr></table></div></figure>
 
-<h2 id="firewalld参数和命令"><a href="#firewalld参数和命令" class="headerlink" title="firewalld参数和命令"></a>firewalld参数和命令</h2><table>
+<h2 id="firewalld参数和命令"><a href="#firewalld参数和命令" class="headerlink" title="firewalld参数和命令"></a>firewalld参数和命令</h2><div class="table-scroll"><table>
 <thead>
 <tr>
 <th>参数</th>
@@ -256,7 +256,7 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <td><strong>–remove-masquerade</strong></td>
 <td><strong>禁止防火墙伪装IP</strong></td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <h2 id="firewalld两种模式"><a href="#firewalld两种模式" class="headerlink" title="firewalld两种模式"></a>firewalld两种模式</h2><p><strong>运行时模式   Runtime</strong>    </p>
 <ul>
 <li>配置后立即生效，重启后失效</li>
@@ -268,29 +268,29 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <h2 id="firewalld使用"><a href="#firewalld使用" class="headerlink" title="firewalld使用"></a>firewalld使用</h2><ul>
 <li><strong>&#x3D;&#x3D;查看当前使用的区域&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-default-zone</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-default-zone</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/4d7961752576bd472758d512afbd8b16.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/4d7961752576bd472758d512afbd8b16.png"  alt="image-20230902213939584" lazyload></a></p>
 <ul>
 <li><strong>&#x3D;&#x3D;查看指定网卡所在的区域&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-zone-of-interface=ens33</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-zone-of-interface=ens33</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/2411a0d1a36e6eb6ef9e68cd73ecd4e5.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/2411a0d1a36e6eb6ef9e68cd73ecd4e5.png"  alt="image-20230902214044715" lazyload></a></p>
 <ul>
 <li><strong>&#x3D;&#x3D;修改当前网卡所在的区域，并永久生效&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=external --change-interface=ens33</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=external --change-interface=ens33</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/1d67ca841ba37bfd9040fe9b091bde29.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/1d67ca841ba37bfd9040fe9b091bde29.png"  alt="image-20230902214225267" lazyload></a></p>
 <p>重启服务器，查看网卡所在区域</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-zone-of-interface=ens33</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --get-zone-of-interface=ens33</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/9dd25006b67b9791e4afec339beeddcc.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/9dd25006b67b9791e4afec339beeddcc.png"  alt="image-20230902214340197" lazyload></a></p>
 <ul>
 <li><strong>&#x3D;&#x3D;显示当前区域的网卡配置参数、资源、端口及服务信息&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --list-all</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --list-all</span><br></pre></td></tr></table></div></figure>
 
 <p>当前处于<code>public</code>区域</p>
 <p><a class="simple-lightbox" href="/imgs/firewalld/82f76860a436b8dfc579b662e18e1e9c.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/82f76860a436b8dfc579b662e18e1e9c.png"  alt="image-20230903121331594" lazyload></a></p>
@@ -301,12 +301,12 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <ul>
 <li><strong>&#x3D;&#x3D;给public区域添加http服务&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-service=http</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-service=http</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/aa5b5553e33d42e78ee85097137ce0d9.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/aa5b5553e33d42e78ee85097137ce0d9.png"  alt="在这里插入图片描述" lazyload></a></p>
 <p>这个时候开启<code>http80端口</code>是可以访问的，但是<strong>上面的配置在重启后配置 会失效</strong></p>
 <p>要想 <code>永久生效</code>必须加上<code>--permanent</code>参数</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent  --zone=public --add-service=http</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent  --zone=public --add-service=http</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -314,17 +314,17 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <li><strong>&#x3D;&#x3D;public区域移除http服务&#x3D;&#x3D;</strong></li>
 </ul>
 <p>当前立即生效，如果想永久生效需要加<code>--permanent</code>参数</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --remove-service=http</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --remove-service=http</span><br></pre></td></tr></table></div></figure>
 
 <ul>
 <li><strong>&#x3D;&#x3D;在配置规则比较多情况下，让永久生效的配置立即生效，可以使用<code>--reload</code>立即生效&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></div></figure>
 
 <ul>
 <li><strong>&#x3D;&#x3D;添加80端口规则&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --permanent --add-port=80/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --permanent --add-port=80/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/6f8a02b9bf73460ccdaa5cd0c32ff661.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/6f8a02b9bf73460ccdaa5cd0c32ff661.png"  alt="image-20230903123202853" lazyload></a></p>
 <p><a class="simple-lightbox" href="/imgs/firewalld/37fb878c830eb168b2d912c822dbd488.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/37fb878c830eb168b2d912c822dbd488.png"  alt="image-20230903123223865" lazyload></a></p>
@@ -332,18 +332,18 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <li><strong>&#x3D;&#x3D;修改<code>ssh服务</code>默认端口&#x3D;&#x3D;</strong></li>
 </ul>
 <p>修改ssh默认端口之前需要禁用<code>selinux</code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/selinux/config</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/selinux/config</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/43618595a5b0b7537eada2c85fe689e6.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/43618595a5b0b7537eada2c85fe689e6.png"  alt="image-20230903124508229" lazyload></a></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/82bee22bc292d1768f85f09a586c9420.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/82bee22bc292d1768f85f09a586c9420.png"  alt="image-20230903123711441" lazyload></a></p>
 <p>重启<code>sshd</code>服务</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart sshd.service</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart sshd.service</span><br></pre></td></tr></table></div></figure>
 
 <p>ssh服务默认是22端口，要想连接，需要设置防火墙规则运行<code>2222</code>端口通过</p>
 <p>设置规则</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --permanent --add-port=2222/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --permanent --add-port=2222/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/9660ad9babb7b4040b493aeb36a66d94.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/9660ad9babb7b4040b493aeb36a66d94.png"  alt="image-20230903124156804" lazyload></a></p>
 <p>连接<code>2222端口</code></p>
@@ -351,14 +351,14 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <ul>
 <li><strong>&#x3D;&#x3D;端口转发&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></div></figure>
 
 <p>修改<code>ssh</code>连接端口为<code>8888</code></p>
 <p><a class="simple-lightbox" href="/imgs/firewalld/f8c748a5f74e42c0ba458f577544a11b.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/f8c748a5f74e42c0ba458f577544a11b.png"  alt="在这里插入图片描述" lazyload></a></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart sshd.service</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart sshd.service</span><br></pre></td></tr></table></div></figure>
 
 <p>设置规则</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=2222:proto=tcp:toport=8888:toaddr=127.0.0.1</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=2222:proto=tcp:toport=8888:toaddr=127.0.0.1</span><br></pre></td></tr></table></div></figure>
 
 <ul>
 <li><code>--add-forward-port</code> 端口转发</li>
@@ -367,15 +367,15 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <li><code>toport</code>到目的地的哪个端口</li>
 <li><code>toaddr</code>到目的地的哪个地址</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/abae02a713784a66938209da065a7ce9.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/abae02a713784a66938209da065a7ce9.png"  alt="在这里插入图片描述" lazyload></a></p>
 <p>添加好端口转发规则后，是连不上的，从<code>2222</code>端口转发到<code>8888</code>端口，我们只开放了<code>2222</code>端口，并没有开放<code>8888</code>端口，需要再加一条规则</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8888/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8888/tcp</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/6153702bb30f99353444af52e1a02ebd.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/6153702bb30f99353444af52e1a02ebd.png"  alt="image-20230903132507065" lazyload></a></p>
 <p>发现还是连接不上，最后发现不能 用<code>127.0.0.1</code>这个地址</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=2222:proto=tcp:toport=8888:toaddr=192.168.80.131</span><br><span class="line"></span><br><span class="line">firewall-cmd  --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=2222:proto=tcp:toport=8888:toaddr=192.168.80.131</span><br><span class="line"></span><br><span class="line">firewall-cmd  --reload</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/1bfc29726227732373a30974893c3235.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/1bfc29726227732373a30974893c3235.png"  alt="image-20230903133426268" lazyload></a></p>
 <p>再次连接就成功了</p>
@@ -383,7 +383,7 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <ul>
 <li><strong>&#x3D;&#x3D;移除端口转发&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --remove-forward-port=port=2222:proto=tcp:toport=8888:toaddr=127.0.0.1</span><br><span class="line"></span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --remove-forward-port=port=2222:proto=tcp:toport=8888:toaddr=127.0.0.1</span><br><span class="line"></span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/95feaa1633f4451b9b9e5a17e45e08cc.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/95feaa1633f4451b9b9e5a17e45e08cc.png"  alt="在这里插入图片描述" lazyload></a></p>
 <h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><blockquote>
@@ -399,7 +399,7 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <p>修改如下：</p>
 <p><a class="simple-lightbox" href="/imgs/firewalld/5cad04b2b1448b9f4c799af3d1bf6f81.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/5cad04b2b1448b9f4c799af3d1bf6f81.png"  alt="image-20230903140628291" lazyload></a></p>
 <p>重启网卡</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart network.service</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart network.service</span><br></pre></td></tr></table></div></figure>
 <p>查看IP<br><a class="simple-lightbox" href="/imgs/firewalld/1b4008ddff01490b9349283bd1739e73.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/1b4008ddff01490b9349283bd1739e73.png"  alt="在这里插入图片描述" lazyload></a></p>
 <p>然后再开启一台<code>win7</code>，，网卡划分到同一<code>LAN区段</code></p>
 <p>手动配置IP地址</p>
@@ -411,22 +411,22 @@ iptables 主要是基于接口，来设置规则，从而判断网络的安全�
 <p><a class="simple-lightbox" href="/imgs/firewalld/f9bc83b4f69974795c394c1f8bc6d6d7.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/f9bc83b4f69974795c394c1f8bc6d6d7.png"  alt="image-20230903142154034" lazyload></a></p>
 <p><a class="simple-lightbox" href="/imgs/firewalld/0de7d81d3e7b405688aeae2f08339a5c.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/0de7d81d3e7b405688aeae2f08339a5c.png"  alt="在这里插入图片描述" lazyload></a></p>
 <p>这个时候<code>Centos</code>就能够访问<code>Win7</code>的网站了</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl 10.1.1.2</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl 10.1.1.2</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/077f59f99f3e498791dc95385dd0a6b9.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/077f59f99f3e498791dc95385dd0a6b9.png"  alt="在这里插入图片描述" lazyload></a></p>
 <p>首先要让<code>Win11</code>能够访问到<code>Centos</code>的<code>8080</code>端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br></pre></td></tr></table></div></figure>
 
 <p>端口转发，让<code>8080</code>端口，能访问到<code>10.1.1.2</code> 的<code>80</code>端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=8080:proto=tcp:toport=80:toaddr=10.1.1.2</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-forward-port=port=8080:proto=tcp:toport=80:toaddr=10.1.1.2</span><br></pre></td></tr></table></div></figure>
 
 <p>立即生效防火墙配置</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></div></figure>
 
 <p>允许防火墙伪装IP</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --add-masquerade</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --add-masquerade</span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/firewalld/66e9ef34809669dee7a397447543ead4.png"><img   src="/images/loading.svg" data-src="/imgs/firewalld/66e9ef34809669dee7a397447543ead4.png"  alt="image-20230903145217393" lazyload></a></p>
 

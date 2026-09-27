@@ -150,13 +150,13 @@
 <p>**原因分析：**之前用该用户登录过，但是系统没有释放连接</p>
 <p><strong>解决方法：</strong></p>
 <p>1、打开cmd命令窗口： 中断开所有连接</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net use \* /del /y</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net use \* /del /y</span><br></pre></td></tr></table></div></figure>
 
 <p>2、重新登录 即可。</p>
 <p><strong>其他小技巧：</strong></p>
 <p>　　1、输入命令：net use  查看当前与网络资源的所有连接，例如驱动器映射、IPC连接。</p>
 <p>　　2、使用命令连接，例如：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net use \\192.168.30.240\public <span class="string">&quot;123456&quot;</span> /user:admin</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net use \\192.168.30.240\public <span class="string">&quot;123456&quot;</span> /user:admin</span><br></pre></td></tr></table></div></figure>
 
 <p>其中123456为访问共享文件夹所设的密码，admin为用户名</p>
 

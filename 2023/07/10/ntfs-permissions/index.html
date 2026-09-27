@@ -158,10 +158,10 @@
 </ol>
 <p><strong>文件系统</strong>即在外部存储设备上组织文件的方法</p>
 <p><strong>常见的文件系统：</strong></p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FAT 		windows</span><br><span class="line">NTFS		windows</span><br><span class="line">EXT			linux常见</span><br></pre></td></tr></table></figure>
+<figure class="highlight makefile"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FAT 		windows</span><br><span class="line">NTFS		windows</span><br><span class="line">EXT			linux常见</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/ntfs-permissions/20669753b7b573014484aa3125133260-1665381371503-15-1688981748565-1-1689046945408-29.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/20669753b7b573014484aa3125133260-1665381371503-15-1688981748565-1-1689046945408-29.png"  alt="20669753b7b573014484aa3125133260-1665381371503-15" lazyload></a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FAT转换为NTFS，convert  盘符: /fs:ntfs         #数据不丢失，但不可逆</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FAT转换为NTFS，convert  盘符: /fs:ntfs         #数据不丢失，但不可逆</span><br></pre></td></tr></table></div></figure>
 
 <p><strong>特点</strong></p>
 <ol>
@@ -177,7 +177,7 @@
 <h2 id="文件及文件夹权限"><a href="#文件及文件夹权限" class="headerlink" title="文件及文件夹权限"></a>文件及文件夹权限</h2><ul>
 <li><strong>文件</strong></li>
 </ul>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th><strong>文件权限</strong></th>
@@ -208,11 +208,11 @@
 <td>特殊权限</td>
 <td>控制文件权限列表的权限</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <ul>
 <li><strong>文件夹</strong></li>
 </ul>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th><strong>文件夹权限</strong></th>
@@ -247,29 +247,29 @@
 <td>特殊权限</td>
 <td>控制文件夹权限列表的权限</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <ul>
 <li>案例</li>
 </ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">建立jimi文件夹，并设置NTFS权限，要求a用户只能读取文件夹中的文件，不能在jimi文件夹中创建新的文件，b用户只能在jimi文件夹中创建新的文件，不能读取文件。</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">建立jimi文件夹，并设置NTFS权限，要求a用户只能读取文件夹中的文件，不能在jimi文件夹中创建新的文件，b用户只能在jimi文件夹中创建新的文件，不能读取文件。</span><br></pre></td></tr></table></div></figure>
 
 <h2 id="权限累加"><a href="#权限累加" class="headerlink" title="权限累加"></a>权限累加</h2><p>当用户同时属于多个组时，权限是累加的!</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">用户a同时属于IT组与HR组，IT组对文件夹jimi可以读取，HR组可以对jimi文件夹写入，则a用户最终的权限为读取和写入。</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">用户a同时属于IT组与HR组，IT组对文件夹jimi可以读取，HR组可以对jimi文件夹写入，则a用户最终的权限为读取和写入。</span><br></pre></td></tr></table></div></figure>
 
 <p> 以管理员账户登录，创建用户和组</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">net user a !a123 /add</span><br><span class="line">net localgroup IT /add</span><br><span class="line">net localgroup HR /add</span><br><span class="line">net localgroup IT a /add</span><br><span class="line">net localgroup HR a /add</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">net user a !a123 /add</span><br><span class="line">net localgroup IT /add</span><br><span class="line">net localgroup HR /add</span><br><span class="line">net localgroup IT a /add</span><br><span class="line">net localgroup HR a /add</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710184845230-1689046945409-34.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710184845230-1689046945409-34.png"  alt="image-20230710184845230" lazyload></a></p>
 <p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710184914157-1689046945409-35.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710184914157-1689046945409-35.png"  alt="image-20230710184914157" lazyload></a></p>
-<h2 id="拒绝最大"><a href="#拒绝最大" class="headerlink" title="拒绝最大"></a>拒绝最大</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">添加c用户,同时添加到IT组和HR组,让c用户不能访问jimi文件夹</span><br></pre></td></tr></table></figure>
+<h2 id="拒绝最大"><a href="#拒绝最大" class="headerlink" title="拒绝最大"></a>拒绝最大</h2><figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">添加c用户,同时添加到IT组和HR组,让c用户不能访问jimi文件夹</span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">net user c !a123 /add</span><br><span class="line">net localgroup HR c /add</span><br><span class="line">net localgroup IT c /add</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">net user c !a123 /add</span><br><span class="line">net localgroup HR c /add</span><br><span class="line">net localgroup IT c /add</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710185354881-1689046945409-36.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710185354881-1689046945409-36.png"  alt="image-20230710185354881" lazyload></a></p>
 <p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710185519909-1689046945409-38.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710185519909-1689046945409-38.png"  alt="image-20230710185519909" lazyload></a></p>
 <h2 id="强制继承"><a href="#强制继承" class="headerlink" title="强制继承"></a>强制继承</h2><p>默认只有administrator有这个权限！</p>
 <p>作用：可以将任何文件夹的所有者改为administrator</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">新建test文件夹</span><br><span class="line">用户c已离职，但test文件夹的属主是c，由于c用户对test文件夹做过权限修改，导致其他用户对test文件夹没有任何权限，现需要管理员administrator用户将test文件夹重新修改权限。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">案例：</span><br><span class="line">新建test文件夹</span><br><span class="line">用户c已离职，但test文件夹的属主是c，由于c用户对test文件夹做过权限修改，导致其他用户对test文件夹没有任何权限，现需要管理员administrator用户将test文件夹重新修改权限。</span><br><span class="line"></span><br></pre></td></tr></table></div></figure>
 
 <p>先取消权限继承，给c用户设置完全控制权限，删除其他组，只给c用户设置访问test文件夹的权限</p>
 <p><a class="simple-lightbox" href="/imgs/ntfs-permissions/image-20230710185910395-1689046945409-37.png"><img   src="/images/loading.svg" data-src="/imgs/ntfs-permissions/image-20230710185910395-1689046945409-37.png"  alt="image-20230710185910395" lazyload></a></p>

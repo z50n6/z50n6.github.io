@@ -165,7 +165,7 @@ iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
 <p>REJECT：拒绝流量通过  （流量拒绝会通知，会返回流量拒绝信息）</p>
 <p>LOG：记录日志信息</p>
 <p>DROP：拒绝流量通过，丢弃  （直接把流量丢弃，不会返回任何值）</p>
-<h2 id="iptables常用参数和作用"><a href="#iptables常用参数和作用" class="headerlink" title="iptables常用参数和作用"></a>iptables常用参数和作用</h2><table>
+<h2 id="iptables常用参数和作用"><a href="#iptables常用参数和作用" class="headerlink" title="iptables常用参数和作用"></a>iptables常用参数和作用</h2><div class="table-scroll"><table>
 <thead>
 <tr>
 <th>参数</th>
@@ -224,31 +224,31 @@ iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
 <td>–sport  num</td>
 <td>匹配来源端口号</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <blockquote>
 <p>以Centos7和Kali为例</p>
 <p>Centos——IP地址：192.168.80.131</p>
 <p>Kali————IP地址：192.168.80.141</p>
 </blockquote>
 <p>先停止、禁用<code>firewalld</code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld</span><br></pre></td></tr></table></div></figure>
 
 <ul>
 <li>&#x3D;&#x3D;<strong>查看规则链</strong>&#x3D;&#x3D;</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -L</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -L</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/iptables/758ad07788534dc983348b14d3a0d44e.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/758ad07788534dc983348b14d3a0d44e.png"  alt="在这里插入图片描述" lazyload></a></p>
 <ul>
 <li>&#x3D;&#x3D;<strong>清空规则链</strong>&#x3D;&#x3D;</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F</span><br></pre></td></tr></table></div></figure>
 
 <p>其实刚开始在没有配置规则的使用，查看规则链的时候就是空的</p>
 <ul>
 <li>&#x3D;&#x3D;<strong>设置默认规则   ，将流入的流量丢掉</strong>&#x3D;&#x3D;</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -P INPUT DROP</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -P INPUT DROP</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/iptables/accf405f0aa1d4b9cfaa3d53a0fc6899.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/accf405f0aa1d4b9cfaa3d53a0fc6899.png"  alt="image-20230902173734183" lazyload></a></p>
 <p>命令回车 之后会发现，输入任何命令已经没有反应了</p>
@@ -258,7 +258,7 @@ iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
 <ul>
 <li><strong>&#x3D;&#x3D;允许icmp协议流量通过&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p icmp -j ACCEPT</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p icmp -j ACCEPT</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/iptables/d5e794232892c5e2535d2efead729f9c.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/d5e794232892c5e2535d2efead729f9c.png"  alt="image-20230902180051540" lazyload></a></p>
 <p>再次测试网络连通性就 可以通了</p>
@@ -267,20 +267,20 @@ iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
 <ul>
 <li>&#x3D;&#x3D;<strong>可以显示规则的行数</strong>&#x3D;&#x3D;</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -nL --line-numbers</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -nL --line-numbers</span><br></pre></td></tr></table></div></figure>
 
 
 
 <ul>
 <li>&#x3D;&#x3D;<strong>删除刚才的默认策略</strong>&#x3D;&#x3D;</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -D INPUT 1</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -D INPUT 1</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/iptables/821779127fced8f82f60a6425b12c918.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/821779127fced8f82f60a6425b12c918.png"  alt="image-20230902180227773" lazyload></a></p>
 <ul>
 <li>&#x3D;&#x3D;<strong>允许所有流量通过</strong>&#x3D;&#x3D;</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -P INPUT ACCEPT</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -P INPUT ACCEPT</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/iptables/7ca03cbf60701a72a69b2a3828ff884e.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/7ca03cbf60701a72a69b2a3828ff884e.png"  alt="image-20230902180424300" lazyload></a></p>
 <p>现在<code>SSH</code>就能 连接成功了</p>
@@ -288,7 +288,7 @@ iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
 <ul>
 <li><strong>&#x3D;&#x3D;所有进来的22端口的TCP流量都给拒绝&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -p tcp --dport 22 -j REJECT</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -p tcp --dport 22 -j REJECT</span><br></pre></td></tr></table></div></figure>
 
 <p>命令回车后，<code>ssh</code>就不能连接了，已经被拒绝了</p>
 <p><a class="simple-lightbox" href="/imgs/iptables/5eb4533fd7ea4ccf5ad2cf2888a951e0.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/5eb4533fd7ea4ccf5ad2cf2888a951e0.png"  alt="image-20230902181045147" lazyload></a></p>
@@ -297,7 +297,7 @@ iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
 <ul>
 <li><strong>&#x3D;&#x3D;允许192.168.80.0网段的22端口通过&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.80.0/24 -p tcp --dport 22 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.80.0/24 -p tcp --dport 22 -j ACCEPT</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/iptables/e93b25b5e512cfb2acef33b0203c60e3.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/e93b25b5e512cfb2acef33b0203c60e3.png"  alt="image-20230902182919230" lazyload></a></p>
 <p>&#x3D;&#x3D;<strong>匹配规则：从上往下</strong>&#x3D;&#x3D;</p>
@@ -305,17 +305,17 @@ iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
 <ul>
 <li>&#x3D;&#x3D;<strong>设置某个端口流量全部拒绝</strong>&#x3D;&#x3D;  （UDP、TCP）</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 80 -j REJECT</span><br><span class="line">iptables -I INPUT -p udp --dport 80 -j REJECT</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 80 -j REJECT</span><br><span class="line">iptables -I INPUT -p udp --dport 80 -j REJECT</span><br></pre></td></tr></table></div></figure>
 
 <ul>
 <li><strong>&#x3D;&#x3D;在input链中添加某个IP拒绝访问某个端口&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp -s 192.168.80.1 --dport 8080 -j REJECT</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp -s 192.168.80.1 --dport 8080 -j REJECT</span><br></pre></td></tr></table></div></figure>
 
 <p>这里不能直接写真实机的地址，应该写<code>VMnet8</code>的地址，这样才能限制住真实机的访问</p>
 <p><a class="simple-lightbox" href="/imgs/iptables/d60b075208b8d96dbf58269ca031fdbb.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/d60b075208b8d96dbf58269ca031fdbb.png"  alt="image-20230902190144279" lazyload></a></p>
 <p>Centos开启<code>8080</code>端口服务</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 8080</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 8080</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/iptables/32ed844161547993c2d48f4ace44c98a.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/32ed844161547993c2d48f4ace44c98a.png"  alt="image-20230902190340997" lazyload></a></p>
 <p>kali可以访问到</p>
@@ -325,18 +325,18 @@ iptables ：包过滤防火墙，是内核防火墙netfilter的管理工具
 <ul>
 <li><strong>&#x3D;&#x3D;清空所有策略&#x3D;&#x3D;</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -F</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/iptables/db31e295aab622a7a27809b9a202e1ee.png"><img   src="/images/loading.svg" data-src="/imgs/iptables/db31e295aab622a7a27809b9a202e1ee.png"  alt="image-20230902190449942" lazyload></a></p>
 <ul>
 <li>&#x3D;&#x3D;<strong>禁用某一段端口</strong>&#x3D;&#x3D;</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -p tcp --dport 8000:9000 -j REJECT</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -p tcp --dport 8000:9000 -j REJECT</span><br></pre></td></tr></table></div></figure>
 
 <ul>
 <li>&#x3D;&#x3D;<strong>保存规则</strong>&#x3D;&#x3D;</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables-save</span><br><span class="line">iptables-save &gt; 1.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables-save</span><br><span class="line">iptables-save &gt; 1.txt</span><br></pre></td></tr></table></div></figure>
 
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ip99/p/15313691.html">https://www.cnblogs.com/ip99/p/15313691.html</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/machangwei-8/p/15978257.html">https://www.cnblogs.com/machangwei-8/p/15978257.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/u014644574/article/details/130071097">https://blog.csdn.net/u014644574/article/details/130071097</a></p>

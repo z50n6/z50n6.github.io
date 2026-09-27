@@ -161,7 +161,7 @@
 <p>弱口令危害极大——不需要 0day，不需要复杂利用链，猜对了就直接拿权限。</p>
 <hr>
 <h2 id="二、Web-后台爆破"><a href="#二、Web-后台爆破" class="headerlink" title="二、Web 后台爆破"></a>二、Web 后台爆破</h2><h3 id="2-1-MD5-加密传输（Zblog-案例）"><a href="#2-1-MD5-加密传输（Zblog-案例）" class="headerlink" title="2.1 MD5 加密传输（Zblog 案例）"></a>2.1 MD5 加密传输（Zblog 案例）</h3><p>登录抓包发现密码字段是 MD5 密文：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">edtUserName=admin&amp;password=21232f297a57a5a743894a0e4a801fc3</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">edtUserName=admin&amp;password=21232f297a57a5a743894a0e4a801fc3</span><br></pre></td></tr></table></div></figure>
 
 <p>Burp Intruder 爆破 → Payload Processing → <code>Hash → MD5</code>，明文字典自动转 MD5 发送。</p>
 <p><a class="simple-lightbox" href="/imgs/weak-password/2504969-20230913133651841-1404154387.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/2504969-20230913133651841-1404154387.png"  alt="Burp MD5 配置" lazyload></a></p>
@@ -170,9 +170,9 @@
 <h3 id="2-3-批量检测"><a href="#2-3-批量检测" class="headerlink" title="2.3 批量检测"></a>2.3 批量检测</h3><p><a target="_blank" rel="noopener" href="https://github.com/yzddmr6/WebCrack">WebCrack</a> — 导入后台地址自动化检测弱口令&#x2F;万能密码。</p>
 <hr>
 <h2 id="三、服务类爆破"><a href="#三、服务类爆破" class="headerlink" title="三、服务类爆破"></a>三、服务类爆破</h2><h3 id="3-1-Hydra"><a href="#3-1-Hydra" class="headerlink" title="3.1 Hydra"></a>3.1 Hydra</h3><p>Kali 内置，支持 30+ 协议：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hydra -l root -P pass.txt -t 5 -vV 192.168.1.1 ssh -f</span><br><span class="line">hydra -l administrator -P pass.txt -t 5 -vV 192.168.1.1 rdp -f</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hydra -l root -P pass.txt -t 5 -vV 192.168.1.1 ssh -f</span><br><span class="line">hydra -l administrator -P pass.txt -t 5 -vV 192.168.1.1 rdp -f</span><br></pre></td></tr></table></div></figure>
 
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th>参数</th>
@@ -203,22 +203,22 @@
 <td><code>-e ns</code></td>
 <td>n&#x3D;空密码，s&#x3D;用户名作密码</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <h3 id="3-2-超级弱口令检查工具"><a href="#3-2-超级弱口令检查工具" class="headerlink" title="3.2 超级弱口令检查工具"></a>3.2 超级弱口令检查工具</h3><p>Windows GUI 工具，支持 SSH &#x2F; RDP &#x2F; SMB &#x2F; MySQL &#x2F; SQLServer &#x2F; Redis 等 20+ 服务。</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/shack2/SNETCracker">GitHub — SNETCracker</a></p>
 <hr>
-<h2 id="四、文件密码破解"><a href="#四、文件密码破解" class="headerlink" title="四、文件密码破解"></a>四、文件密码破解</h2><h3 id="4-1-ZIP"><a href="#4-1-ZIP" class="headerlink" title="4.1 ZIP"></a>4.1 ZIP</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zip2john archive.zip &gt; hash.txt   <span class="comment"># 提取 hash</span></span><br><span class="line">john hash.txt                      <span class="comment"># 字典模式</span></span><br><span class="line">fcrackzip -b -c <span class="string">&#x27;aA1&#x27;</span> -l 1-6 -u archive.zip</span><br><span class="line">rarcrack 123.zip -threads 12 -<span class="built_in">type</span> zip</span><br></pre></td></tr></table></figure>
+<h2 id="四、文件密码破解"><a href="#四、文件密码破解" class="headerlink" title="四、文件密码破解"></a>四、文件密码破解</h2><h3 id="4-1-ZIP"><a href="#4-1-ZIP" class="headerlink" title="4.1 ZIP"></a>4.1 ZIP</h3><figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zip2john archive.zip &gt; hash.txt   <span class="comment"># 提取 hash</span></span><br><span class="line">john hash.txt                      <span class="comment"># 字典模式</span></span><br><span class="line">fcrackzip -b -c <span class="string">&#x27;aA1&#x27;</span> -l 1-6 -u archive.zip</span><br><span class="line">rarcrack 123.zip -threads 12 -<span class="built_in">type</span> zip</span><br></pre></td></tr></table></div></figure>
 
 <p>GUI：Advanced Archive Password Recovery</p>
 <p><a class="simple-lightbox" href="/imgs/weak-password/image-20231231193957076.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/image-20231231193957076.png"  alt="ZIP 破解" lazyload></a></p>
-<h3 id="4-2-RAR-7z"><a href="#4-2-RAR-7z" class="headerlink" title="4.2 RAR &#x2F; 7z"></a>4.2 RAR &#x2F; 7z</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rarcrack archive.rar -threads 12 -<span class="built_in">type</span> rar</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-RAR-7z"><a href="#4-2-RAR-7z" class="headerlink" title="4.2 RAR &#x2F; 7z"></a>4.2 RAR &#x2F; 7z</h3><figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rarcrack archive.rar -threads 12 -<span class="built_in">type</span> rar</span><br></pre></td></tr></table></div></figure>
 
 <h3 id="4-3-Office-PDF"><a href="#4-3-Office-PDF" class="headerlink" title="4.3 Office &#x2F; PDF"></a>4.3 Office &#x2F; PDF</h3><p>Word：PassFab for Word（收费）<a target="_blank" rel="noopener" href="https://www.passfab.com/">https://www.passfab.com/</a></p>
 <p><a class="simple-lightbox" href="/imgs/weak-password/2504969-20230913133652043-1086423137.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/2504969-20230913133652043-1086423137.png"  alt="Word 破解" lazyload></a></p>
 <p>PDF：<a target="_blank" rel="noopener" href="https://smallpdf.com/unlock-pdf">smallpdf 在线解锁</a></p>
 <p><a class="simple-lightbox" href="/imgs/weak-password/image-20231231194603795.png"><img   src="/images/loading.svg" data-src="/imgs/weak-password/image-20231231194603795.png"  alt="PDF 解锁" lazyload></a></p>
 <hr>
-<h2 id="五、字典资源"><a href="#五、字典资源" class="headerlink" title="五、字典资源"></a>五、字典资源</h2><table>
+<h2 id="五、字典资源"><a href="#五、字典资源" class="headerlink" title="五、字典资源"></a>五、字典资源</h2><div class="table-scroll"><table>
 <thead>
 <tr>
 <th>类型</th>
@@ -241,7 +241,7 @@
 <td>FOFA 搜集</td>
 <td>搜目标平台 → 查默认口令</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <hr>
 <h2 id="六、相关参考"><a href="#六、相关参考" class="headerlink" title="六、相关参考"></a>六、相关参考</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://sgk66.cc/">社工库</a>（违法，慎用）</li>
@@ -266,10 +266,10 @@
 
     
       <div class="next-post">
-        <a class="purple-link" href="/2026/06/28/web-dos/">
+        <a class="purple-link" href="/2026/06/28/sql-injection/">
           <h3 class="post-title">
             
-            下一篇：Web 拒绝服务（DoS）
+            下一篇：SQL 注入
           </h3>
         </a>
       </div>

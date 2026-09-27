@@ -143,7 +143,7 @@
         <div class="post-content">
           <h1 id="DoH-与-DoT：加密-DNS-解析"><a href="#DoH-与-DoT：加密-DNS-解析" class="headerlink" title="DoH 与 DoT：加密 DNS 解析"></a>DoH 与 DoT：加密 DNS 解析</h1><hr>
 <h2 id="一、为什么需要加密-DNS？"><a href="#一、为什么需要加密-DNS？" class="headerlink" title="一、为什么需要加密 DNS？"></a>一、为什么需要加密 DNS？</h2><p>传统 DNS 使用 <strong>UDP&#x2F;TCP 53 端口</strong>，查询和应答以<strong>明文</strong>传输：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──明文 DNS 查询──→ DNS 服务器</span><br><span class="line">         ←──明文 DNS 应答──</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──明文 DNS 查询──→ DNS 服务器</span><br><span class="line">         ←──明文 DNS 应答──</span><br></pre></td></tr></table></div></figure>
 
 <p>这意味着：</p>
 <ul>
@@ -153,7 +153,7 @@
 </ul>
 <p><strong>DoH</strong> 和 <strong>DoT</strong> 都是给 DNS 查询「加 TLS 加密」的方案，让解析过程既保密又更难被篡改。</p>
 <h2 id="二、DoT-是什么？"><a href="#二、DoT-是什么？" class="headerlink" title="二、DoT 是什么？"></a>二、DoT 是什么？</h2><p><strong>DoT</strong>（DNS over TLS）&#x3D; 在 <strong>TLS 加密通道</strong> 里传输 DNS 协议。</p>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th align="left">项目</th>
@@ -180,8 +180,8 @@
 <td align="left">协议形态</td>
 <td align="left">仍是标准 DNS 报文，只是外层包了 TLS</td>
 </tr>
-</tbody></table>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──TLS 853──→ DoT 服务器（如 1.1.1.1:853）</span><br><span class="line">         ←──加密的 DNS 应答──</span><br></pre></td></tr></table></figure>
+</tbody></table></div>
+<figure class="highlight text"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──TLS 853──→ DoT 服务器（如 1.1.1.1:853）</span><br><span class="line">         ←──加密的 DNS 应答──</span><br></pre></td></tr></table></div></figure>
 
 <p><strong>特点：</strong></p>
 <ul>
@@ -190,7 +190,7 @@
 <li>适合在系统层面统一启用</li>
 </ul>
 <h2 id="三、DoH-是什么？"><a href="#三、DoH-是什么？" class="headerlink" title="三、DoH 是什么？"></a>三、DoH 是什么？</h2><p><strong>DoH</strong>（DNS over HTTPS）&#x3D; 把 DNS 查询封装在 <strong>HTTPS 请求</strong> 里发送。</p>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th align="left">项目</th>
@@ -217,8 +217,8 @@
 <td align="left">协议形态</td>
 <td align="left">DNS 报文编码为 HTTP GET&#x2F;POST 请求</td>
 </tr>
-</tbody></table>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──HTTPS 443──→ https://cloudflare-dns.com/dns-query</span><br><span class="line">         ←──加密的 DNS 应答──</span><br></pre></td></tr></table></figure>
+</tbody></table></div>
+<figure class="highlight text"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">你的设备 ──HTTPS 443──→ https://cloudflare-dns.com/dns-query</span><br><span class="line">         ←──加密的 DNS 应答──</span><br></pre></td></tr></table></div></figure>
 
 <p><strong>特点：</strong></p>
 <ul>
@@ -226,7 +226,7 @@
 <li>浏览器（Firefox、Chrome、Edge）和应用层集成方便</li>
 <li>企业网络、防火墙更难按「DNS 流量」做策略分流</li>
 </ul>
-<h2 id="四、DoH-vs-DoT-vs-传统-DNS"><a href="#四、DoH-vs-DoT-vs-传统-DNS" class="headerlink" title="四、DoH vs DoT vs 传统 DNS"></a>四、DoH vs DoT vs 传统 DNS</h2><table>
+<h2 id="四、DoH-vs-DoT-vs-传统-DNS"><a href="#四、DoH-vs-DoT-vs-传统-DNS" class="headerlink" title="四、DoH vs DoT vs 传统 DNS"></a>四、DoH vs DoT vs 传统 DNS</h2><div class="table-scroll"><table>
 <thead>
 <tr>
 <th align="left">对比项</th>
@@ -277,14 +277,14 @@
 <td align="left">中</td>
 <td align="left">高</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <div class="markdown-alert markdown-alert-tip">
 <p class="markdown-alert-title">提示</p>
 
 <p>DNSSEC 补充<br>DoH 和 DoT <strong>解决的是传输层安全</strong>（加密 + 防篡改），不等于 DNSSEC。若要校验应答是否被权威源签名，还需配合 <a target="_blank" rel="noopener" href="https://www.cloudflare.com/learning/dns/dnssec/how-dnssec-works/">DNSSEC</a>。</p>
 </div>
 
-<h2 id="五、公共-DoH-DoT-服务"><a href="#五、公共-DoH-DoT-服务" class="headerlink" title="五、公共 DoH &#x2F; DoT 服务"></a>五、公共 DoH &#x2F; DoT 服务</h2><table>
+<h2 id="五、公共-DoH-DoT-服务"><a href="#五、公共-DoH-DoT-服务" class="headerlink" title="五、公共 DoH &#x2F; DoT 服务"></a>五、公共 DoH &#x2F; DoT 服务</h2><div class="table-scroll"><table>
 <thead>
 <tr>
 <th align="left">服务商</th>
@@ -317,23 +317,23 @@
 <td align="left"><code>9.9.9.9:853</code></td>
 <td align="left"><code>https://dns.quad9.net/dns-query</code></td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <p>国内用户优先选阿里、腾讯节点，延迟通常更低；注重隐私可选 Cloudflare、Quad9。</p>
 <h2 id="六、如何启用"><a href="#六、如何启用" class="headerlink" title="六、如何启用"></a>六、如何启用</h2><h3 id="6-1-Windows-11（系统级-DoH）"><a href="#6-1-Windows-11（系统级-DoH）" class="headerlink" title="6.1 Windows 11（系统级 DoH）"></a>6.1 Windows 11（系统级 DoH）</h3><p><strong>图形界面：</strong></p>
 <p>设置 → 网络和 Internet → 以太网 &#x2F; WLAN → DNS 服务器分配 → 手动 → 填入 DNS IP → 开启「DNS over HTTPS」。</p>
 <p><strong>PowerShell（管理员）：</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Cloudflare DoH</span></span><br><span class="line"><span class="built_in">Add-DnsClientDohServerAddress</span> <span class="literal">-ServerAddress</span> <span class="string">&quot;1.1.1.1&quot;</span> `</span><br><span class="line">  <span class="literal">-DohTemplate</span> <span class="string">&quot;https://cloudflare-dns.com/dns-query&quot;</span> `</span><br><span class="line">  <span class="literal">-AllowFallbackToUdp</span> <span class="variable">$false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 阿里 DoH</span></span><br><span class="line"><span class="built_in">Add-DnsClientDohServerAddress</span> <span class="literal">-ServerAddress</span> <span class="string">&quot;223.5.5.5&quot;</span> `</span><br><span class="line">  <span class="literal">-DohTemplate</span> <span class="string">&quot;https://dns.alidns.com/dns-query&quot;</span> `</span><br><span class="line">  <span class="literal">-AllowFallbackToUdp</span> <span class="variable">$false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看已配置的 DoH</span></span><br><span class="line"><span class="built_in">Get-DnsClientDohServerAddress</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Cloudflare DoH</span></span><br><span class="line"><span class="built_in">Add-DnsClientDohServerAddress</span> <span class="literal">-ServerAddress</span> <span class="string">&quot;1.1.1.1&quot;</span> `</span><br><span class="line">  <span class="literal">-DohTemplate</span> <span class="string">&quot;https://cloudflare-dns.com/dns-query&quot;</span> `</span><br><span class="line">  <span class="literal">-AllowFallbackToUdp</span> <span class="variable">$false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 阿里 DoH</span></span><br><span class="line"><span class="built_in">Add-DnsClientDohServerAddress</span> <span class="literal">-ServerAddress</span> <span class="string">&quot;223.5.5.5&quot;</span> `</span><br><span class="line">  <span class="literal">-DohTemplate</span> <span class="string">&quot;https://dns.alidns.com/dns-query&quot;</span> `</span><br><span class="line">  <span class="literal">-AllowFallbackToUdp</span> <span class="variable">$false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看已配置的 DoH</span></span><br><span class="line"><span class="built_in">Get-DnsClientDohServerAddress</span></span><br></pre></td></tr></table></div></figure>
 
 <p><code>AllowFallbackToUdp $false</code> 表示 DoH 失败时不回退到明文 DNS，安全性更高。</p>
 <h3 id="6-2-Android（系统级-DoT）"><a href="#6-2-Android（系统级-DoT）" class="headerlink" title="6.2 Android（系统级 DoT）"></a>6.2 Android（系统级 DoT）</h3><p>设置 → 网络和 Internet → 私人 DNS → 选择「私人 DNS 提供商主机名」→ 填入：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">one.one.one.one          # Cloudflare</span><br><span class="line">dns.google               # Google</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">one.one.one.one          # Cloudflare</span><br><span class="line">dns.google               # Google</span><br></pre></td></tr></table></div></figure>
 
 <p>Android 9 及以上原生支持 DoT，无需安装额外应用。</p>
 <h3 id="6-3-Linux（systemd-resolved-DoT）"><a href="#6-3-Linux（systemd-resolved-DoT）" class="headerlink" title="6.3 Linux（systemd-resolved + DoT）"></a>6.3 Linux（systemd-resolved + DoT）</h3><p>编辑 <code>/etc/systemd/resolved.conf</code>：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Resolve]</span></span><br><span class="line"><span class="attr">DNS</span>=<span class="number">1.1</span>.<span class="number">1.1</span><span class="comment">#cloudflare-dns.com</span></span><br><span class="line"><span class="attr">DNS</span>=<span class="number">223.5</span>.<span class="number">5.5</span><span class="comment">#dns.alidns.com</span></span><br><span class="line"><span class="attr">DNSOverTLS</span>=<span class="literal">yes</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Resolve]</span></span><br><span class="line"><span class="attr">DNS</span>=<span class="number">1.1</span>.<span class="number">1.1</span><span class="comment">#cloudflare-dns.com</span></span><br><span class="line"><span class="attr">DNS</span>=<span class="number">223.5</span>.<span class="number">5.5</span><span class="comment">#dns.alidns.com</span></span><br><span class="line"><span class="attr">DNSOverTLS</span>=<span class="literal">yes</span></span><br></pre></td></tr></table></div></figure>
 
 <p>重启服务：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl restart systemd-resolved</span><br><span class="line">resolvectl status</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl restart systemd-resolved</span><br><span class="line">resolvectl status</span><br></pre></td></tr></table></div></figure>
 
 <h3 id="6-4-浏览器级-DoH"><a href="#6-4-浏览器级-DoH" class="headerlink" title="6.4 浏览器级 DoH"></a>6.4 浏览器级 DoH</h3><p><strong>Firefox：</strong></p>
 <p>设置 → 隐私与安全 → 启用 DNS over HTTPS → 选择提供商或自定义。</p>
@@ -346,14 +346,14 @@
 </div>
 
 <h3 id="6-5-路由器-AdGuard-Home"><a href="#6-5-路由器-AdGuard-Home" class="headerlink" title="6.5 路由器 &#x2F; AdGuard Home"></a>6.5 路由器 &#x2F; AdGuard Home</h3><p>在 <a target="_blank" rel="noopener" href="https://github.com/AdguardTeam/AdGuardHome">AdGuard Home</a> 的上游 DNS 中勾选「DNS-over-HTTPS」或「DNS-over-TLS」，路由器 DNS 指向 AdGuard Home 后，全家设备统一走加密 DNS。</p>
-<h2 id="七、验证是否生效"><a href="#七、验证是否生效" class="headerlink" title="七、验证是否生效"></a>七、验证是否生效</h2><h3 id="7-1-检查-DoH-配置（Windows）"><a href="#7-1-检查-DoH-配置（Windows）" class="headerlink" title="7.1 检查 DoH 配置（Windows）"></a>7.1 检查 DoH 配置（Windows）</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-DnsClientDohServerAddress</span></span><br></pre></td></tr></table></figure>
+<h2 id="七、验证是否生效"><a href="#七、验证是否生效" class="headerlink" title="七、验证是否生效"></a>七、验证是否生效</h2><h3 id="7-1-检查-DoH-配置（Windows）"><a href="#7-1-检查-DoH-配置（Windows）" class="headerlink" title="7.1 检查 DoH 配置（Windows）"></a>7.1 检查 DoH 配置（Windows）</h3><figure class="highlight powershell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-DnsClientDohServerAddress</span></span><br></pre></td></tr></table></div></figure>
 
 <h3 id="7-2-在线检测"><a href="#7-2-在线检测" class="headerlink" title="7.2 在线检测"></a>7.2 在线检测</h3><p>访问以下站点，确认加密 DNS 已启用：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://1.1.1.1/help">Cloudflare 加密 DNS 检测</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.dnsleaktest.com/">DNS Leak Test</a></li>
 </ul>
-<h3 id="7-3-抓包对比"><a href="#7-3-抓包对比" class="headerlink" title="7.3 抓包对比"></a>7.3 抓包对比</h3><table>
+<h3 id="7-3-抓包对比"><a href="#7-3-抓包对比" class="headerlink" title="7.3 抓包对比"></a>7.3 抓包对比</h3><div class="table-scroll"><table>
 <thead>
 <tr>
 <th align="left">方式</th>
@@ -372,7 +372,7 @@
 <td align="left">DoH</td>
 <td align="left">TCP 443 TLS 加密，与普通 HTTPS 无法区分</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <h2 id="八、局限与注意事项"><a href="#八、局限与注意事项" class="headerlink" title="八、局限与注意事项"></a>八、局限与注意事项</h2><h3 id="8-1-不能替代-HTTPS"><a href="#8-1-不能替代-HTTPS" class="headerlink" title="8.1 不能替代 HTTPS"></a>8.1 不能替代 HTTPS</h3><p>DoH&#x2F;DoT 只加密 <strong>DNS 查询</strong>，网站内容仍需 HTTPS 保护。两者配合使用才是完整方案。</p>
 <h3 id="8-2-无法隐藏「你连了哪个-IP」"><a href="#8-2-无法隐藏「你连了哪个-IP」" class="headerlink" title="8.2 无法隐藏「你连了哪个 IP」"></a>8.2 无法隐藏「你连了哪个 IP」</h3><p>加密 DNS 隐藏的是<strong>域名查询</strong>，但连接目标 IP 的 TLS 流量仍可能被 SNI 等手段分析（DoH 对此无额外帮助）。</p>
 <h3 id="8-3-企业环境可能冲突"><a href="#8-3-企业环境可能冲突" class="headerlink" title="8.3 企业环境可能冲突"></a>8.3 企业环境可能冲突</h3><p>公司内网依赖内网 DNS 解析内部域名（如 <code>intranet.corp.local</code>）。全局 DoH 可能导致内网域名无法解析，企业通常采用<strong>分流策略</strong>（内网走公司 DNS，外网走 DoH）。</p>

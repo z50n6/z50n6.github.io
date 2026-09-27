@@ -144,35 +144,35 @@
       <div class="post-content-wrapper">
         <div class="post-content">
           <h1 id="ARP断网攻击"><a href="#ARP断网攻击" class="headerlink" title="&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;"></a>&#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D;</h1><h2 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h2><p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191004748-1689047579186-117.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191004748-1689047579186-117.png"  alt="image-20230707191004748" lazyload></a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PC1的IP地址 <span class="number">10.9</span><span class="number">.136</span><span class="number">.222</span></span><br><span class="line">PC2的IP地址 <span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PC1的IP地址 <span class="number">10.9</span><span class="number">.136</span><span class="number">.222</span></span><br><span class="line">PC2的IP地址 <span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span></span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在局域网里通信 需要有IP地址和MAC地址</span><br><span class="line">两台电脑PC1和PC2要想相互通信，PC1在连接PC2的时候，PC1会先查看自己的ARP缓存表（命令：arp -a ） ，看一下有没有 <span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span>对应的MAC地址，如果没有<span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span>对应的MAC地址，向交换机发送广播包，交换机会给每个接口都发送，当PC2收到消息后，会产生应答包，PC2把它的MAC地址发给交换机，目的地址会发送到PC1，（因为广播包是PC1发送的），PC1会把PC2的IP地址和MAC地址写入自己的ARP缓存表里</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在局域网里通信 需要有IP地址和MAC地址</span><br><span class="line">两台电脑PC1和PC2要想相互通信，PC1在连接PC2的时候，PC1会先查看自己的ARP缓存表（命令：arp -a ） ，看一下有没有 <span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span>对应的MAC地址，如果没有<span class="number">10.9</span><span class="number">.136</span><span class="number">.55</span>对应的MAC地址，向交换机发送广播包，交换机会给每个接口都发送，当PC2收到消息后，会产生应答包，PC2把它的MAC地址发给交换机，目的地址会发送到PC1，（因为广播包是PC1发送的），PC1会把PC2的IP地址和MAC地址写入自己的ARP缓存表里</span><br></pre></td></tr></table></div></figure>
 
 <p>&#x3D;&#x3D;ARP欺骗原理&#x3D;&#x3D;：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在局域网中，主机通信前必须通过ARP协议把IP地址转换为MAC地址，ARP欺骗就是通过伪造IP地址与MAC地址的映射关系实现的一种欺骗攻击。因为局域网内的主机根据MAC地址进行通信，发送方检查其ARP缓存中是否已存储目标IP的MAC地址，否则它会广播发送ARP请求报文，只有目标IP的主机才会响应一个包含其MAC地址的ARP应答报文，发送方收到该应答后，立即更新自身的ARP缓存。攻击者可以发送虚假的ARP请求或应答报文，使得目标主机接收错误的IP和MAC绑定关系</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在局域网中，主机通信前必须通过ARP协议把IP地址转换为MAC地址，ARP欺骗就是通过伪造IP地址与MAC地址的映射关系实现的一种欺骗攻击。因为局域网内的主机根据MAC地址进行通信，发送方检查其ARP缓存中是否已存储目标IP的MAC地址，否则它会广播发送ARP请求报文，只有目标IP的主机才会响应一个包含其MAC地址的ARP应答报文，发送方收到该应答后，立即更新自身的ARP缓存。攻击者可以发送虚假的ARP请求或应答报文，使得目标主机接收错误的IP和MAC绑定关系</span><br></pre></td></tr></table></div></figure>
 
 <hr>
 <p><strong>实验准备</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">win7    网卡nat模式</span><br><span class="line">kali    网卡nat模式   攻击方</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">win7    网卡nat模式</span><br><span class="line">kali    网卡nat模式   攻击方</span><br></pre></td></tr></table></div></figure>
 
 <p>1、win7：先ping一下，能否上网</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping www.baidu.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping www.baidu.com</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191612674-1689047579186-119.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191612674-1689047579186-119.png"  alt="image-20230707191612674" lazyload></a></p>
 <p>2、win7：查看网关</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig </span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig </span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191641136-1689047579187-122.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191641136-1689047579187-122.png"  alt="image-20230707191641136" lazyload></a></p>
 <p>3、win7：查看ARP缓存表，查看网关的MAC地址</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191813019-1689047579186-120.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191813019-1689047579186-120.png"  alt="image-20230707191813019" lazyload></a></p>
 <p>4、win7： 让它 一直ping下去</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping www.baidu.com -t</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping www.baidu.com -t</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707191935953-1689047579187-121.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707191935953-1689047579187-121.png"  alt="image-20230707191935953" lazyload></a></p>
 <p>5、kali：开始攻击</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">arpspoof -i eth0 -t 192.168.241.130 -r 192.168.241.2</span><br><span class="line">-i  选择网卡</span><br><span class="line">-t  被攻击方的IP地址</span><br><span class="line">-r  网关IP地址</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">arpspoof -i eth0 -t 192.168.241.130 -r 192.168.241.2</span><br><span class="line">-i  选择网卡</span><br><span class="line">-t  被攻击方的IP地址</span><br><span class="line">-r  网关IP地址</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707192141735-1689047579187-123.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707192141735-1689047579187-123.png"  alt="image-20230707192141735" lazyload></a></p>
 <hr>
@@ -180,26 +180,26 @@
 <p>在发动攻击的时候，网关的MAC地址被改成了攻击方kali的MAC地址，导致上不了网</p>
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230707193709889-1689047579187-125.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230707193709889-1689047579187-125.png"  alt="image-20230707193709889" lazyload></a></p>
 <h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>1、查看网关</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708105946724-1689047579187-126.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708105946724-1689047579187-126.png"  alt="image-20230708105946724" lazyload></a></p>
 <p>2、查看网关对应的MAC地址为动态类型,</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708110904874-1689047579187-127.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708110904874-1689047579187-127.png"  alt="image-20230708110904874" lazyload></a></p>
 <p>3、查看本地网卡所对应的<code>Idx</code>值,以太网所对应的<code>Idx</code>值为<code>2</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netsh interface ipv4 show interfaces</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">简写</span></span><br><span class="line">netsh i i show in</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netsh interface ipv4 show interfaces</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">简写</span></span><br><span class="line">netsh i i show in</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708105721164-1689047579187-129.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708105721164-1689047579187-129.png"  alt="image-20230708105721164" lazyload></a></p>
 <p>4、静态绑定IP地址和MAC地址</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2 代表网卡的Idx值</span> </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">以管理员身份运行该命令</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">绑定网关的IP地址和MAC地址</span></span><br><span class="line">netsh -c &quot;i i&quot; add ne 2 10.9.136.1 50-6f-77-89-ad-92</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2 代表网卡的Idx值</span> </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">以管理员身份运行该命令</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">绑定网关的IP地址和MAC地址</span></span><br><span class="line">netsh -c &quot;i i&quot; add ne 2 10.9.136.1 50-6f-77-89-ad-92</span><br></pre></td></tr></table></div></figure>
 
 <p>5、再次查看arp缓存表</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp -a</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/arp-attack/image-20230708111025154-1689047579187-128.png"><img   src="/images/loading.svg" data-src="/imgs/arp-attack/image-20230708111025154-1689047579187-128.png"  alt="image-20230708111025154" lazyload></a></p>
 <p>6、取消arp静态绑定</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">取消静态绑定</span></span><br><span class="line">netsh -c &quot;i i&quot; delete ne 2</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">取消静态绑定</span></span><br><span class="line">netsh -c &quot;i i&quot; delete ne 2</span><br></pre></td></tr></table></div></figure>
 
 <p>以上操作不能完全防御</p>
 <p>在路由器出故障的情况下，换了一个新的路由器，那么物理地址就变了</p>

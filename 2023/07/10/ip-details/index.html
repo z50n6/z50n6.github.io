@@ -177,7 +177,7 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <p><strong>IP地址构成</strong>：网络位+主机位 （网络位相同的IP地址，为同一网段）</p>
 <p><strong>子网掩码</strong>： 用来确定IP地址的网络位</p>
 <p><strong>子网掩码如何确认网络位</strong>：与255对应的数字为网络位，与0对应的数字为主机位</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">255.0.0.0</span><br><span class="line"></span><br><span class="line">255.255.0.0</span><br><span class="line"></span><br><span class="line">255.255.255.0</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">255.0.0.0</span><br><span class="line"></span><br><span class="line">255.255.0.0</span><br><span class="line"></span><br><span class="line">255.255.255.0</span><br></pre></td></tr></table></div></figure>
 
 <blockquote>
 <p>如：</p>
@@ -229,12 +229,12 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 </ol>
 <p><strong>IP地址详细解剖</strong>：</p>
 <p>案例1：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span></span><br><span class="line"></span><br><span class="line"><span class="number">255.255</span><span class="number">.255</span><span class="number">.0</span></span><br><span class="line"></span><br><span class="line">问：<span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于哪个网段？所在网段有多少个可用的IP地址？该网段的广播地址是什么？</span><br><span class="line"></span><br><span class="line">答：</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于<span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段。</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段可用的IP地址范围：<span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>-<span class="number">10.1</span><span class="number">.1</span><span class="number">.254</span>        <span class="number">254</span>个可用地址</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段的广播地址：<span class="number">10.1</span><span class="number">.1</span><span class="number">.255</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span></span><br><span class="line"></span><br><span class="line"><span class="number">255.255</span><span class="number">.255</span><span class="number">.0</span></span><br><span class="line"></span><br><span class="line">问：<span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于哪个网段？所在网段有多少个可用的IP地址？该网段的广播地址是什么？</span><br><span class="line"></span><br><span class="line">答：</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于<span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段。</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段可用的IP地址范围：<span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>-<span class="number">10.1</span><span class="number">.1</span><span class="number">.254</span>        <span class="number">254</span>个可用地址</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段的广播地址：<span class="number">10.1</span><span class="number">.1</span><span class="number">.255</span></span><br></pre></td></tr></table></div></figure>
 
 
 
 <p>案例2：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span></span><br><span class="line"></span><br><span class="line"><span class="number">255.255</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于哪个网段？所在网段有多少个IP地址？该网段的广播地址是什么？</span><br><span class="line"></span><br><span class="line">答：</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于<span class="number">10.1</span><span class="number">.0</span><span class="number">.0</span>网段。</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.0</span><span class="number">.0</span>网段可用的IP地址范围：<span class="number">10.1</span><span class="number">.0</span><span class="number">.1</span>-<span class="number">10.1</span><span class="number">.255</span><span class="number">.254</span>      （<span class="number">2</span>^<span class="number">16</span>)-<span class="number">2</span>  =<span class="number">65534</span>个</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段的广播地址：<span class="number">10.1</span><span class="number">.255</span><span class="number">.255</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span></span><br><span class="line"></span><br><span class="line"><span class="number">255.255</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于哪个网段？所在网段有多少个IP地址？该网段的广播地址是什么？</span><br><span class="line"></span><br><span class="line">答：</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.1</span>属于<span class="number">10.1</span><span class="number">.0</span><span class="number">.0</span>网段。</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.0</span><span class="number">.0</span>网段可用的IP地址范围：<span class="number">10.1</span><span class="number">.0</span><span class="number">.1</span>-<span class="number">10.1</span><span class="number">.255</span><span class="number">.254</span>      （<span class="number">2</span>^<span class="number">16</span>)-<span class="number">2</span>  =<span class="number">65534</span>个</span><br><span class="line"></span><br><span class="line"><span class="number">10.1</span><span class="number">.1</span><span class="number">.0</span>网段的广播地址：<span class="number">10.1</span><span class="number">.255</span><span class="number">.255</span></span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -243,7 +243,7 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <p>网关：一个网络的出口，Gateway&#x3D;GW，一般网关是在路由器上</p>
 <p>路由器：可用连接内外网的设备。</p>
 <p>PC向外发包： </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、首先判断目标IP地址与自己是否在同一网段。 </span><br><span class="line"></span><br><span class="line"><span class="number">2</span>、如在同一网段，则直接发出去，而不找网关 </span><br><span class="line"></span><br><span class="line"><span class="number">3</span>、如不在同一网段，则直接发包给网关</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、首先判断目标IP地址与自己是否在同一网段。 </span><br><span class="line"></span><br><span class="line"><span class="number">2</span>、如在同一网段，则直接发出去，而不找网关 </span><br><span class="line"></span><br><span class="line"><span class="number">3</span>、如不在同一网段，则直接发包给网关</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/ip-details/image-20230710193627270-1689047036561-61.png"><img   src="/images/loading.svg" data-src="/imgs/ip-details/image-20230710193627270-1689047036561-61.png"  alt="image-20230710193627270" lazyload></a></p>
 <p><strong>六、DNS</strong></p>
@@ -253,14 +253,14 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <p>1、1台PC需要连接外网，需要<strong>IP地址、子网掩码、网关、DNS</strong>四大参数</p>
 <p><strong>七、网络测试命令</strong></p>
 <p>1、如何查看IP地址首先：开始–运行–输入cmd–进入命令行窗口 或者win+r打开运行窗口</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ipconfig <span class="comment"># 查看IP地址基本信息 </span></span><br><span class="line"></span><br><span class="line">ipconfig /<span class="built_in">all</span> <span class="comment"># 查看IP地址详细信息</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ipconfig <span class="comment"># 查看IP地址基本信息 </span></span><br><span class="line"></span><br><span class="line">ipconfig /<span class="built_in">all</span> <span class="comment"># 查看IP地址详细信息</span></span><br></pre></td></tr></table></div></figure>
 
 <p>2、测试网络连通性</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ping 目标IP地址 <span class="comment"># 测试网络连通性，有去有回即为可以成功通信！ </span></span><br><span class="line"></span><br><span class="line">ping -t 目标IP地址 <span class="comment"># 一直ping </span></span><br><span class="line"></span><br><span class="line">ping -n 数字 目标IP地址 <span class="comment"># 修改ping包的数量 </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ping 目标IP地址 <span class="comment"># 测试网络连通性，有去有回即为可以成功通信！ </span></span><br><span class="line"></span><br><span class="line">ping -t 目标IP地址 <span class="comment"># 一直ping </span></span><br><span class="line"></span><br><span class="line">ping -n 数字 目标IP地址 <span class="comment"># 修改ping包的数量 </span></span><br></pre></td></tr></table></div></figure>
 
 <p>注：如ping不通，可能对方不在线，或者对方开着防火墙！ </p>
 <p>3、手工解析域名</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nslookup www.jd.com  <span class="comment">#手工解析域名的IP地址</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nslookup www.jd.com  <span class="comment">#手工解析域名的IP地址</span></span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -278,7 +278,7 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <p>10.68.1.32&#x2F;8</p>
 <p>主机位全为0是网络ip地址，网络号代表网络段本身。</p>
 <p>主机位全为1是广播地址。</p>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th><strong>IP</strong>  <strong>地</strong>  <strong>址</strong>  <strong>类</strong>  <strong>型</strong></th>
@@ -329,7 +329,7 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <td>240-  254</td>
 <td></td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <blockquote>
 <p>可用的网络数量就是网络标识符当中可用的数量，计算方式是W,X,Y,数量相乘</p>
 <p>目前使用的只有A,B,C三类ip地址。</p>
@@ -346,7 +346,7 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <p>204.4.6.255 代表广播地址 </p>
 </blockquote>
 <p>  <strong>私网ip</strong> </p>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th><strong>网络标识符</strong></th>
@@ -374,7 +374,7 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <td></td>
 <td></td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <h2 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h2><p>子网掩码由32位二进制组成。</p>
 <blockquote>
 <p>例：</p>
@@ -524,7 +524,7 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <p>网络地址 200.200.200.224</p>
 <p>广播地址 200.200.200.255</p>
 </blockquote>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th></th>
@@ -575,9 +575,9 @@ IP地址就是一个唯一标识，是一段网络编码（二">
 <td>200.200.200.254</td>
 <td>200.200.200.255</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <h2 id="进制转换"><a href="#进制转换" class="headerlink" title="进制转换"></a>进制转换</h2><p><a href="imgs/https://tool.lu/hexconvert/">进制转换在线工具</a><br><a href="imgs/https://blog.sciencenet.cn/blog-3428464-1243124.html">进制转换及原理他人博客</a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">二进制（B）————&gt;<span class="number">0</span> ~ <span class="number">1</span></span><br><span class="line">八进制（O）————&gt;<span class="number">0</span> ~ <span class="number">7</span></span><br><span class="line">十进制 (D) ————&gt;<span class="number">0</span> ~ <span class="number">9</span></span><br><span class="line">十六进制（H）————&gt;<span class="number">0</span> ~ <span class="number">9</span> 、A(<span class="number">10</span>) ~ F(<span class="number">15</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">二进制（B）————&gt;<span class="number">0</span> ~ <span class="number">1</span></span><br><span class="line">八进制（O）————&gt;<span class="number">0</span> ~ <span class="number">7</span></span><br><span class="line">十进制 (D) ————&gt;<span class="number">0</span> ~ <span class="number">9</span></span><br><span class="line">十六进制（H）————&gt;<span class="number">0</span> ~ <span class="number">9</span> 、A(<span class="number">10</span>) ~ F(<span class="number">15</span>)</span><br></pre></td></tr></table></div></figure>
 
 
 

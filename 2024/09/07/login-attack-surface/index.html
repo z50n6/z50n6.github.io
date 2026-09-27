@@ -165,7 +165,7 @@ WEB漏洞 | 常见漏洞详解与思路技巧！
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Python_0011/article/details/139193861">渗透测试中登录框骚操作总结（非常详细）零基础入门到精通，收藏这一篇就够了</a></li>
 </ul>
 <hr>
-<h2 id="攻击面速览"><a href="#攻击面速览" class="headerlink" title="攻击面速览"></a>攻击面速览</h2><table>
+<h2 id="攻击面速览"><a href="#攻击面速览" class="headerlink" title="攻击面速览"></a>攻击面速览</h2><div class="table-scroll"><table>
 <thead>
 <tr>
 <th>类别</th>
@@ -373,7 +373,7 @@ WEB漏洞 | 常见漏洞详解与思路技巧！
 <td>Session 会话固定</td>
 <td>登录前后 Session ID 不变，攻击者可为受害者预设会话</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <hr>
 <h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><p>拿到登录框后不要急着测漏洞，先把信息摸清楚。</p>
 <h3 id="1-1-识别框架-指纹"><a href="#1-1-识别框架-指纹" class="headerlink" title="1.1 识别框架&#x2F;指纹"></a>1.1 识别框架&#x2F;指纹</h3><p>寻找 CMS、网页框架、厂商服务的特征指纹。确定框架后可以直接去 fofa 找同类型站，也可以针对性利用已知漏洞。</p>
@@ -387,7 +387,7 @@ WEB漏洞 | 常见漏洞详解与思路技巧！
 <li>Nday</li>
 </ul>
 <p>确认框架后针对已知漏洞打。常见指纹 → 漏洞映射：</p>
-<table>
+<div class="table-scroll"><table>
 <thead>
 <tr>
 <th>框架&#x2F;服务</th>
@@ -418,7 +418,7 @@ WEB漏洞 | 常见漏洞详解与思路技巧！
 <td>各类 OA（致远、泛微、通达）</td>
 <td>文件上传、未授权访问</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <p><strong>Shiro 利用工具：</strong> <a target="_blank" rel="noopener" href="https://github.com/SummerSec/ShiroAttack2">ShiroAttack2</a></p>
 <p><strong>Struts2 检测利用工具：</strong> <a target="_blank" rel="noopener" href="https://github.com/abc123info/Struts2VulsScanTools">Struts2VulsScanTools</a></p>
 <p><strong>Nacos 利用工具：</strong> <a target="_blank" rel="noopener" href="https://github.com/h0ny/NacosExploit">NacosExploit</a></p>
@@ -516,29 +516,29 @@ WEB漏洞 | 常见漏洞详解与思路技巧！
 <h2 id="四、短信-邮箱接口安全"><a href="#四、短信-邮箱接口安全" class="headerlink" title="四、短信&#x2F;邮箱接口安全"></a>四、短信&#x2F;邮箱接口安全</h2><h3 id="4-1-短信轰炸-邮箱轰炸"><a href="#4-1-短信轰炸-邮箱轰炸" class="headerlink" title="4.1 短信轰炸 &#x2F; 邮箱轰炸"></a>4.1 短信轰炸 &#x2F; 邮箱轰炸</h3><p>一般在发送验证码后抓包，不断 Repeater 即可。以下为常见绕过手法：</p>
 <ul>
 <li><p><strong>添加空格或换行绕过</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mobile=XXXXXX → mobile= XXXXXX</span><br><span class="line">               → mobile=XXXXXX</span><br><span class="line">               → mobile=XXXXXX\n</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mobile=XXXXXX → mobile= XXXXXX</span><br><span class="line">               → mobile=XXXXXX</span><br><span class="line">               → mobile=XXXXXX\n</span><br></pre></td></tr></table></div></figure>
 
 <p>空格或 <code>\n</code>、<code>\r</code>、<code>\r\n</code> 可叠加：<code>mobile=XXXXXX\n\n</code></p>
 </li>
 <li><p><strong>参数污染绕过</strong></p>
 <p>后台取数字部分发送短信，混入其他字符绕过已发送号码的校验：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tel=+)WAFXE#!18888888888&amp;uid=11</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tel=+)WAFXE#!18888888888&amp;uid=11</span><br></pre></td></tr></table></div></figure>
 </li>
 <li><p><strong>+86 或 086 前缀绕过</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mobile=+86 18888888888</span><br><span class="line">mobile=086 18888888888</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mobile=+86 18888888888</span><br><span class="line">mobile=086 18888888888</span><br></pre></td></tr></table></div></figure>
 </li>
 <li><p><strong>变量污染绕过（多参数同名）</strong></p>
 <p>后台校验第一个参数，但实际传递以最后一个为准：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mobile=17777777777（绕过限制的号码）&amp;mobile=18888888888（真正接收短信的号码）</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mobile=17777777777（绕过限制的号码）&amp;mobile=18888888888（真正接收短信的号码）</span><br></pre></td></tr></table></div></figure>
 </li>
 <li><p><strong>数据长度绕过</strong></p>
 <p>手机号定义为 11 位，但后台未校验长度，<code>123 = 0123 = 00123</code>，通过补零绕过。</p>
 </li>
 <li><p><strong>修改变量参数&#x2F;接口类型绕过</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">terminal=01&amp;Mobile=XXXXXXX</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">terminal=01&amp;Mobile=XXXXXXX</span><br></pre></td></tr></table></div></figure>
 
 <p><code>terminal=01</code> 调用注册短信，<code>02</code> 调用密码重置短信，<code>03</code> 调用注册成功短信……修改参数值即可触发不同类型短信。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apitype=1&amp;phone=18888888888</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apitype=1&amp;phone=18888888888</span><br></pre></td></tr></table></div></figure>
 
 <p><code>1</code>&#x3D;注册，<code>2</code>&#x3D;注册成功，<code>3</code>&#x3D;密码重置 → 爆破 <code>apitype</code> 参数达到多类型轰炸。</p>
 <p>前端带入状态标识的：<code>mobile=188&amp;checkFlag=False</code> → 改为 <code>mobile=188&amp;checkFlag=True</code> 绕过。</p>
@@ -550,7 +550,7 @@ WEB漏洞 | 常见漏洞详解与思路技巧！
 <p>限制当前 IP 频率的，更换 IP 或使用代理绕过。</p>
 </li>
 <li><p><strong>大小写绕过（邮箱专用）</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Email=XXXX@qq.com  → Email=XXXX@Qq.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Email=XXXX@qq.com  → Email=XXXX@Qq.com</span><br></pre></td></tr></table></div></figure>
 </li>
 <li><p><strong>删除&#x2F;修改 Cookie 绕过</strong></p>
 <p>抓包删除或修改 Cookie 信息（全部删掉或删中间一部分）→ 空数值发包多次。</p>
@@ -575,7 +575,7 @@ WEB漏洞 | 常见漏洞详解与思路技巧！
 <li><p><strong>万能验证码</strong>：0000、9999 等开发测试用的万能码</p>
 </li>
 <li><p><strong>验证码可修改接收者</strong>：将 A 账号的验证码接收者改为 B，A 的验证码发到 B 的手机上</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mobilephone=13333888888 → mobilephone=18888888888</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mobilephone=13333888888 → mobilephone=18888888888</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/login-attack-surface/12312312ewqdsa.png"><img   src="/images/loading.svg" data-src="/imgs/login-attack-surface/12312312ewqdsa.png"  lazyload></a></p>
 </li>
@@ -649,10 +649,10 @@ WEB漏洞 | 常见漏洞详解与思路技巧！
 <hr>
 <h2 id="七、URL-重定向"><a href="#七、URL-重定向" class="headerlink" title="七、URL 重定向"></a>七、URL 重定向</h2><p>登录参数中常带有 redirect 参数用于登录后跳转，修改为任意 URL 可用于钓鱼。</p>
 <p>常见 URL 跳转参数：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redirect、redirect_to、redirect_url、url、jump、jump_to、target、to、link、linkto、Domain</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redirect、redirect_to、redirect_url、url、jump、jump_to、target、to、link、linkto、Domain</span><br></pre></td></tr></table></div></figure>
 
 <p>参数值可能经过 Base64 编码：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.aaa.com?url=aHR0cDovL2FkbWluLmFhYS5jb20=</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.aaa.com?url=aHR0cDovL2FkbWluLmFhYS5jb20=</span><br></pre></td></tr></table></div></figure>
 
 <hr>
 <h2 id="八、未授权访问"><a href="#八、未授权访问" class="headerlink" title="八、未授权访问"></a>八、未授权访问</h2><ul>

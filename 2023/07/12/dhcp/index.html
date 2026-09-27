@@ -190,19 +190,19 @@ DHCP原理也成为DHCP租">
 <p>wireshark点击开启抓包，然后把win7从NAT模式转换为Lan区段，让win7向DHCP获取地址，wireshark来抓取win7获取地址的整个过程</p>
 <p>win7最后获取到的IP地址为&#x3D;&#x3D;10.1.1.15&#x3D;&#x3D;</p>
 <p><a class="simple-lightbox" href="/imgs/dhcp/image-20230712153841635.png"><img   src="/images/loading.svg" data-src="/imgs/dhcp/image-20230712153841635.png"  alt="image-20230712153841635" lazyload></a></p>
-<h2 id="DHCP攻击与防御"><a href="#DHCP攻击与防御" class="headerlink" title="&#x3D;&#x3D;DHCP攻击与防御&#x3D;&#x3D;"></a>&#x3D;&#x3D;DHCP攻击与防御&#x3D;&#x3D;</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）	攻击DHCP服务器：频繁的发送伪装DHCP请求，直到将DHCP地址池资源耗尽</span><br><span class="line">	防御：在交换机（管理型）的端口上做动态MAC地址绑定</span><br><span class="line"><span class="number">2</span>）	伪装DHCP服务器攻击：hack通过将自己部署为DHCP服务器，为客户机提供非法ip地址</span><br><span class="line">	防御：在交换机上（管理型），除合法的DHCP服务器所在接口外，全部设置为禁止发送dhcp oﬀer包</span><br></pre></td></tr></table></figure>
+<h2 id="DHCP攻击与防御"><a href="#DHCP攻击与防御" class="headerlink" title="&#x3D;&#x3D;DHCP攻击与防御&#x3D;&#x3D;"></a>&#x3D;&#x3D;DHCP攻击与防御&#x3D;&#x3D;</h2><figure class="highlight python"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）	攻击DHCP服务器：频繁的发送伪装DHCP请求，直到将DHCP地址池资源耗尽</span><br><span class="line">	防御：在交换机（管理型）的端口上做动态MAC地址绑定</span><br><span class="line"><span class="number">2</span>）	伪装DHCP服务器攻击：hack通过将自己部署为DHCP服务器，为客户机提供非法ip地址</span><br><span class="line">	防御：在交换机上（管理型），除合法的DHCP服务器所在接口外，全部设置为禁止发送dhcp oﬀer包</span><br></pre></td></tr></table></div></figure>
 
 
 
 <h3 id="DHCP地址池耗尽攻击"><a href="#DHCP地址池耗尽攻击" class="headerlink" title="DHCP地址池耗尽攻击"></a>DHCP地址池耗尽攻击</h3><p>dhcp服务器 (server2008)      win7 (测试)            kali(攻击方)</p>
 <p><a class="simple-lightbox" href="/imgs/dhcp/image-20230711142525249.png"><img   src="/images/loading.svg" data-src="/imgs/dhcp/image-20230711142525249.png"  alt="image-20230711142525249" lazyload></a></p>
 <p>释放win7的IP地址,禁用网卡</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig /release</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig /release</span><br></pre></td></tr></table></div></figure>
 
 <p><a class="simple-lightbox" href="/imgs/dhcp/image-20230711142705434.png"><img   src="/images/loading.svg" data-src="/imgs/dhcp/image-20230711142705434.png"  alt="image-20230711142705434" lazyload></a></p>
 <p>kali网卡设置成lan区段，接入到该局域网</p>
 <p><a class="simple-lightbox" href="/imgs/dhcp/image-20230711142753968.png"><img   src="/images/loading.svg" data-src="/imgs/dhcp/image-20230711142753968.png"  alt="image-20230711142753968" lazyload></a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> 启动图形化界面</span> </span><br><span class="line">yersinia -G </span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> 启动图形化界面</span> </span><br><span class="line">yersinia -G </span><br></pre></td></tr></table></div></figure>
 
 <p>发送discovery的广播包</p>
 <p><a class="simple-lightbox" href="/imgs/dhcp/image-20230711143024700.png"><img   src="/images/loading.svg" data-src="/imgs/dhcp/image-20230711143024700.png"  alt="image-20230711143024700" lazyload></a></p>
