@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>54ury</title>
+<meta name="keywords" content="54ury, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="一个安服从业者的个人 wiki——记录渗透测试、应急响应和漏洞分析中的踩坑与思考。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="54ury">
+<meta property="og:description" content="一个安服从业者的个人 wiki——记录渗透测试、应急响应和漏洞分析中的踩坑与思考。">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    
+    
+    <div class="site-marquee" aria-hidden="true">
+      <span class="site-marquee-text" style="animation-duration: 14s; color: #9a6b1f;">
+        <i class="site-marquee-dot" style="background: #9a6b1f;"></i>写点东西，保持思考 · 安全学习之路
+      </span>
+    </div>
+    
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+      <a class="menu is-active" href="/">
+        首页
+      </a>
+    
+  
+      <a class="menu" href="/tags/">
+        标签
+      </a>
+    
+  
+      <a class="menu" href="/categories/">
+        分类
+      </a>
+    
+  
+      <a class="menu" href="/archives/">
+        归档
+      </a>
+    
+  
+      <a class="menu" href="/about/">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+
+    
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/14/dns-deploy/">
+        <h2 class="post-title">DNS部署搭建</h2>
+      </a>
+      <a href="/2023/07/14/dns-deploy/">
+          <div class="post-abstract">
+            
+            Domain Name Service 域名服务 作用：为客户机提供域名解析服务器 域名组成 如” www.sina.com.cn “是一个域名，从严格意义上讲，”sina.com.cn”才被称为域名(全球唯一)，而”www”是主机 名。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-14</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                DNS
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/14/iis-website/">
+        <h2 class="post-title">IIS网站搭建</h2>
+      </a>
+      <a href="/2023/07/14/iis-website/">
+          <div class="post-abstract">
+            
+            IIS搭建 打开IIS管理器 地址栏输入 127.0.0.1 出现下面的界面，说明IIS服务已经搭建好了 网站部署 先找到默认文档 添加index.asp 启动父路径 把解压的ok3文件夹 复制粘贴到 wwwroot路径…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-14</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                IIS
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/14/file-share-server/">
+        <h2 class="post-title">文件共享服务器</h2>
+      </a>
+      <a href="/2023/07/14/file-share-server/">
+          <div class="post-abstract">
+            
+            cifs协议 通过网络提供文件共享服务，提供文件下载和上传服务（类似于FTP服务器） 创建共享 1 2 3 4 5 1. 在本地登录时，只受NTFS权限的影响 2. 远程登录时，将受共享及NTFS权限的共同影响，且取交集！ 3.
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-14</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/12/dhcp/">
+        <h2 class="post-title">DHCP部署与安全</h2>
+      </a>
+      <a href="/2023/07/12/dhcp/">
+          <div class="post-abstract">
+            
+            作用 Dynamic Host Configure Protocol）自动分配IP地址 相关概念 地址池&#x2F;作用域：（IP、子网掩码、网关、DNS、租期），DHCP协议端口是 UDP 67&#x2F;68 DHC…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                DHCP
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/12/dos-commands/">
+        <h2 class="post-title">DOS命令</h2>
+      </a>
+      <a href="/2023/07/12/dos-commands/">
+          <div class="post-abstract">
+            
+            1 2 3 color --help #查看帮助信息 color 0a #修改背景和字体颜色 cls #清屏命令 文件相关 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                DOS
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/12/ftp-server/">
+        <h2 class="post-title">FTP服务器</h2>
+      </a>
+      <a href="/2023/07/12/ftp-server/">
+          <div class="post-abstract">
+            
+            文件传输协议 端口： ​ tcp 20 21 数据端口 20 控制端口 21 客户端安装FileZilla Client 服务器安装FileZilla Server 创建组 添加用户 练习 答案： 组设置 用户设置 …
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                FTP
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/12/rdp-ftp-bruteforce/">
+        <h2 class="post-title">rdp_ftp协议的密码爆破</h2>
+      </a>
+      <a href="/2023/07/12/rdp-ftp-bruteforce/">
+          <div class="post-abstract">
+            
+            &#x3D;&#x3D;rdp、ftp协议的密码爆破&#x3D;&#x3D; 远程桌面 rdp协议 3389 文件传输 FTP协议 20 21 攻击方：Kali 测试方：Win7 两台都要在同一网段 密码爆破工具 &#x3D;&#x3D;hydra九头蛇&#x3D;&#x3D;
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-12</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                密码爆破
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/10/ip-details/">
+        <h2 class="post-title">IP详解</h2>
+      </a>
+      <a href="/2023/07/10/ip-details/">
+          <div class="post-abstract">
+            
+            IP地址介绍bilibili 一、简单局域网的构成 局域网：一般称为内网 简单内网的构成：交换机，网线，PC 交换机：用来组建内网的局域网的设备 二、IP地址 IP地址就是一个唯一标识，是一段网络编码（二进制），由32位…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-10</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                网络
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/10/ntfs-permissions/">
+        <h2 class="post-title">NTFS权限</h2>
+      </a>
+      <a href="/2023/07/10/ntfs-permissions/">
+          <div class="post-abstract">
+            
+            通过设置NTFS权限，实现不同的用户访问不同的权限 分配了正确的访问权限后，用户才能访问其资源 设置权限 防止资源被篡改，删除 文件系统 即在外部存储设备上组织文件的方法 常见的文件系统： 1 2 3 FAT windo…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-10</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                NTFS
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/08/arp-attack/">
+        <h2 class="post-title">ARP断网攻击</h2>
+      </a>
+      <a href="/2023/07/08/arp-attack/">
+          <div class="post-abstract">
+            
+            &#x3D;&#x3D;ARP断网攻击&#x3D;&#x3D; 攻击 1 2 PC1的IP地址 10.9 .136 .222 PC2的IP地址 10.9 .136 .55 1 2 在局域网里通信 需要有IP地址和MAC地…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-08</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                ARP
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/08/sam-crack/">
+        <h2 class="post-title">SAM文件破解</h2>
+      </a>
+      <a href="/2023/07/08/sam-crack/">
+          <div class="post-abstract">
+            
+            &#x3D;&#x3D;SAM文件破解&#x3D;&#x3D; win7 在对方不知情，不知道对方密码的情况下，破解密码 以Win7为例 步骤 使用 kali-live镜像（ U盘版本），直接插入他人电脑就可直接运行 模…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-08</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+                  ，
+                
+            
+
+                SAM
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2023/07/08/windows-users-groups/">
+        <h2 class="post-title">用户与组</h2>
+      </a>
+      <a href="/2023/07/08/windows-users-groups/">
+          <div class="post-abstract">
+            
+            用户 每个用户有自己唯一的SID（安全标识符） 1 2 # 查看用户ID值 whoami /user 1 2 3 4 5 6 7 用户ID值是不断往上累加，不会占用之前用户的ID值 # 例如 创建一个 zs用户，ID值为…
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-07-08</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                Windows
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+
+    
+    <div class="pagination-container" data-load-more>
+      <button type="button" class="load-more-btn"
+              data-next="/page/5/"
+              data-page="4"
+              data-total="5">
+        <span class="load-more-text">加载更多</span>
+        <span class="load-more-spinner" aria-hidden="true"></span>
+      </button>
+      <div class="load-more-done" hidden>已经到底了</div>
+      
+      <noscript>
+        
+          <a href="/page/5/" class="next">下一页 <i class="icon icon-arrow-ios-forward-outline"></i></a>
+        
+      </noscript>
+    </div>
+
+
+
+  </div>
+
+
+<script src="/js/load-more.js" defer></script>
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = false; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
