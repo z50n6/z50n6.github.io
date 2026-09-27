@@ -109,16 +109,18 @@
   <div class="content-container">
 
     
+<div class="post-list">
+
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/xss/">
-        <h2 class="post-title">XSS 跨站脚本攻击</h2>
+      <a href="/2026/06/28/xxe/">
+        <h2 class="post-title">XML 外部实体注入（XXE）</h2>
       </a>
-      <a href="/2026/06/28/xss/">
+      <a href="/2026/06/28/xxe/">
           <div class="post-abstract">
             
-            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
+            一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
           </div>
       </a>
       <div class="post-info">
@@ -147,13 +149,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/xxe/">
-        <h2 class="post-title">XML 外部实体注入（XXE）</h2>
+      <a href="/2026/06/28/xss/">
+        <h2 class="post-title">XSS 跨站脚本攻击</h2>
       </a>
-      <a href="/2026/06/28/xxe/">
+      <a href="/2026/06/28/xss/">
           <div class="post-abstract">
             
-            一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
+            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
           </div>
       </a>
       <div class="post-info">
@@ -252,13 +254,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/05/24/doh-dot/">
-        <h2 class="post-title">DoH与DoT加密DNS</h2>
+      <a href="/2026/05/24/dns-hijacking/">
+        <h2 class="post-title">DNS劫持原理与防护</h2>
       </a>
-      <a href="/2026/05/24/doh-dot/">
+      <a href="/2026/05/24/dns-hijacking/">
           <div class="post-abstract">
             
-            解析 一、为什么需要加密 DNS？ 传统 DNS 使用 UDP&#x2F;TCP 53 端口 ，查询和应答以 明文 传输： 1 2 你的设备 ──明文 DNS 查询──→ DNS 服务器 ←──明文 DNS 应答── 这…
+            一、DNS 是什么？ DNS（Domain Name System，域名系统）是互联网的「电话本」。 当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名翻…
           </div>
       </a>
       <div class="post-info">
@@ -287,13 +289,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/05/24/dns-hijacking/">
-        <h2 class="post-title">DNS劫持原理与防护</h2>
+      <a href="/2026/05/24/doh-dot/">
+        <h2 class="post-title">DoH与DoT加密DNS</h2>
       </a>
-      <a href="/2026/05/24/dns-hijacking/">
+      <a href="/2026/05/24/doh-dot/">
           <div class="post-abstract">
             
-            一、DNS 是什么？ DNS（Domain Name System，域名系统）是互联网的「电话本」。 当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名翻…
+            解析 一、为什么需要加密 DNS？ 传统 DNS 使用 UDP&#x2F;TCP 53 端口 ，查询和应答以 明文 传输： 1 2 你的设备 ──明文 DNS 查询──→ DNS 服务器 ←──明文 DNS 应答── 这…
           </div>
       </a>
       <div class="post-info">
@@ -373,13 +375,13 @@
             <i class="icon icon-pricetags-outline"></i>
             
 
-                安全工具
+                BurpSuite
                 
                   ，
                 
             
 
-                BurpSuite
+                安全工具
                 
             
           </span>
@@ -529,6 +531,7 @@
   </section>
 
 
+</div>
 
 
     
