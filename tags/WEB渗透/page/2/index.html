@@ -153,13 +153,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/xxe/">
-        <h2 class="post-title">XML 外部实体注入（XXE）</h2>
+      <a href="/2026/06/28/xss/">
+        <h2 class="post-title">XSS 跨站脚本攻击</h2>
       </a>
-      <a href="/2026/06/28/xxe/">
+      <a href="/2026/06/28/xss/">
           <div class="post-abstract">
             
-            一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
+            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
           </div>
       </a>
       <div class="post-info">
@@ -188,13 +188,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/xss/">
-        <h2 class="post-title">XSS 跨站脚本攻击</h2>
+      <a href="/2026/06/28/xxe/">
+        <h2 class="post-title">XML 外部实体注入（XXE）</h2>
       </a>
-      <a href="/2026/06/28/xss/">
+      <a href="/2026/06/28/xxe/">
           <div class="post-abstract">
             
-            一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
+            一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
           </div>
       </a>
       <div class="post-info">
@@ -327,12 +327,20 @@
 
 
 
-    <div class="pagination-container">
+    
+    <div class="pagination-container" data-load-more>
+      <button type="button" class="load-more-btn"
+              data-next=""
+              data-page="2"
+              data-total="2">
+        <span class="load-more-text">加载更多</span>
+        <span class="load-more-spinner" aria-hidden="true"></span>
+      </button>
+      <div class="load-more-done" hidden>已经到底了</div>
       
-      
-        <a href="/tags/WEB%E6%B8%97%E9%80%8F/" class="prev"><i class="icon icon-arrow-ios-back-outline"></i> 上一页</a>
-      
-      
+      <noscript>
+        
+      </noscript>
     </div>
 
 

@@ -1652,6 +1652,125 @@ html.dark .menu-container a.menu::after {
     font-size: 17px;
   }
 }
+.pagination-container[data-load-more] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px 0 8px;
+  gap: 10px;
+}
+.load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 132px;
+  padding: 9px 22px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--c-base-blacklight);
+  background: transparent;
+  border: 1px solid rgba(12,30,41,0.14);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+.load-more-btn:hover {
+  color: var(--c-base-purple);
+  border-color: rgba(58,110,165,0.45);
+  background: rgba(58,110,165,0.04);
+}
+.load-more-btn:active {
+  background: rgba(58,110,165,0.08);
+}
+.load-more-btn:disabled {
+  cursor: default;
+}
+.load-more-btn:focus-visible {
+  outline: 2px solid var(--c-base-purple);
+  outline-offset: 2px;
+}
+.load-more-btn.is-loading {
+  color: var(--c-base-gray);
+  border-color: rgba(12,30,41,0.1);
+}
+.load-more-btn.is-error {
+  color: #c60030;
+  border-color: rgba(198,0,48,0.4);
+}
+.load-more-spinner {
+  display: none;
+  width: 13px;
+  height: 13px;
+  flex: none;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: load-more-spin 0.7s linear infinite;
+}
+.load-more-btn.is-loading .load-more-spinner {
+  display: inline-block;
+}
+.load-more-done {
+  font-size: 0.8125rem;
+  color: var(--c-base-gray);
+}
+.load-more-done::before,
+.load-more-done::after {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  vertical-align: middle;
+  background: rgba(12,30,41,0.12);
+  margin: 0 10px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .load-more-spinner {
+    animation: none;
+  }
+}
+html.dark .load-more-btn {
+  color: #8b949e;
+  border-color: rgba(255,255,255,0.14);
+}
+html.dark .load-more-btn:hover {
+  color: var(--c-accent-dark);
+  border-color: rgba(122,162,227,0.5);
+  background: rgba(122,162,227,0.08);
+}
+html.dark .load-more-btn.is-error {
+  color: #ff6b81;
+  border-color: rgba(255,107,129,0.45);
+}
+html.dark .load-more-done {
+  color: #8b949e;
+}
+html.dark .load-more-done::before,
+html.dark .load-more-done::after {
+  background: rgba(255,255,255,0.14);
+}
+@-moz-keyframes load-more-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes load-more-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes load-more-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes load-more-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 /* ============================================================
  * 搜索弹窗（自定义改写）
  *
