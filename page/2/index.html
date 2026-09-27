@@ -149,13 +149,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/xxe/">
-        <h2 class="post-title">XML 外部实体注入（XXE）</h2>
+      <a href="/2026/06/28/web-dos/">
+        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
       </a>
-      <a href="/2026/06/28/xxe/">
+      <a href="/2026/06/28/web-dos/">
           <div class="post-abstract">
             
-            一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
+            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
           </div>
       </a>
       <div class="post-info">
