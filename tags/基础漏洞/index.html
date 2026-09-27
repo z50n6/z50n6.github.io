@@ -155,41 +155,6 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/csrf/">
-        <h2 class="post-title">CSRF 跨站请求伪造</h2>
-      </a>
-      <a href="/2026/06/28/csrf/">
-          <div class="post-abstract">
-            
-            一、基本原理 1.1 是什么 CSRF（Cross-Site Request Forgery，跨站请求伪造），也叫 One Click Attack 或 Session Riding。
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                WEB渗透
-                
-                  ，
-                
-            
-
-                基础漏洞
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-
-
-<section class="post-item">
-    <div class="content">
       <a href="/2026/06/28/crlf-injection/">
         <h2 class="post-title">CRLF 注入（HTTP 响应拆分）</h2>
       </a>
@@ -225,13 +190,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/file-upload/">
-        <h2 class="post-title">任意文件上传</h2>
+      <a href="/2026/06/28/csrf/">
+        <h2 class="post-title">CSRF 跨站请求伪造</h2>
       </a>
-      <a href="/2026/06/28/file-upload/">
+      <a href="/2026/06/28/csrf/">
           <div class="post-abstract">
             
-            一、概述 1.1 是什么 文件上传是 Web 应用的必备功能——头像上传、附件分享等。如果服务器配置不当或没有充分过滤，用户可以上传任意文件（恶意脚本、exe 程序等），这就是 任意文件上传漏洞 。通过它获取的网站后门叫 WebShell 。
+            一、基本原理 1.1 是什么 CSRF（Cross-Site Request Forgery，跨站请求伪造），也叫 One Click Attack 或 Session Riding。
           </div>
       </a>
       <div class="post-info">
@@ -267,6 +232,41 @@
           <div class="post-abstract">
             
             一、概述 1.1 什么是文件包含 开发者把可复用的函数或代码段写到单个文件里形成”封装”，调用时直接 include ，不用重复编写。 这种调用文件的过程就叫文件包含。 为了让代码更灵活，被包含文件的路径通常设为变量来动态调用。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/file-upload/">
+        <h2 class="post-title">任意文件上传</h2>
+      </a>
+      <a href="/2026/06/28/file-upload/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 是什么 文件上传是 Web 应用的必备功能——头像上传、附件分享等。如果服务器配置不当或没有充分过滤，用户可以上传任意文件（恶意脚本、exe 程序等），这就是 任意文件上传漏洞 。通过它获取的网站后门叫 WebShell 。
           </div>
       </a>
       <div class="post-info">
@@ -435,13 +435,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/web-dos/">
-        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
+      <a href="/2026/06/28/weak-password/">
+        <h2 class="post-title">弱口令</h2>
       </a>
-      <a href="/2026/06/28/web-dos/">
+      <a href="/2026/06/28/weak-password/">
           <div class="post-abstract">
             
-            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
+            一、概述 弱口令（Weak Password）没有严格定义——凡是 容易被猜解或能被工具快速破解的口令 都是弱口令。 两个主要成因： 管理员安全意识不足，用了简单密码 平台默认初始密码，部署后没改 弱口令危害极大——不需要 0day，不需要复杂利用链，猜对了就直接拿权限。
           </div>
       </a>
       <div class="post-info">
