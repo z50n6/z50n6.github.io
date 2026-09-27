@@ -1564,6 +1564,94 @@ html.dark .post-content tbody tr:nth-child(even) {
 html.dark .post-content tbody tr:hover {
   background: rgba(122,162,227,0.08);
 }
+.menu-container {
+  background: #fff;
+}
+.menu-container .menu-list {
+  margin-top: -56px;
+  gap: 0;
+}
+.menu-container a.menu {
+  position: relative;
+  display: inline-block;
+  padding: 14px 10px;
+  margin: 0;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--c-base-black);
+  background-image: none;
+  background-color: transparent;
+  transition: color 0.2s ease;
+}
+.menu-container a.menu::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--c-base-purple);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+}
+.menu-container a.menu:hover {
+  color: var(--c-base-purple);
+}
+.menu-container a.menu:hover::after {
+  transform: scaleX(1);
+}
+.menu-container a.menu:active {
+  opacity: 0.7;
+}
+.menu-container a.menu.is-active {
+  color: var(--c-base-purple);
+  font-weight: 600;
+}
+.menu-container a.menu.is-active::after {
+  transform: scaleX(1);
+  opacity: 0.45;
+}
+html.dark .menu-container {
+  background-color: #121212;
+}
+html.dark .menu-container a.menu {
+  color: #c9d1d9;
+  background-image: none;
+}
+html.dark .menu-container a.menu:hover,
+html.dark .menu-container a.menu.is-active {
+  color: var(--c-accent-dark);
+}
+html.dark .menu-container a.menu::after {
+  background: var(--c-accent-dark);
+}
+@media (max-width: 480px) {
+  .menu-container .menu-list {
+    margin-top: -40px;
+  }
+  .menu-container a.menu {
+    padding: 9px 8px;
+    font-size: 18px;
+  }
+  .menu-container a.menu::after {
+    bottom: 5px;
+    left: 8px;
+    right: 8px;
+  }
+}
+@media (max-height: 520px) {
+  .menu-container .menu-list {
+    margin-top: 0;
+  }
+  .menu-container a.menu {
+    padding: 5px 8px;
+    font-size: 17px;
+  }
+}
 /* ============================================================
  * 搜索弹窗（自定义改写）
  *
