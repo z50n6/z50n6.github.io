@@ -1771,6 +1771,78 @@ html.dark .load-more-done::after {
     transform: rotate(360deg);
   }
 }
+.scroll-nav {
+  position: fixed;
+  right: 28px;
+  bottom: 82px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.scroll-nav-btn {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(12,30,41,0.08);
+  border-radius: 50%;
+  background: #fff;
+  color: #98a2ad;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(12,30,41,0.07);
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+.scroll-nav-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+.scroll-nav-btn:hover:not(.is-disabled) {
+  color: var(--c-base-purple);
+  border-color: rgba(58,110,165,0.28);
+  box-shadow: 0 3px 12px rgba(12,30,41,0.12);
+}
+.scroll-nav-btn:focus-visible {
+  outline: 2px solid var(--c-base-purple);
+  outline-offset: 2px;
+}
+.scroll-nav-btn.is-disabled {
+  opacity: 0.38;
+  cursor: default;
+  box-shadow: none;
+}
+html.dark .scroll-nav-btn {
+  background: #1c2027;
+  border-color: rgba(255,255,255,0.1);
+  color: #8b949e;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+}
+html.dark .scroll-nav-btn:hover:not(.is-disabled) {
+  color: var(--c-accent-dark);
+  border-color: rgba(122,162,227,0.4);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.45);
+}
+html.dark .scroll-nav-btn.is-disabled {
+  opacity: 0.32;
+  box-shadow: none;
+}
+@media (max-width: 600px) {
+  .scroll-nav {
+    right: 16px;
+    bottom: 70px;
+  }
+  .scroll-nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .scroll-nav-btn svg {
+    width: 17px;
+    height: 17px;
+  }
+}
 /* ============================================================
  * 搜索弹窗（自定义改写）
  *
