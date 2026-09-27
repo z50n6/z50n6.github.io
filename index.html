@@ -149,6 +149,41 @@
 
 <section class="post-item">
     <div class="content">
+      <a href="/2026/06/28/arbitrary-file-read/">
+        <h2 class="post-title">任意文件读取 / 下载</h2>
+      </a>
+      <a href="/2026/06/28/arbitrary-file-read/">
+          <div class="post-abstract">
+            
+            一、概述 1.1 是什么 一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。 任意文件读取和下载本质无区别： 信息都是从服务端流向浏览器 ，差异只在表现形态（页面展示 vs 触发下载行为）。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+<section class="post-item">
+    <div class="content">
       <a href="/2026/06/28/csrf/">
         <h2 class="post-title">CSRF 跨站请求伪造</h2>
       </a>
@@ -289,41 +324,6 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/arbitrary-file-read/">
-        <h2 class="post-title">任意文件读取 / 下载</h2>
-      </a>
-      <a href="/2026/06/28/arbitrary-file-read/">
-          <div class="post-abstract">
-            
-            一、概述 1.1 是什么 一些网站提供文件查看或下载功能。如果对用户指定的文件没有限制或限制可被绕过，就可以读取任意文件——源代码、配置文件、系统敏感文件。 任意文件读取和下载本质无区别： 信息都是从服务端流向浏览器 ，差异只在表现形态（页面展示 vs 触发下载行为）。
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                WEB渗透
-                
-                  ，
-                
-            
-
-                基础漏洞
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-
-
-<section class="post-item">
-    <div class="content">
       <a href="/2026/06/28/open-redirect/">
         <h2 class="post-title">URL 重定向（开放重定向）</h2>
       </a>
@@ -394,13 +394,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
-        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
+      <a href="/2026/06/28/ssrf/">
+        <h2 class="post-title">SSRF 服务器端请求伪造</h2>
       </a>
-      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+      <a href="/2026/06/28/ssrf/">
           <div class="post-abstract">
             
-            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
+            一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
           </div>
       </a>
       <div class="post-info">
@@ -429,13 +429,13 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/ssrf/">
-        <h2 class="post-title">SSRF 服务器端请求伪造</h2>
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
+        <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
       </a>
-      <a href="/2026/06/28/ssrf/">
+      <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
           <div class="post-abstract">
             
-            一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
+            一、前置知识：同源策略 同源策略（Same-Origin Policy，SOP）是浏览器核心安全机制——限制来自一个源的文档或脚本与另一个源的资源交互。
           </div>
       </a>
       <div class="post-info">
