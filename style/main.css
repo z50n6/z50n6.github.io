@@ -1771,54 +1771,6 @@ html.dark .load-more-done::after {
     transform: rotate(360deg);
   }
 }
-.home-cats {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin: 4px 0 26px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(12,30,41,0.06);
-}
-.home-cat {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-  padding: 3px 11px;
-  border: 1px solid rgba(58,110,165,0.16);
-  border-radius: 999px;
-  background: rgba(58,110,165,0.045);
-  color: var(--c-base-black);
-  font-size: 0.8125rem;
-  line-height: 1.6;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
-}
-.home-cat:hover {
-  color: var(--c-base-purple);
-  border-color: rgba(58,110,165,0.32);
-  background: rgba(58,110,165,0.09);
-}
-.home-cat-count {
-  font-family: 'Source Code Pro', Consolas, Menlo, monospace;
-  font-size: 0.6875rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--c-base-gray);
-  transition: color 0.2s;
-}
-.home-cat:hover .home-cat-count {
-  color: var(--c-base-purple);
-}
-.home-cat-all {
-  border-style: dashed;
-  border-color: rgba(12,30,41,0.16);
-  background: transparent;
-  color: var(--c-base-blacklight);
-}
-.home-cat-all:hover {
-  border-color: rgba(58,110,165,0.4);
-}
 .post-item--featured {
   display: block;
   max-height: none;
@@ -1881,34 +1833,6 @@ html.dark .load-more-done::after {
   color: #fff;
   opacity: 0.88;
 }
-html.dark .home-cats {
-  border-bottom-color: rgba(255,255,255,0.07);
-}
-html.dark .home-cat {
-  background: rgba(122,162,227,0.1);
-  border-color: rgba(122,162,227,0.22);
-  color: #c9d1d9;
-}
-html.dark .home-cat:hover {
-  color: var(--c-accent-dark);
-  border-color: rgba(122,162,227,0.45);
-  background: rgba(122,162,227,0.16);
-}
-html.dark .home-cat-count {
-  color: #8b949e;
-}
-html.dark .home-cat:hover .home-cat-count {
-  color: var(--c-accent-dark);
-}
-html.dark .home-cat-all {
-  background: transparent;
-  border-color: rgba(255,255,255,0.14);
-  color: #8b949e;
-}
-html.dark .home-cat-all:hover {
-  border-color: rgba(122,162,227,0.45);
-  color: var(--c-accent-dark);
-}
 html.dark .post-item--featured {
   background: #16191e;
   border-color: rgba(255,255,255,0.08);
@@ -1923,15 +1847,6 @@ html.dark .featured-mark {
   color: #0c1e29;
 }
 @media (max-width: 600px) {
-  .home-cats {
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    gap: 6px;
-  }
-  .home-cat {
-    padding: 2px 9px;
-    font-size: 0.75rem;
-  }
   .post-item--featured {
     padding: 18px 16px 16px;
   }

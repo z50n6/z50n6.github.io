@@ -117,42 +117,6 @@
   
 
 
-
-  
-  <nav class="home-cats" aria-label="分类入口">
-    
-      
-        <a class="home-cat" href="/categories/%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80/">
-          安全基础<span class="home-cat-count">25</span>
-        </a>
-      
-    
-      
-        <a class="home-cat" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
-          渗透测试<span class="home-cat-count">23</span>
-        </a>
-      
-    
-      
-        <a class="home-cat" href="/categories/%E5%AE%89%E5%85%A8/">
-          安全<span class="home-cat-count">3</span>
-        </a>
-      
-    
-      
-        <a class="home-cat" href="/categories/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/">
-          应急响应<span class="home-cat-count">2</span>
-        </a>
-      
-    
-      
-    
-    <a class="home-cat home-cat-all" href="/categories/">
-      全部分类
-    </a>
-  </nav>
-
-
 <div class="post-list">
 
   <section class="post-item post-item--featured">
@@ -380,39 +344,6 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/ssrf/">
-        <h2 class="post-title">SSRF 服务器端请求伪造</h2>
-      </a>
-      <a href="/2026/06/28/ssrf/">
-          <div class="post-abstract">
-            
-            一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
-          </div>
-      </a>
-      <div class="post-info">
-        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
-        
-          <span>
-            <i class="icon icon-pricetags-outline"></i>
-            
-
-                WEB渗透
-                
-                  ，
-                
-            
-
-                基础漏洞
-                
-            
-          </span>
-        
-      </div>
-    </div>
-  </section>
-
-<section class="post-item">
-    <div class="content">
       <a href="/2026/06/28/subdomain-takeover-cors-jsonp/">
         <h2 class="post-title">子域名接管 / CORS 跨域 / JSONP 回调</h2>
       </a>
@@ -446,13 +377,46 @@
 
 <section class="post-item">
     <div class="content">
-      <a href="/2026/06/28/web-dos/">
-        <h2 class="post-title">Web 拒绝服务（DoS）</h2>
+      <a href="/2026/06/28/ssrf/">
+        <h2 class="post-title">SSRF 服务器端请求伪造</h2>
       </a>
-      <a href="/2026/06/28/web-dos/">
+      <a href="/2026/06/28/ssrf/">
           <div class="post-abstract">
             
-            一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
+            一、原理 服务器根据用户提交的 URL 发起 HTTP 请求。典型场景是”百度识图”——你给一个图片 URL，服务器去拉这张图然后做识别。
+          </div>
+      </a>
+      <div class="post-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-06-28</span>
+        
+          <span>
+            <i class="icon icon-pricetags-outline"></i>
+            
+
+                WEB渗透
+                
+                  ，
+                
+            
+
+                基础漏洞
+                
+            
+          </span>
+        
+      </div>
+    </div>
+  </section>
+
+<section class="post-item">
+    <div class="content">
+      <a href="/2026/06/28/weak-password/">
+        <h2 class="post-title">弱口令</h2>
+      </a>
+      <a href="/2026/06/28/weak-password/">
+          <div class="post-abstract">
+            
+            一、概述 弱口令（Weak Password）没有严格定义——凡是 容易被猜解或能被工具快速破解的口令 都是弱口令。 两个主要成因： 管理员安全意识不足，用了简单密码 平台默认初始密码，部署后没改 弱口令危害极大——不需要 0day，不需要复杂利用链，猜对了就直接拿权限。
           </div>
       </a>
       <div class="post-info">
