@@ -114,7 +114,6 @@
 <div class="post-list">
 
 
-
 <section class="post-item">
     <div class="content">
       <a href="/2026/06/28/weak-password/">
@@ -122,7 +121,6 @@
       </a>
       <a href="/2026/06/28/weak-password/">
           <div class="post-abstract">
-            
             一、概述 弱口令（Weak Password）没有严格定义——凡是 容易被猜解或能被工具快速破解的口令 都是弱口令。 两个主要成因： 管理员安全意识不足，用了简单密码 平台默认初始密码，部署后没改 弱口令危害极大——不需要 0day，不需要复杂利用链，猜对了就直接拿权限。
           </div>
       </a>
@@ -148,6 +146,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/06/28/web-dos/">
@@ -155,7 +155,6 @@
       </a>
       <a href="/2026/06/28/web-dos/">
           <div class="post-abstract">
-            
             一、是什么 Web 拒绝服务的本质： 服务端有一段”资源生成”逻辑，其中的参数被客户端控制，且没有对生成资源的规模做限制。攻击者把参数放大到极端值后，服务器 CPU &#x2F; 内存 &#x2F; 磁盘被吃满，拒绝正常请求。
           </div>
       </a>
@@ -181,6 +180,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/06/28/xss/">
@@ -188,7 +189,6 @@
       </a>
       <a href="/2026/06/28/xss/">
           <div class="post-abstract">
-            
             一、概述 1.1 是什么 跨站脚本攻击（Cross-Site Scripting），由于与 CSS 重名，更名为 XSS。本质是 客户端代码注入 ——攻击者在合法网站中注入恶意脚本，用户访问被注入的页面时，浏览器解析并执行这段 JS。 XSS 用 JavaScript 完成攻击。
           </div>
       </a>
@@ -214,6 +214,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/06/28/xxe/">
@@ -221,7 +223,6 @@
       </a>
       <a href="/2026/06/28/xxe/">
           <div class="post-abstract">
-            
             一、概述 XXE（XML External Entity Injection），XML 外部实体注入。漏洞出现是因为应用程序解析 XML 输入时 没有禁用外部实体加载 ，攻击者可以加载恶意外部资源。
           </div>
       </a>
@@ -247,6 +248,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/06/14/authz-misconceptions/">
@@ -254,7 +257,6 @@
       </a>
       <a href="/2026/06/14/authz-misconceptions/">
           <div class="post-abstract">
-            
             一句话总结： 平行越权改ID，垂直越权改鉴权。 核心区分 漏洞类型 操作方式 本质 平行越权 替换请求中的 资源ID （如 userId 、 orderId ） 用 A 的身份，访问 B 的数据 垂直越权 替换请求中的…
           </div>
       </a>
@@ -280,6 +282,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/06/14/ssrf-vs-url-redirect/">
@@ -287,7 +291,6 @@
       </a>
       <a href="/2026/06/14/ssrf-vs-url-redirect/">
           <div class="post-abstract">
-            
             SSRF 和 URL 跳转的区别 用大白话来讲（不看官方定义，按我的理解写）： SSRF（服务端请求伪造）： 攻击者通过前端的输入点，让 服务器 主动向该服务器内网或其他网站发起了一个请求。
           </div>
       </a>
@@ -313,6 +316,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/05/24/doh-dot/">
@@ -320,7 +325,6 @@
       </a>
       <a href="/2026/05/24/doh-dot/">
           <div class="post-abstract">
-            
             解析 一、为什么需要加密 DNS？ 传统 DNS 使用 UDP&#x2F;TCP 53 端口 ，查询和应答以 明文 传输： 1 2 你的设备 ──明文 DNS 查询──→ DNS 服务器 ←──明文 DNS 应答── 这…
           </div>
       </a>
@@ -346,6 +350,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/05/24/dns-hijacking/">
@@ -353,7 +359,6 @@
       </a>
       <a href="/2026/05/24/dns-hijacking/">
           <div class="post-abstract">
-            
             一、DNS 是什么？ DNS（Domain Name System，域名系统）是互联网的「电话本」。 当你在浏览器输入 www.baidu.com 时，系统不会直接连这个字符串，而是先向 DNS 服务器发起查询，把域名翻…
           </div>
       </a>
@@ -379,6 +384,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/04/02/ren-ren-du-neng-cheng-wei-dai-ma-shen-ji-zhuan-jia/">
@@ -386,7 +393,6 @@
       </a>
       <a href="/2026/04/02/ren-ren-du-neng-cheng-wei-dai-ma-shen-ji-zhuan-jia/">
           <div class="post-abstract">
-            
             本文以 Cursor 为例进行演示（Trae 的 Solo 模式同样适用）。 一、整体工作流程 阶段 1 ：调用 code-audit Skill，生成审计初稿。 阶段 2 ：调用 Yakit MCP 接口，进行漏洞二次实战验证。 阶段 3 ：迭代修正并交付最终报告，实现零误报。
           </div>
       </a>
@@ -412,6 +418,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2026/01/07/burpsuite-activation/">
@@ -419,7 +427,6 @@
       </a>
       <a href="/2026/01/07/burpsuite-activation/">
           <div class="post-abstract">
-            
             大部分都用的是 52破解 里提供的burpsuite professional，内置java环境，不需要自己另外安装java环境，但是唯一的问题就是使用vbs脚本启动，不能固定到 任务栏 目录文件长这样： 下面的burp…
           </div>
       </a>
@@ -445,6 +452,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2025/12/28/rce/">
@@ -452,7 +461,6 @@
       </a>
       <a href="/2025/12/28/rce/">
           <div class="post-abstract">
-            
             一、概念与本质 RCE（Remote Code&#x2F;Command Execution）分两层意思： 代码执行 ：用户输入被当作脚本代码解析执行（ eval(&#39;phpinfo();&#39;) ） 命令执行…
           </div>
       </a>
@@ -478,6 +486,8 @@
     </div>
   </section>
 
+
+
 <section class="post-item">
     <div class="content">
       <a href="/2025/11/05/linux-intrusion-response/">
@@ -485,7 +495,6 @@
       </a>
       <a href="/2025/11/05/linux-intrusion-response/">
           <div class="post-abstract">
-            
             0、应急响应流程 当企业发生黑客入侵、系统崩溃或其它影响业务正常运行的安全事件时，急需第一时间进行处理，使企业的网络信息系统在最短时间内恢复正常工作，进一步查找入侵来源，还原入侵事故过程，同时给出解决方案与防范措施，为企业挽回或减少经济损失。
           </div>
       </a>
@@ -511,10 +520,10 @@
     </div>
   </section>
 
+
 </div>
 
 
-    
     <div class="pagination-container" data-load-more>
       <button type="button" class="load-more-btn"
               data-next="/page/3/"
@@ -530,7 +539,6 @@
         
       </noscript>
     </div>
-
 
 
   </div>
