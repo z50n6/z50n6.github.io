@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>Pi Coding Agent Windows 原生环境配置指南</title>
+<meta name="keywords" content="Pi Coding Agent Windows 原生环境配置指南, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="
+
+这套配置不碰插件开发，也不讲 Pi 的核心机制，只解决一件事：把 Pi 装在 Windows 原生环境（而不是 WSL2）之后，怎么让它别在 bash 上栽跟头。
+前置依赖四个工具，缺一个后面的配置都白搭：
+
+
+
+工具
+用途
+
+
+
+ri">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="Pi Coding Agent Windows 原生环境配置指南">
+<meta property="og:description" content="
+
+这套配置不碰插件开发，也不讲 Pi 的核心机制，只解决一件事：把 Pi 装在 Windows 原生环境（而不是 WSL2）之后，怎么让它别在 bash 上栽跟头。
+前置依赖四个工具，缺一个后面的配置都白搭：
+
+
+
+工具
+用途
+
+
+
+ri">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    
+    
+    <div class="site-marquee" aria-hidden="true">
+      <span class="site-marquee-text" style="animation-duration: 14s; color: #9a6b1f;">
+        <i class="site-marquee-dot" style="background: #9a6b1f;"></i>写点东西，保持思考 · 安全学习之路
+      </span>
+    </div>
+    
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+      <a class="menu" href="/">
+        首页
+      </a>
+    
+  
+      <a class="menu" href="/tags/">
+        标签
+      </a>
+    
+  
+      <a class="menu" href="/categories/">
+        分类
+      </a>
+    
+  
+      <a class="menu" href="/archives/">
+        归档
+      </a>
+    
+  
+      <a class="menu" href="/about/">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">Pi Coding Agent Windows 原生环境配置指南</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2026-09-28</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/AI%E8%B5%8B%E8%83%BD/">
+              AI赋能
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/Pi-Coding-Agent/">
+              Pi Coding Agent
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p><a class="simple-lightbox" href="/imgs/pi-coding-agent-windows-setup/Pi-Coding-Agent-Windows%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-%E5%B0%81%E9%9D%A2.webp"><img   src="/images/loading.svg" data-src="/imgs/pi-coding-agent-windows-setup/Pi-Coding-Agent-Windows%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97-%E5%B0%81%E9%9D%A2.webp"  alt="Pi Coding Agent Windows 配置指南" lazyload></a></p>
+<hr>
+<p>这套配置不碰插件开发，也不讲 Pi 的核心机制，只解决一件事：<strong>把 Pi 装在 Windows 原生环境（而不是 WSL2）之后，怎么让它别在 bash 上栽跟头</strong>。</p>
+<p>前置依赖四个工具，缺一个后面的配置都白搭：</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ripgrep</code>（<code>rg</code>）</td>
+<td>文件内容 &#x2F; 文件名检索</td>
+</tr>
+<tr>
+<td><code>pi-coding-agent</code></td>
+<td>本体</td>
+</tr>
+<tr>
+<td>PowerShell 7（<code>pwsh</code>）</td>
+<td>替掉 bash 当默认 shell</td>
+</tr>
+<tr>
+<td>Windows Terminal</td>
+<td>承载终端快捷键</td>
+</tr>
+</tbody></table></div>
+<h2 id="一、用-pwsh-替掉-bash"><a href="#一、用-pwsh-替掉-bash" class="headerlink" title="一、用 pwsh 替掉 bash"></a>一、用 pwsh 替掉 bash</h2><p>先把结论摆前面：Windows 上不要用默认 bash 或第三方 bash 工具，两个原因。</p>
+<p><strong>路径格式对不上。</strong> WSL 那套 bash 认的是 <code>/mnt/c/Users/...</code>，而模型在 read、write、读 system prompt 的时候，默认吐出来的是 <code>C:/Users/...</code>。两边格式不一致，调用 bash 工具时路径识别错误几乎是必然的。</p>
+<p><strong>命令本身也不兼容。</strong> 不少在 Linux 上跑得好好的 bash 命令，换到 Windows 要么行为变了，要么直接不可用。</p>
+<p>现在的模型（GPT-5.6、DeepSeek 4 Flash 这类）写 PowerShell 脚本已经相当熟练，没什么理由继续将就 bash。改配置文件 <code>%USERPROFILE%/.pi/agent/settings.json</code>：</p>
+<figure class="highlight json"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shellPath&quot;</span><span class="punctuation">:</span> <span class="string">&quot;C:/Program Files/PowerShell/7/pwsh.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;externalEditor&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code --wait&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;showHardwareCursor&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></div></figure>
+
+<p>两个容易忽略的配置项：</p>
+<ul>
+<li><code>externalEditor</code>：填 <code>code --wait</code> 之后，按 <code>Ctrl + G</code> 能直接唤起 VS Code 写长提示词，比在终端里硬敲舒服得多。</li>
+<li><code>showHardwareCursor</code>：<font color="#ffff00"><b>中文输入法在终端里候选框位置飘的问题，就是靠这个修好的</b></font>。</li>
+</ul>
+<blockquote>
+<p><code>shellPath</code> 写的是 PowerShell 7 的默认安装位置。如果你的 pwsh 装在别处（比如 scoop 装的），用 <code>Get-Command pwsh</code> 拿到真实路径再填。</p>
+</blockquote>
+<h2 id="二、统一编码为-UTF-8"><a href="#二、统一编码为-UTF-8" class="headerlink" title="二、统一编码为 UTF-8"></a>二、统一编码为 UTF-8</h2><p>Windows 祖传的编码问题，不做处理就是满屏中文乱码。既然 shell 已经换成 pwsh 了，顺手把它的编码也锁死成 UTF-8。</p>
+<p>在 PowerShell 7 里跑 <code>code $PROFILE.CurrentUserCurrentHost</code> 打开当前用户的 profile 文件（文件不存在就新建），注入这段：</p>
+<figure class="highlight powershell"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$utf8</span> = [<span class="type">System.Text.UTF8Encoding</span>]::new(<span class="variable">$false</span>)</span><br><span class="line">[<span class="type">Console</span>]::InputEncoding = <span class="variable">$utf8</span></span><br><span class="line">[<span class="type">Console</span>]::OutputEncoding = <span class="variable">$utf8</span></span><br><span class="line"><span class="variable">$global:OutputEncoding</span> = <span class="variable">$utf8</span></span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$IsWindows</span>) &#123; chcp.com <span class="number">65001</span> &gt;<span class="variable">$null</span> &#125;</span><br></pre></td></tr></table></div></figure>
+
+<p><font color="#ffff00"><b>遇到乱码就加这段，别犹豫</b></font>。实测 Win10 上不加必定乱码；Win11 有时不加也能正常显示，具体原因还不清楚，但补上没坏处。</p>
+<p>三个细节：</p>
+<ul>
+<li><code>[Console]::OutputEncoding</code> 管的是 PowerShell 自己怎么解码输出，<code>chcp.com 65001</code> 管的是控制台代码页 —— 后者是原生程序会继承并读取的那份，<font color="#ffff00"><b>两个都留着</b></font>。</li>
+<li><code>[System.Text.UTF8Encoding]::new($false)</code> 里的 <code>$false</code> 是关掉 BOM 输出，别改成 <code>$true</code>，否则每次命令回显前面都会多出几个不可见字节。</li>
+<li>如果 profile 里要写中文注释，存成 UTF-8 with BOM 更保险。<code>pwsh</code> 7 无 BOM 也能正常解析，但 PowerShell 5.1 读无 BOM 的 UTF-8 会把中文注释解成乱码。</li>
+</ul>
+<h2 id="三、配置全局-Prompt"><a href="#三、配置全局-Prompt" class="headerlink" title="三、配置全局 Prompt"></a>三、配置全局 Prompt</h2><p>底层换成 PowerShell 之后，得明确告诉模型它现在身处什么环境。不然它还是会凭惯性往外吐 bash 命令。</p>
+<p>打开或创建 <code>%USERPROFILE%/.pi/agent/AGENTS.md</code>，加上：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- 当前环境是 PowerShell 7，必须使用 PowerShell 语法。</span><br><span class="line">- 在进行搜索文件内容或文件名等操作时，优先用 `rg`。</span><br></pre></td></tr></table></div></figure>
+
+<p>「优先用 <code>rg</code>」这条强烈建议加上。模型基本都知道 ripgrep 是什么，但默认行为往往是先试一遍 <code>find</code> 或 <code>grep</code>，在大仓库里这一下就能拖慢不少。<font color="#ffff00"><b>在全局 prompt 里把规矩定死，模型检索代码的速度能明显快一档</b></font>。</p>
+<h2 id="四、Windows-Terminal-快捷键"><a href="#四、Windows-Terminal-快捷键" class="headerlink" title="四、Windows Terminal 快捷键"></a>四、Windows Terminal 快捷键</h2><p>在 Windows Terminal 里跑 Pi，<code>Shift+Enter</code> 和 <code>Alt+Enter</code> 这两个键在默认配置下要么被终端吃掉，要么识别不出来，得手动改。</p>
+<p>按 <code>Ctrl+Shift+,</code> 打开 Windows Terminal 的 JSON 设置文件，在 <code>actions</code> 数组里追加这两段：</p>
+<figure class="highlight json"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;sendInput&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;input&quot;</span><span class="punctuation">:</span> <span class="string">&quot;\u001b[13;2u&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;keys&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shift+enter&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;sendInput&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;input&quot;</span><span class="punctuation">:</span> <span class="string">&quot;\u001b[13;3u&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;keys&quot;</span><span class="punctuation">:</span> <span class="string">&quot;alt+enter&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></div></figure>
+
+<p>保存生效后：<code>Shift+Enter</code> 正常换行，<code>Alt+Enter</code> 进 Follow-up 队列。</p>
+<blockquote>
+<p>这里的 <code>\u001b[13;2u</code> &#x2F; <code>\u001b[13;3u</code> 是 Kitty 键盘协议的 CSI u 编码，分别对应 Shift+Enter 和 Alt+Enter。<code>13</code> 是回车的键码，<code>;</code> 后面跟修饰键编号。</p>
+</blockquote>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/earendil-works/pi/issues/7064">WSL absolute windows paths are mishandled · Issue #7064 · earendil-works&#x2F;pi</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/earendil-works/pi/issues/7547">[Windows] [sink-thread] How do you use Pi on windows? · Issue #7547 · earendil-works&#x2F;pi</a></li>
+<li><a target="_blank" rel="noopener" href="https://pi.dev/docs/latest/terminal-setup#windows-terminal">Terminal Setup · Documentation · Pi</a></li>
+<li><a target="_blank" rel="noopener" href="https://pi.dev/docs/latest/windows">Windows Setup · Documentation · Pi</a></li>
+<li>原文：<a target="_blank" rel="noopener" href="https://blog.lmile.online/note/2026-08-15-pi-coding-agent-windows-optimization/">Windows 原生环境调教 Pi Coding Agent 的踩坑与优化指南</a></li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E7%94%A8-pwsh-%E6%9B%BF%E6%8E%89-bash"><span class="top-box-text">一、用 pwsh 替掉 bash</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E7%BB%9F%E4%B8%80%E7%BC%96%E7%A0%81%E4%B8%BA-UTF-8"><span class="top-box-text">二、统一编码为 UTF-8</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E9%85%8D%E7%BD%AE%E5%85%A8%E5%B1%80-Prompt"><span class="top-box-text">三、配置全局 Prompt</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81Windows-Terminal-%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="top-box-text">四、Windows Terminal 快捷键</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="top-box-text">参考链接</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2026/08/13/zi-dong-hua-shen-tou-claudecode/">
+          <h3 class="post-title">
+            
+            下一篇：用 Claude Code 配置自动化渗透测试
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+    
+      
+<div class="scroll-nav" id="scroll-nav">
+  <button type="button" class="scroll-nav-btn" data-scroll="top" aria-label="回到顶部" title="回到顶部">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 15l6-6 6 6"></path>
+    </svg>
+  </button>
+  <button type="button" class="scroll-nav-btn" data-scroll="bottom" aria-label="回到底部" title="回到底部">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 9l6 6 6-6"></path>
+    </svg>
+  </button>
+</div>
+
+      <script src="/js/scroll-nav.js" defer></script>
+    
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

